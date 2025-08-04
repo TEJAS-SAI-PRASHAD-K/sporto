@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
+enum OverlayDirection { right, left, top, bottom }
+
 class CircularOverlayPage extends StatelessWidget {
   final List<String> labels;
   final List<String> imagePaths;
+  final List<OverlayDirection> directions;
 
   const CircularOverlayPage({
     super.key,
     required this.labels,
     required this.imagePaths,
+    required this.directions,
   });
 
   @override
@@ -15,59 +19,111 @@ class CircularOverlayPage extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-          top: 80,
+          top: 120,
           left: 30,
-          child: CircularLabel(label: labels[0], image: imagePaths[0]),
+          child: CircularBubbleWithDirection(
+            image: imagePaths[0],
+            label: labels[0],
+            direction: directions[0],
+          ),
         ),
         Positioned(
           top: 80,
-          right: 30,
-          child: CircularLabel(label: labels[1], image: imagePaths[1]),
+          right: 45,
+          child: CircularBubbleWithDirection(
+            image: imagePaths[1],
+            label: labels[1],
+            direction: directions[1],
+          ),
         ),
         Positioned(
-          bottom: 180,
+          bottom: 100,
           left: 30,
-          child: CircularLabel(label: labels[2], image: imagePaths[2]),
+          child: CircularBubbleWithDirection(
+            image: imagePaths[2],
+            label: labels[2],
+            direction: directions[2],
+          ),
         ),
         Positioned(
-          bottom: 180,
-          right: 30,
-          child: CircularLabel(label: labels[3], image: imagePaths[3]),
+          bottom: 80,
+          right: 45,
+          child: CircularBubbleWithDirection(
+            image: imagePaths[3],
+            label: labels[3],
+            direction: directions[3],
+          ),
         ),
       ],
     );
   }
 }
 
-class CircularLabel extends StatelessWidget {
-  final String label;
+class CircularBubbleWithDirection extends StatelessWidget {
   final String image;
+  final String label;
+  final OverlayDirection direction;
 
-  const CircularLabel({super.key, required this.label, required this.image});
+  const CircularBubbleWithDirection({
+    super.key,
+    required this.image,
+    required this.label,
+    required this.direction,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+    final labelWidget = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
         ),
-        const SizedBox(height: 8),
-        Container(
-          width: 70,
-          height: 70,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 3),
-          ),
-          child: ClipOval(child: Image.asset(image)),
-        ),
-      ],
+      ),
     );
+    final avatarWidget = Container(
+      width: 70,
+      height: 70,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 3),
+      ),
+      child: ClipOval(child: Image.asset(image)),
+    );
+
+    switch (direction) {
+      case OverlayDirection.right:
+        return Row(children: [
+          avatarWidget,       
+          labelWidget,
+        ]);
+      case OverlayDirection.left:
+        return Row(children: [
+          labelWidget,       
+          avatarWidget,
+        ]);
+      case OverlayDirection.top:
+        return Column(
+          children: [
+            labelWidget,          
+            avatarWidget,
+          ],
+        );
+      case OverlayDirection.bottom:
+        return Column(
+          children: [
+            avatarWidget,
+            labelWidget,
+          ],
+        );
+    }
   }
 }

@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:playo/core/providers/theme_provider.dart';
 import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
+import 'package:playo/features/onboarding/view/pages/pick_your_fav.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+    
+    final theme=ref.watch(themeModeNotifierProvider);
+
     return MaterialApp(
       title: 'Playo',
+      theme: theme,
       debugShowCheckedModeBanner: false,
-      home: OnboardingPage(),
+      home: PickYourFavPage(),
     );
   }
 }

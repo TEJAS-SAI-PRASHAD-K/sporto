@@ -9,9 +9,22 @@ void showCustomModelSheet(BuildContext context) {
     builder: (context) => const CustomModelContent(),
   );
 }
-
 class CustomModelContent extends StatelessWidget {
   const CustomModelContent({super.key});
+
+  void _handleEmailLogin(BuildContext context) {
+    // TODO: Implement email login logic
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Email login clicked')));
+  }
+
+  void _handleGoogleLogin(BuildContext context) {
+    // TODO: Implement Google login logic
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Google login clicked')));
+  }
 
   @override
   Widget build(BuildContext context) {

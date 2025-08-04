@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:playo/features/onboarding/view/widgets/otp_input_bottom_modelsheet.dart';
 
@@ -9,6 +11,7 @@ void showCustomModelSheet(BuildContext context) {
     builder: (context) => const CustomModelContent(),
   );
 }
+
 class CustomModelContent extends StatelessWidget {
   const CustomModelContent({super.key});
 
@@ -40,28 +43,23 @@ class CustomModelContent extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  borderRadius: BorderRadius.circular(2),
-                ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'You\'re almost there!',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            const Text(
-              'You\'re almost there!',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
             const SizedBox(height: 8),
-            Text(
-              'Enter Mobile Number',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Enter Mobile Number',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -94,7 +92,6 @@ class CustomModelContent extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -108,7 +105,114 @@ class CustomModelContent extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 64,),
+
+            SizedBox(height: 24),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'By signing up, you agree to the\n',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.inverseSurface,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'Terms Of Service',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                  TextSpan(
+                    text: ' and ',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.inverseSurface,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'Privacy Policy',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(child: Divider(thickness: 1)),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'Or continue with',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+                Expanded(child: Divider(thickness: 1)),
+              ],
+            ),
+            SizedBox(height: 16),
+
+            Row(
+              children: [
+                if (Platform.isIOS || Platform.isMacOS) ...[
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        // Handle email login
+                        Navigator.pop(context);
+                        _handleEmailLogin(context);
+                      },
+                      icon: Icon(Icons.apple_rounded, size: 20),
+                      label: Text('Apple'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: Size(0, 45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      // Handle email login
+                      Navigator.pop(context);
+                      _handleEmailLogin(context);
+                    },
+                    icon: Icon(Icons.email_outlined, size: 20),
+                    label: Text('Email'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: Size(0, 45),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      // Handle Google login
+                      Navigator.pop(context);
+                      _handleGoogleLogin(context);
+                    },
+                    icon: Image.asset(
+                      'assets/images/google_icon.png',
+                      height: 22,
+                    ),
+                    label: Text('Google'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: Size(0, 45),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 64),
           ],
         ),
       ),

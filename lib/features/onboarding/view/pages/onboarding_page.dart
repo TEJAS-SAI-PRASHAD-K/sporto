@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:playo/features/onboarding/view/widgets/login_bottom_modelsheet.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:playo/features/onboarding/view/widgets/circular_overlay.dart';
+
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
 
@@ -48,7 +49,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         leading: Padding(
           padding: const EdgeInsets.all(8),
           child: Image.asset(
-            'assets/images/new-logo-playo.png',
+            'assets/images/logo_playo.png',
             fit: BoxFit.contain,
           ),
         ),
@@ -89,7 +90,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             ),
                             child: ClipOval(
                               child: Image.asset(
-                                'assets/images/vectors, photos and PSD files _ Free download.jpeg',
+                                'assets/images/girl_avatar.jpeg',
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -104,16 +105,20 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             "Wanna play?",
                           ],
                           imagePaths: [
-                            'assets/images/d85b08d3-df7b-455a-98d2-e0e402080a9f.jpeg',
-                            'assets/images/d85b08d3-df7b-455a-98d2-e0e402080a9f.jpeg',
-                            'assets/images/d85b08d3-df7b-455a-98d2-e0e402080a9f.jpeg',
-                            'assets/images/d85b08d3-df7b-455a-98d2-e0e402080a9f.jpeg',
+                            'assets/images/girl_avatar.jpeg',
+                            'assets/images/girl_avatar.jpeg',
+                            'assets/images/girl_avatar.jpeg',
+                            'assets/images/girl_avatar.jpeg',
                           ],
                           directions: [
-                            OverlayDirection.right,  // Top-left: label to the right
-                            OverlayDirection.bottom,   // Top-right: label to the left
-                            OverlayDirection.right, // Bottom-left: label below image
-                            OverlayDirection.bottom,    // Bottom-right: label above image
+                            OverlayDirection
+                                .right, // Top-left: label to the right
+                            OverlayDirection
+                                .bottom, // Top-right: label to the left
+                            OverlayDirection
+                                .right, // Bottom-left: label below image
+                            OverlayDirection
+                                .bottom, // Bottom-right: label above image
                           ],
                         ),
                       ],
@@ -130,7 +135,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             ),
                             child: ClipOval(
                               child: Image.asset(
-                                'assets/images/vectors, photos and PSD files _ Free download.jpeg',
+                                'assets/images/boy_avatar.png',
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -144,10 +149,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             "Cricket",
                           ],
                           imagePaths: [
-                            'assets/images/d85b08d3-df7b-455a-98d2-e0e402080a9f.jpeg',
-                            'assets/images/d85b08d3-df7b-455a-98d2-e0e402080a9f.jpeg',
-                            'assets/images/d85b08d3-df7b-455a-98d2-e0e402080a9f.jpeg',
-                            'assets/images/d85b08d3-df7b-455a-98d2-e0e402080a9f.jpeg',
+                            'assets/images/boy_avatar.jpeg',
+                            'assets/images/boy_avatar.jpeg',
+                            'assets/images/boy_avatar.jpeg',
+                            'assets/images/boy_avatar.jpeg',
                           ],
                           directions: [
                             OverlayDirection.right,
@@ -198,10 +203,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ? 'Just like you did as a kid!'
                       : 'Get your squad to play together!',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 15, color: Colors.grey[700]),
                 ),
               ],
             ),

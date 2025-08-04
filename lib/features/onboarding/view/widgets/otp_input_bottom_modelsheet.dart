@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:playo/features/onboarding/view/pages/pick_your_fav.dart';
 import 'package:playo/features/onboarding/view/widgets/otp_input_row.dart';
 
 class OtpInputSheet extends StatelessWidget {
@@ -32,6 +33,10 @@ class OtpInputSheet extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (builder) => PickYourFavPage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,

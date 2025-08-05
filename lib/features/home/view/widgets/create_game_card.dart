@@ -10,7 +10,7 @@ class CreateGameCard extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -49,10 +49,11 @@ class CreateGameCard extends StatelessWidget {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(9),
                     ),
-                    backgroundColor: Theme.of(context).primaryColor,
+                    shadowColor: Colors.black,
                   ),
                   onPressed: () => ScaffoldMessenger.of(
                     context,
@@ -61,7 +62,7 @@ class CreateGameCard extends StatelessWidget {
                     "Create",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                 ),

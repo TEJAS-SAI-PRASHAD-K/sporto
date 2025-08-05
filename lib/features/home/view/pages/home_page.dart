@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   HomeTile(
-                    img: 'assets/play_img.png',
+                    img: 'assets/images/boy_avatar.png',
                     title: 'Play',
                     description: 'Find players and join their activities',
                     onTap: () => ScaffoldMessenger.of(
@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                     ).showSnackBar(const SnackBar(content: Text(''))),
                   ),
                   HomeTile(
-                    img: 'assets/book_img.png',
+                    img: 'assets/images/boy_avatar.png',
                     title: 'Book',
                     description: 'Book your slots in venues nearby',
                     onTap: () => ScaffoldMessenger.of(
@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: HomeTile(
-                img: 'assets/train_img.png',
+                img: 'assets/images/boy_avatar.png',
                 title: 'Train With Us',
                 description:
                     'Connect with certified coaches nearby to level up your game',

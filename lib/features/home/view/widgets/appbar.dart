@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 PreferredSizeWidget buildCustomAppBar() {
   return AppBar(
-    elevation: 0,
-    titleSpacing: 0,
     title: Row(
       children: [
         const Icon(Icons.edit_location_alt),

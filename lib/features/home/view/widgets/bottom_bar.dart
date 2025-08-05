@@ -4,7 +4,11 @@ class BottomBar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onTabTapped;
 
-  const BottomBar({super.key, required this.selectedIndex, required this.onTabTapped});
+  const BottomBar({
+    super.key,
+    required this.selectedIndex,
+    required this.onTabTapped,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +21,7 @@ class BottomBar extends StatelessWidget {
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(icon: Icon(Icons.sports), label: 'Play'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Train'),
         BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Book'),
         BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'More'),
       ],

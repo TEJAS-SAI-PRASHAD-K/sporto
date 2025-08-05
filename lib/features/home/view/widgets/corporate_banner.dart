@@ -5,7 +5,6 @@ class CorporateBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFF243645),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -14,7 +13,12 @@ class CorporateBanner extends StatelessWidget {
           children: [
             const Text(
               "See Your Employees\nTired of Back to Back Meetings?",
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16, height: 1.2),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                height: 1.2,
+              ),
             ),
             const SizedBox(height: 7),
             const Text(
@@ -23,17 +27,25 @@ class CorporateBanner extends StatelessWidget {
             ),
             const Text(
               "Team Bonding!",
-              style: TextStyle(color: Colors.lightBlue, fontSize: 12, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: Colors.lightBlue,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: const Text("Explore Corporate Offerings!"),
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(''))),
+              onPressed: () => ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text(''))),
             ),
           ],
         ),

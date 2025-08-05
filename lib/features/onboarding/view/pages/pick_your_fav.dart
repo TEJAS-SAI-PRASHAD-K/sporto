@@ -19,7 +19,7 @@ class Sport {
 
 class _PickYourFavPageState extends State<PickYourFavPage> {
   List<String> selectedSports = [];
-  int currentSportsSet = 0; // 0 = initial 6, 1 = next 6, 2 = remaining sports
+  int currentSportsSet = 0;
 
   final List<Sport> initialSports = [
     Sport(name: 'Football', image: 'assets/images/google_icon.png'),
@@ -114,23 +114,7 @@ class _PickYourFavPageState extends State<PickYourFavPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Show More Sports',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    Icons.expand_more,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ],
-              ),
+              child: SingleChildScrollView(),
             ),
           ),
 

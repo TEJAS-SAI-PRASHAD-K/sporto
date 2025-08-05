@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:playo/core/widgets/theme_switch_icon_button.dart';
+import 'package:playo/features/home/view/pages/home_page.dart';
+import 'package:playo/features/onboarding/view/pages/avatar.dart';
 
 class PickYourFavPage extends StatefulWidget {
   const PickYourFavPage({super.key});
@@ -141,6 +143,10 @@ class _PickYourFavPageState extends State<PickYourFavPage> {
             height: 50,
             child: ElevatedButton(
               onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (builder) => HomePage()),
+                );
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -178,7 +184,10 @@ class _PickYourFavPageState extends State<PickYourFavPage> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (builder) => Avatar()),
+                        );
                       },
                       icon: const Icon(Icons.arrow_back, size: 30),
                       style: IconButton.styleFrom(

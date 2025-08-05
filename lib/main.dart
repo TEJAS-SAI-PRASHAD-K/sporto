@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/core/providers/theme_provider.dart';
+import 'package:playo/features/onboarding/view/pages/avatar.dart';
+import 'package:playo/features/onboarding/view/pages/complete_your_profile.dart';
 import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
 
 void main() {

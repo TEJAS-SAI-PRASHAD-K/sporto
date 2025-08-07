@@ -34,8 +34,8 @@ class PlayPageViewModel extends ChangeNotifier {
     if (_subTabIndex == 0) {
       return _cachedUpcomingActions ??= [
         const MenuAction(Icons.add, 'Create Game'),
-        const MenuAction(Icons.share, 'Share calendar'),
-        const MenuAction(Icons.person_add_alt_1, 'Invite playpals'),
+        const MenuAction(Icons.share, 'Share Calendar'),
+        const MenuAction(Icons.person_add_alt_1, 'Invite Playpals'),
         const MenuAction(Icons.history, 'My Bookings'),
       ];
     }

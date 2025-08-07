@@ -4,6 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/core/providers/bottom_nav_provider.dart';
 import 'package:playo/features/home/view/pages/home_page.dart';
 import 'package:playo/features/more/view/pages/more_page.dart';
+import 'package:playo/features/play/view/pages/play_page.dart';
 
 class BottomNavBar extends ConsumerStatefulWidget {
   const BottomNavBar({super.key});
@@ -21,7 +22,7 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
   List<Widget> _buildPages() {
     return [
       const HomePage(),
-      const Scaffold(body: Center(child: Text('Play Page'))), // Placeholder
+      const PlayPage(),
       const Scaffold(body: Center(child: Text('Train Page'))), // Placeholder
       const Scaffold(body: Center(child: Text('Book Page'))), // Placeholder
       const MorePage(),

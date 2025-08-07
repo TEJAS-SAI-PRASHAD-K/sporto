@@ -35,11 +35,14 @@ class PlayAppBar extends StatelessWidget implements PreferredSizeWidget {
             const Spacer(),
             IconButton(
               onPressed: () {},
-              icon: const Icon(Icons.notes, color: Colors.white),
+              icon: const Icon(Icons.chat, color: Colors.white),
             ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.notifications, color: Colors.white),
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.notifications, color: Colors.white),
+              ),
             ),
             const CircleAvatar(
               backgroundColor: Colors.white,

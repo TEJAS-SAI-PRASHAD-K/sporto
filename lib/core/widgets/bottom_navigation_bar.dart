@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/core/providers/bottom_nav_provider.dart';
 import 'package:playo/features/home/view/pages/home_page.dart';
+import 'package:playo/features/more/view/pages/more_page.dart';
 
 class BottomNavBar extends ConsumerStatefulWidget {
   const BottomNavBar({super.key});
@@ -12,17 +13,19 @@ class BottomNavBar extends ConsumerStatefulWidget {
 }
 
 class BottomNavBarState extends ConsumerState<BottomNavBar> {
-  final List<String> _tabNames = ['Home', 'Timetable', 'Attendance', 'Account'];
-
   @override
   void initState() {
     super.initState();
-    
-    
   }
 
   List<Widget> _buildPages() {
-    return const [HomePage()];
+    return [
+      const HomePage(),
+      const Scaffold(body: Center(child: Text('Play Page'))), // Placeholder
+      const Scaffold(body: Center(child: Text('Train Page'))), // Placeholder
+      const Scaffold(body: Center(child: Text('Book Page'))), // Placeholder
+      const MorePage(),
+    ];
   }
 
   @override
@@ -34,7 +37,6 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop && currentIndex != 0) {
           ref.read(bottomNavIndexProvider.notifier).state = 0;
-          
         }
       },
       child: Scaffold(
@@ -42,22 +44,18 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
           duration: const Duration(milliseconds: 300),
           transitionBuilder: (child, animation) =>
               FadeTransition(opacity: animation, child: child),
-          child: _buildPages()[currentIndex],
+          child: IndexedStack(
+            key: ValueKey(currentIndex),
+            index: currentIndex,
+            children: _buildPages(),
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           unselectedFontSize: 14,
           currentIndex: currentIndex,
           onTap: (index) {
-            if (index != currentIndex) {
-              final fromTab = _tabNames[currentIndex];
-              final toTab = _tabNames[index];
-
-              // Log tab switch
-              
-
-              ref.read(bottomNavIndexProvider.notifier).state = index;
-            }
+            ref.read(bottomNavIndexProvider.notifier).state = index;
           },
           items: [
             BottomNavigationBarItem(
@@ -81,8 +79,8 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
               label: "Book",
             ),
             BottomNavigationBarItem(
-              icon: _buildNavIcon(Iconsax.more, 3),
-              activeIcon: _buildActiveIcon(Iconsax.more, 3),
+              icon: _buildNavIcon(Iconsax.more, 4),
+              activeIcon: _buildActiveIcon(Iconsax.more, 4),
               label: "More",
             ),
           ],

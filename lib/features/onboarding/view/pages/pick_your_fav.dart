@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:playo/core/widgets/bottom_navigation_bar.dart';
 import 'package:playo/core/widgets/theme_switch_icon_button.dart';
-import 'package:playo/features/home/view/pages/home_page.dart';
 import 'package:playo/features/onboarding/view/pages/avatar.dart';
 
 class PickYourFavPage extends StatefulWidget {
@@ -129,7 +129,7 @@ class _PickYourFavPageState extends State<PickYourFavPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (builder) => HomePage()),
+                  MaterialPageRoute(builder: (builder) => BottomNavBar()),
                 );
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

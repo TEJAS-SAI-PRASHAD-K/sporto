@@ -9,7 +9,6 @@ import '../widgets/spotlight_tile.dart';
 import '../widgets/social_links_row.dart';
 import '../widgets/refer_banner.dart';
 import '../widgets/footer_section.dart';
-import '../widgets/bottom_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,14 +17,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  String _selectedLocation = 'Location';
 
   void onTabTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Simple navigation logic for demo purposes
+    setState(() {});
     switch (index) {
       case 0:
         break; // Home, do nothing
@@ -50,7 +45,14 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildCustomAppBar(),
+      appBar: buildCustomAppBar(
+        selectedLocation: _selectedLocation,
+        onLocationChanged: (loc) {
+          setState(() {
+            _selectedLocation = loc;
+          });
+        },
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -136,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                 vertical: 10,
               ),
               child: Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),

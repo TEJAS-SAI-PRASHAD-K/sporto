@@ -1,16 +1,134 @@
 import 'package:flutter/material.dart';
 
-PreferredSizeWidget buildCustomAppBar() {
+class LocationOption {
+  final String label;
+  final IconData icon;
+  final bool isCurrent;
+  final bool isRecent;
+
+  LocationOption({
+    required this.label,
+    required this.icon,
+    this.isCurrent = false,
+    this.isRecent = false,
+  });
+}
+
+class LocationSelector extends StatefulWidget {
+  final String selectedLocation;
+  final ValueChanged<String> onLocationChanged;
+
+  const LocationSelector({
+    super.key,
+    required this.selectedLocation,
+    required this.onLocationChanged,
+  });
+
+  @override
+  State<LocationSelector> createState() => _LocationSelectorState();
+}
+
+class _LocationSelectorState extends State<LocationSelector> {
+  late String _selected;
+
+  final List<LocationOption> _locations = [
+    LocationOption(
+      label: 'Current Location',
+      icon: Icons.my_location,
+      isCurrent: true,
+    ),
+    LocationOption(label: 'Hyderabad', icon: Icons.history, isRecent: true),
+    LocationOption(label: 'Bengaluru', icon: Icons.history, isRecent: true),
+    LocationOption(label: 'Chennai', icon: Icons.location_city),
+    LocationOption(label: 'Mumbai', icon: Icons.location_city),
+    LocationOption(label: 'Delhi', icon: Icons.location_city),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.selectedLocation;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<LocationOption>(
+      initialValue: _locations.firstWhere(
+        (loc) => loc.label == _selected,
+        orElse: () => _locations[0],
+      ),
+      onSelected: (LocationOption option) {
+        setState(() {
+          _selected = option.label;
+        });
+        widget.onLocationChanged(option.label);
+      },
+      itemBuilder: (context) => _locations.map((option) {
+        return PopupMenuItem<LocationOption>(
+          value: option,
+          child: Row(
+            children: [
+              Icon(
+                option.icon,
+                color: option.isCurrent ? Colors.green : Colors.grey,
+                size: 20,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                option.label,
+                style: TextStyle(
+                  fontWeight: option.isCurrent
+                      ? FontWeight.bold
+                      : FontWeight.normal,
+                  color: option.isCurrent ? Colors.green : Colors.black87,
+                ),
+              ),
+              if (_selected == option.label)
+                const Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Icon(Icons.check, color: Colors.green, size: 18),
+                ),
+            ],
+          ),
+        );
+      }).toList(),
+      child: Row(
+        children: [
+          Icon(Icons.location_on, color: Colors.green, size: 22),
+          const SizedBox(width: 4),
+          Text(
+            _selected,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 17,
+              color: Colors.black87,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          const Icon(
+            Icons.keyboard_arrow_down,
+            color: Colors.black54,
+            size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+PreferredSizeWidget buildCustomAppBar({
+  String selectedLocation = 'Location',
+  ValueChanged<String>? onLocationChanged,
+}) {
   return AppBar(
+    backgroundColor: Colors.white,
+    elevation: 0,
     title: Row(
       children: [
-        const Icon(Icons.edit_location_alt),
-        const SizedBox(width: 8),
         Expanded(
-          child: Text(
-            "Location",
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
-            overflow: TextOverflow.ellipsis,
+          child: LocationSelector(
+            selectedLocation: selectedLocation,
+            onLocationChanged: onLocationChanged ?? (_) {},
           ),
         ),
       ],

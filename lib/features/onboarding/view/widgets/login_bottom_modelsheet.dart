@@ -1,7 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:playo/features/onboarding/view/widgets/otp_input_bottom_modelsheet.dart';
+import 'package:icons_plus/icons_plus.dart';
 
 void showCustomModelSheet(BuildContext context) {
   showModalBottomSheet(
@@ -160,8 +160,8 @@ class CustomModelContent extends StatelessWidget {
                         Navigator.pop(context);
                         _handleEmailLogin(context);
                       },
-                      icon: Icon(Icons.apple_rounded, size: 20),
-                      label: Text('Apple'),
+                      icon: Icon(Icons.apple_rounded, size: 16),
+                      label: Text('Apple', style: TextStyle(fontSize: 12)),
                       style: OutlinedButton.styleFrom(
                         minimumSize: Size(0, 45),
                         shape: RoundedRectangleBorder(
@@ -179,8 +179,8 @@ class CustomModelContent extends StatelessWidget {
                       Navigator.pop(context);
                       _handleEmailLogin(context);
                     },
-                    icon: Icon(Icons.email_outlined, size: 20),
-                    label: Text('Email'),
+                    icon: Icon(Icons.email_outlined, size: 16),
+                    label: Text('Email', style: TextStyle(fontSize: 12)),
                     style: OutlinedButton.styleFrom(
                       minimumSize: Size(0, 45),
                       shape: RoundedRectangleBorder(
@@ -197,11 +197,8 @@ class CustomModelContent extends StatelessWidget {
                       Navigator.pop(context);
                       _handleGoogleLogin(context);
                     },
-                    icon: Image.asset(
-                      'assets/images/google_icon.png',
-                      height: 22,
-                    ),
-                    label: Text('Google'),
+                    icon: Icon(Bootstrap.google, size: 16),
+                    label: Text('Google', style: TextStyle(fontSize: 12)),
                     style: OutlinedButton.styleFrom(
                       minimumSize: Size(0, 45),
                       shape: RoundedRectangleBorder(
@@ -212,7 +209,7 @@ class CustomModelContent extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 64),
+            const SizedBox(height: 48),
           ],
         ),
       ),

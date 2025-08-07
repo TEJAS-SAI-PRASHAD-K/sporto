@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/core/providers/theme_provider.dart';
 import 'package:playo/features/more/view/pages/more_page.dart';
 import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
-import 'package:playo/features/play/view/play_page.dart';
+import 'package:playo/features/play/view/pages/play_page.dart';
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -20,7 +20,7 @@ class MyApp extends ConsumerWidget {
       title: 'Playo',
       theme: theme,
       debugShowCheckedModeBanner: false,
-      home: OnboardingPage(),
+      home: PlayPage(),
     );
   }
 }

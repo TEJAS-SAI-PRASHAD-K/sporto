@@ -6,6 +6,7 @@ import 'package:playo/features/play/view/widgets/play_tabs_bar.dart';
 import 'package:playo/features/play/view/widgets/play_sub_tabs_bar.dart';
 import 'package:playo/features/play/view/widgets/empty_games_widget.dart';
 import 'package:playo/features/play/view/widgets/menu_overlay.dart';
+import 'package:playo/core/widgets/bottom_navigation_bar.dart';
 
 class PlayPage extends StatelessWidget {
   const PlayPage({super.key});

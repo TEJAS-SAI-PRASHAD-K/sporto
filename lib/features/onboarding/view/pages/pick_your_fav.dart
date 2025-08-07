@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:playo/core/widgets/bottom_navigation_bar.dart';
 import 'package:playo/core/widgets/theme_switch_icon_button.dart';
+import 'package:playo/features/onboarding/view/pages/avatar.dart';
 
 class PickYourFavPage extends StatefulWidget {
   const PickYourFavPage({super.key});
@@ -17,7 +19,7 @@ class Sport {
 
 class _PickYourFavPageState extends State<PickYourFavPage> {
   List<String> selectedSports = [];
-  int currentSportsSet = 0; // 0 = initial 6, 1 = next 6, 2 = remaining sports
+  int currentSportsSet = 0;
 
   final List<Sport> initialSports = [
     Sport(name: 'Football', image: 'assets/images/google_icon.png'),
@@ -26,24 +28,30 @@ class _PickYourFavPageState extends State<PickYourFavPage> {
     Sport(name: 'Cricket', image: 'assets/images/google_icon.png'),
     Sport(name: 'Badminton', image: 'assets/images/google_icon.png'),
     Sport(name: 'Swimming', image: 'assets/images/google_icon.png'),
+    Sport(name: 'Volleyball', image: 'assets/images/google_icon.png'),
+    Sport(name: 'Hockey', image: 'assets/images/google_icon.png'),
   ];
 
   final List<Sport> secondSports = [
-    Sport(name: 'Volleyball', image: 'assets/images/google_icon.png'),
-    Sport(name: 'Hockey', image: 'assets/images/google_icon.png'),
     Sport(name: 'Golf', image: 'assets/images/google_icon.png'),
     Sport(name: 'Baseball', image: 'assets/images/google_icon.png'),
     Sport(name: 'Cycling', image: 'assets/images/google_icon.png'),
     Sport(name: 'Running', image: 'assets/images/google_icon.png'),
-  ];
-
-  final List<Sport> thirdSports = [
     Sport(name: 'Boxing', image: 'assets/images/google_icon.png'),
     Sport(name: 'Wrestling', image: 'assets/images/google_icon.png'),
     Sport(name: 'Gymnastics', image: 'assets/images/google_icon.png'),
     Sport(name: 'Table Tennis', image: 'assets/images/google_icon.png'),
+  ];
+
+  final List<Sport> thirdSports = [
     Sport(name: 'Martial Arts', image: 'assets/images/google_icon.png'),
     Sport(name: 'Rock Climbing', image: 'assets/images/google_icon.png'),
+    Sport(name: 'Skateboarding', image: 'assets/images/google_icon.png'),
+    Sport(name: 'Surfing', image: 'assets/images/google_icon.png'),
+    Sport(name: 'Snowboarding', image: 'assets/images/google_icon.png'),
+    Sport(name: 'Archery', image: 'assets/images/google_icon.png'),
+    Sport(name: 'Bowling', image: 'assets/images/google_icon.png'),
+    Sport(name: 'Fishing', image: 'assets/images/google_icon.png'),
   ];
 
   List<Sport> get currentSportsToShow {
@@ -86,6 +94,68 @@ class _PickYourFavPageState extends State<PickYourFavPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
+
+      persistentFooterAlignment: AlignmentDirectional.bottomCenter,
+      persistentFooterButtons: [
+        if (hasMoreSports)
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton(
+              onPressed: showMoreSports,
+              style: OutlinedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: SingleChildScrollView(),
+            ),
+          ),
+
+        if (hasMoreSports && selectedSports.isNotEmpty)
+          const SizedBox(height: 12),
+
+        if (selectedSports.isNotEmpty)
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (builder) => BottomNavBar()),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Selected sports: ${selectedSports.join(', ')}',
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                'Continue (${selectedSports.length} selected)',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+      ],
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -98,12 +168,15 @@ class _PickYourFavPageState extends State<PickYourFavPage> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (builder) => Avatar()),
+                        );
                       },
                       icon: const Icon(Icons.arrow_back, size: 30),
                       style: IconButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(1),
                         ),
                       ),
                     ),
@@ -138,12 +211,14 @@ class _PickYourFavPageState extends State<PickYourFavPage> {
                         height: 150,
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: isSelected ? Colors.blue : Colors.grey,
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.outline,
                             width: isSelected ? 3 : 2,
                           ),
                           borderRadius: BorderRadius.circular(12),
                           color: isSelected
-                              ? Theme.of(context).colorScheme.primary
+                              ? Theme.of(context).colorScheme.primaryContainer
                               : Theme.of(
                                   context,
                                 ).colorScheme.surfaceContainerLow,
@@ -198,62 +273,8 @@ class _PickYourFavPageState extends State<PickYourFavPage> {
                   }).toList(),
                 ),
               ),
-              const SizedBox(height: 100), // Add space for BottomAppBar
             ],
           ),
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (hasMoreSports)
-              OutlinedButton(
-                onPressed: () {
-                  showMoreSports();
-                },
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 60),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Show More Sports', style: TextStyle(fontSize: 16)),
-                    const SizedBox(width: 8),
-                    Icon(Icons.expand_more),
-                  ],
-                ),
-              ),
-            // if (selectedSports.isNotEmpty)
-            //   Padding(
-            //     padding: EdgeInsets.only(top: hasMoreSports ? 12 : 0),
-            //     child: ElevatedButton(
-            //       onPressed: () {
-            //         // TODO: Handle continue with selected sports
-            //         ScaffoldMessenger.of(context).showSnackBar(
-            //           SnackBar(
-            //             content: Text(
-            //               'Selected sports: ${selectedSports.join(', ')}',
-            //             ),
-            //           ),
-            //         );
-            //       },
-            //       style: ElevatedButton.styleFrom(
-            //         minimumSize: const Size(double.infinity, 50),
-            //         shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(12),
-            //         ),
-            //       ),
-            //       child: Text(
-            //         'Continue (${selectedSports.length} selected)',
-            //         style: const TextStyle(fontSize: 16),
-            //       ),
-            //     ),
-            //   ),
-          ],
         ),
       ),
     );

@@ -198,10 +198,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomBar(
-        selectedIndex: _selectedIndex,
-        onTabTapped: onTabTapped,
-      ),
     );
   }
 }

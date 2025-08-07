@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:playo/features/onboarding/view/pages/complete_your_profile.dart';
 import 'package:playo/features/onboarding/view/pages/pick_your_fav.dart';
 import 'package:playo/features/onboarding/view/widgets/otp_input_row.dart';
 
@@ -35,7 +36,9 @@ class OtpInputSheet extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (builder) => PickYourFavPage()),
+                    MaterialPageRoute(
+                      builder: (builder) => CompleteYourProfile(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(

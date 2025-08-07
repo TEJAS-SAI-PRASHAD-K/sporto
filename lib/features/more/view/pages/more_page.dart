@@ -59,126 +59,201 @@ class _MorePageState extends State<MorePage> {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // First Container with 4 ListTiles
-            Expanded(
-              flex: 4,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 8,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.person, color: Colors.blueAccent),
-                      title: Text('Profile Settings'),
-                      subtitle: Text('Manage your personal information'),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {},
-                    ),
-                    Divider(height: 1),
-                    ListTile(
-                      leading: Icon(Icons.notifications, color: Colors.orange),
-                      title: Text('Notifications'),
-                      subtitle: Text('Configure notification preferences'),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {},
-                    ),
-                    Divider(height: 1),
-                    ListTile(
-                      leading: Icon(Icons.security, color: Colors.green),
-                      title: Text('Privacy & Security'),
-                      subtitle: Text('Manage privacy settings'),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {},
-                    ),
-                    Divider(height: 1),
-                    ListTile(
-                      leading: Icon(Icons.payment, color: Colors.purple),
-                      title: Text('Payment Methods'),
-                      subtitle: Text('Manage cards and payment options'),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Second Container with 5 ListTiles
-            Expanded(
-              flex: 5,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 8,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.help, color: Colors.blue),
-                      title: Text('Help & Support'),
-                      subtitle: Text('Get help and contact support'),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {},
-                    ),
-                    Divider(height: 1),
-                    ListTile(
-                      leading: Icon(Icons.info, color: Colors.teal),
-                      title: Text('About'),
-                      subtitle: Text('App version and information'),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {},
-                    ),
-                    Divider(height: 1),
-                    ListTile(
-                      leading: Icon(Icons.star, color: Colors.amber),
-                      title: Text('Rate Us'),
-                      subtitle: Text('Rate our app on the store'),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {},
-                    ),
-                    Divider(height: 1),
-                    ListTile(
-                      leading: Icon(Icons.share, color: Colors.indigo),
-                      title: Text('Share App'),
-                      subtitle: Text('Share with friends and family'),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {},
-                    ),
-                    Divider(height: 1),
-                    ListTile(
-                      leading: Icon(Icons.logout, color: Colors.red),
-                      title: Text('Logout'),
-                      subtitle: Text('Sign out of your account'),
-                      trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {},
-                    ),
-                  ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // First Container with 4 ListTiles
+              Flexible(
+                flex: 4,
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: ListTile(
+                          leading: Icon(Icons.person, color: Colors.blueAccent),
+                          title: Text(
+                            'Profile Settings',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          subtitle: Text(
+                            'Manage your personal information',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                      Divider(height: 1),
+                      Flexible(
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.notifications,
+                            color: Colors.orange,
+                          ),
+                          title: Text(
+                            'Notifications',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          subtitle: Text(
+                            'Configure notification preferences',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                      Divider(height: 1),
+                      Flexible(
+                        child: ListTile(
+                          leading: Icon(Icons.security, color: Colors.green),
+                          title: Text(
+                            'Privacy & Security',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          subtitle: Text(
+                            'Manage privacy settings',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                      Divider(height: 1),
+                      Flexible(
+                        child: ListTile(
+                          leading: Icon(Icons.payment, color: Colors.purple),
+                          title: Text(
+                            'Payment Methods',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          subtitle: Text(
+                            'Manage cards and payment options',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 16),
+
+              // Second Container with 5 ListTiles
+              Flexible(
+                flex: 5,
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: ListTile(
+                          leading: Icon(Icons.help, color: Colors.blue),
+                          title: Text(
+                            'Help & Support',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          subtitle: Text(
+                            'Get help and contact support',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                      Divider(height: 1),
+                      Flexible(
+                        child: ListTile(
+                          leading: Icon(Icons.info, color: Colors.teal),
+                          title: Text('About', style: TextStyle(fontSize: 14)),
+                          subtitle: Text(
+                            'App version and information',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                      Divider(height: 1),
+                      Flexible(
+                        child: ListTile(
+                          leading: Icon(Icons.star, color: Colors.amber),
+                          title: Text(
+                            'Rate Us',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          subtitle: Text(
+                            'Rate our app on the store',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                      Divider(height: 1),
+                      Flexible(
+                        child: ListTile(
+                          leading: Icon(Icons.share, color: Colors.indigo),
+                          title: Text(
+                            'Share App',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          subtitle: Text(
+                            'Share with friends and family',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                      Divider(height: 1),
+                      Flexible(
+                        child: ListTile(
+                          leading: Icon(Icons.logout, color: Colors.red),
+                          title: Text('Logout', style: TextStyle(fontSize: 14)),
+                          subtitle: Text(
+                            'Sign out of your account',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

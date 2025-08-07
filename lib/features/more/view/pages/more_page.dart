@@ -101,48 +101,48 @@ class _MorePageState extends State<MorePage> {
                       Divider(height: 1),
                       Flexible(
                         child: ListTile(
+                          leading: Icon(Icons.payment, color: Colors.orange),
+                          title: Text(
+                            'My Bookings',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          subtitle: Text(
+                            'View Transactions and Receipts',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                      Divider(height: 1),
+                      Flexible(
+                        child: ListTile(
+                          leading: Icon(Icons.people, color: Colors.green),
+                          title: Text(
+                            'PlayPals',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          subtitle: Text(
+                            'Edit and Manage Players',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {},
+                        ),
+                      ),
+                      Divider(height: 1),
+                      Flexible(
+                        child: ListTile(
                           leading: Icon(
-                            Icons.notifications,
-                            color: Colors.orange,
+                            Icons.privacy_tip,
+                            color: Colors.purple,
                           ),
                           title: Text(
-                            'Notifications',
+                            'Priference and Privacy',
                             style: TextStyle(fontSize: 14),
                           ),
                           subtitle: Text(
-                            'Configure notification preferences',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                          onTap: () {},
-                        ),
-                      ),
-                      Divider(height: 1),
-                      Flexible(
-                        child: ListTile(
-                          leading: Icon(Icons.security, color: Colors.green),
-                          title: Text(
-                            'Privacy & Security',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          subtitle: Text(
-                            'Manage privacy settings',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                          onTap: () {},
-                        ),
-                      ),
-                      Divider(height: 1),
-                      Flexible(
-                        child: ListTile(
-                          leading: Icon(Icons.payment, color: Colors.purple),
-                          title: Text(
-                            'Payment Methods',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          subtitle: Text(
-                            'Manage cards and payment options',
+                            'Sports, Location, Notifications, etc',
                             style: TextStyle(fontSize: 12),
                           ),
                           trailing: Icon(Icons.arrow_forward_ios, size: 16),

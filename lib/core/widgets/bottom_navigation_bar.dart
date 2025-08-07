@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/core/providers/bottom_nav_provider.dart';
 import 'package:playo/features/book/view/pages/book_page.dart';
+import 'package:playo/features/Train/pages/train_page.dart';
 import 'package:playo/features/home/view/pages/home_page.dart';
 import 'package:playo/features/more/view/pages/more_page.dart';
 import 'package:playo/features/play/view/pages/play_page.dart';
@@ -26,6 +27,9 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
       const PlayPage(),
       const Scaffold(body: Center(child: Text('Train Page'))), // Placeholder
       const BookPage(),
+      const Scaffold(body: Center(child: Text('Play Page'))), // Placeholder
+      const TrainPage(), // Placeholder
+      const Scaffold(body: Center(child: Text('Book Page'))), // Placeholder
       const MorePage(),
     ];
   }

@@ -54,7 +54,7 @@ class _TrainPageState extends State<TrainPage> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        print("List withus");
+                        print("List with Us");
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -75,7 +75,6 @@ class _TrainPageState extends State<TrainPage> {
                     margin: EdgeInsets.symmetric(horizontal: 12),
                   ),
 
-                  // RIGHT CLICKABLE: Text + Icon
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
@@ -84,7 +83,8 @@ class _TrainPageState extends State<TrainPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons., size: 20),
+                          SizedBox(width: 6),
+                          Icon(Icons.question_answer, size: 20),
                           SizedBox(width: 6),
                           Text("Queries"),
                         ],

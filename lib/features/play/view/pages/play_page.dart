@@ -6,7 +6,6 @@ import 'package:playo/features/play/view/widgets/play_tabs_bar.dart';
 import 'package:playo/features/play/view/widgets/play_sub_tabs_bar.dart';
 import 'package:playo/features/play/view/widgets/empty_games_widget.dart';
 import 'package:playo/features/play/view/widgets/menu_overlay.dart';
-import 'package:playo/core/widgets/bottom_navigation_bar.dart';
 
 class PlayPage extends StatelessWidget {
   const PlayPage({super.key});
@@ -50,6 +49,12 @@ class _PlayPageBodyState extends State<PlayPageBody> {
   }
 
   @override
+  void dispose() {
+    _hideMenu();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<PlayPageViewModel>(
       builder: (context, vm, _) => GestureDetector(
@@ -76,9 +81,9 @@ class _PlayPageBodyState extends State<PlayPageBody> {
               ),
               Expanded(
                 child: EmptyGamesWidget(
-                  imageAsset: 'assets/images/empty_games.png',
                   title: vm.emptyTitle,
                   buttonText: vm.buttonLabel,
+                  selectedCity: vm.selectedCity,
                 ),
               ),
             ],

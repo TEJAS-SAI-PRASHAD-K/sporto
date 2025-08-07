@@ -4,13 +4,30 @@ import 'package:playo/features/play/model/menu_action.dart';
 class PlayPageViewModel extends ChangeNotifier {
   int _tabIndex = 0;
   int _subTabIndex = 0;
+  String _selectedCity = 'Bengaluru';
+
+  // Available cities list
+  final List<String> _availableCities = [
+    'Amaravati',
+    'Hyderabad',
+    'Bengaluru',
+    'Chennai',
+    'Mumbai',
+    'Delhi',
+    'Pune',
+    'Kolkata',
+  ];
 
   List<MenuAction>? _cachedUpcomingActions;
   List<MenuAction>? _cachedPastActions;
 
+  // Getters
   int get tabIndex => _tabIndex;
   int get subTabIndex => _subTabIndex;
+  String get selectedCity => _selectedCity;
+  List<String> get availableCities => List.unmodifiable(_availableCities);
 
+  // Tab selection methods
   void setTabIndex(int value) {
     if (_tabIndex != value) {
       _tabIndex = value;
@@ -23,6 +40,23 @@ class PlayPageViewModel extends ChangeNotifier {
       _subTabIndex = value;
       notifyListeners();
     }
+  }
+
+  // City selection method
+  void setSelectedCity(String city) {
+    if (_selectedCity != city && _availableCities.contains(city)) {
+      _selectedCity = city;
+      notifyListeners();
+
+      // Clear cached actions when city changes as games might be different
+      _cachedUpcomingActions = null;
+      _cachedPastActions = null;
+    }
+  }
+
+  // Check if a city is available
+  bool isCityAvailable(String city) {
+    return _availableCities.contains(city);
   }
 
   String get emptyTitle =>
@@ -44,6 +78,8 @@ class PlayPageViewModel extends ChangeNotifier {
       const MenuAction(Icons.history, 'My Bookings'),
     ];
   }
+
+  String? get emptyImage => null;
 
   @override
   void dispose() {

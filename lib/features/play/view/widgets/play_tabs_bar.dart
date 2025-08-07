@@ -23,12 +23,12 @@ class PlayTabsBar extends StatelessWidget {
           children: List.generate(tabs.length, (i) {
             final selected = selectedIndex == i;
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.only(left: 16, right: 4),
               child: InkWell(
                 onTap: () => onTabSelected(i),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
+                    horizontal: 12,
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(

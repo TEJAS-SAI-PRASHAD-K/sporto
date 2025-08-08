@@ -25,11 +25,7 @@ class _MorePageState extends State<MorePage> {
               child: CircleAvatar(
                 radius: 20,
                 backgroundColor: Colors.grey[100],
-                child: Icon(
-                  Icons.person_2_rounded,
-                  color: Colors.black,
-                  size: 24,
-                ),
+                foregroundImage: AssetImage("assets/images/boy_10.png"),
               ),
             ),
             const SizedBox(width: 18),
@@ -49,7 +45,7 @@ class _MorePageState extends State<MorePage> {
                   ),
                   Text(
                     'View your profile',
-                    style: TextStyle(color: Colors.black54, fontSize: 10),
+                    style: TextStyle(color: Colors.black54, fontSize: 12),
                   ),
                 ],
               ),
@@ -117,7 +113,10 @@ class _MorePageState extends State<MorePage> {
                     Divider(height: 1),
                     Flexible(
                       child: ListTile(
-                        leading: Icon(Icons.people, color: Colors.green),
+                        leading: Icon(
+                          Icons.people,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         title: Text('PlayPals', style: TextStyle(fontSize: 14)),
                         subtitle: Text(
                           'Edit and Manage Players',

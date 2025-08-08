@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 class BookAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String selectedLocation;
@@ -12,55 +13,40 @@ class BookAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFF27313C),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: SafeArea(
+    return AppBar(
+      title: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
             DropdownButton<String>(
               value: selectedLocation,
               underline: const SizedBox(),
+
               items: const [
-                DropdownMenuItem(
-                  value: 'Amaravati',
-                  child: Text(
-                    'Amaravati',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                DropdownMenuItem(
-                  value: 'Hyderabad',
-                  child: Text(
-                    'Hyderabad',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+                DropdownMenuItem(value: 'Amaravati', child: Text('Amaravati')),
+                DropdownMenuItem(value: 'Hyderabad', child: Text('Hyderabad')),
               ],
               onChanged: (value) => onLocationChanged(value ?? 'Amaravati'),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
+              style: TextStyle(
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
               ),
-              icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
-              dropdownColor: const Color(0xFF27313C),
+              icon: const Icon(Icons.keyboard_arrow_down),
             ),
             const Spacer(),
             IconButton(
               onPressed: () {},
-              icon: const Icon(Icons.chat, color: Colors.white),
+              icon: const Icon(Iconsax.message_2_copy),
             ),
-            Padding(padding: const EdgeInsets.only(right: 2)),
             IconButton(
               onPressed: () {},
-              icon: const Icon(Icons.notifications, color: Colors.white),
+              icon: const Icon(Iconsax.notification_1_copy),
             ),
             Padding(padding: const EdgeInsets.only(left: 12)),
             CircleAvatar(
               radius: 18,
-              backgroundColor: Colors.white,
-              child: Icon(Icons.person, color: Colors.grey[600]),
+              foregroundImage: AssetImage("assets/images/boy_10.png"),
             ),
           ],
         ),

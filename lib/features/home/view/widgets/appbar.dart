@@ -66,12 +66,16 @@ class _LocationSelectorState extends State<LocationSelector> {
       },
       itemBuilder: (context) => _locations.map((option) {
         return PopupMenuItem<LocationOption>(
+          textStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+
           value: option,
           child: Row(
             children: [
               Icon(
                 option.icon,
-                color: option.isCurrent ? Colors.green : Colors.grey,
+                color: option.isCurrent
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey,
                 size: 20,
               ),
               const SizedBox(width: 10),
@@ -81,13 +85,19 @@ class _LocationSelectorState extends State<LocationSelector> {
                   fontWeight: option.isCurrent
                       ? FontWeight.bold
                       : FontWeight.normal,
-                  color: option.isCurrent ? Colors.green : Colors.black87,
+                  color: option.isCurrent
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.black87,
                 ),
               ),
               if (_selected == option.label)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(left: 8.0),
-                  child: Icon(Icons.check, color: Colors.green, size: 18),
+                  child: Icon(
+                    Icons.check,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 18,
+                  ),
                 ),
             ],
           ),
@@ -142,7 +152,10 @@ PreferredSizeWidget buildCustomAppBar({
       ),
       Padding(
         padding: const EdgeInsets.only(right: 14, left: 7),
-        child: CircleAvatar(radius: 18, child: const Icon(Iconsax.user)),
+        child: CircleAvatar(
+          radius: 18,
+          foregroundImage: AssetImage("assets/images/boy_10.png"),
+        ),
       ),
     ],
   );

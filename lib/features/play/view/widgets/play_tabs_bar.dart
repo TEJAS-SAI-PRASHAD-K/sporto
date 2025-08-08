@@ -16,7 +16,7 @@ class PlayTabsBar extends StatelessWidget {
 
     return Container(
       height: 54,
-      color: const Color(0xFF1A1C1E),
+      color: Theme.of(context).colorScheme.surface,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -32,15 +32,19 @@ class PlayTabsBar extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: selected ? Colors.green : Colors.transparent,
+                    color: selected
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(18),
                   ),
                   child: Text(
                     tabs[i],
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
+                      color: selected
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : null,
                     ),
                   ),
                 ),

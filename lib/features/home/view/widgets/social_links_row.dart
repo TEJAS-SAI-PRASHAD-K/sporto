@@ -12,25 +12,19 @@ class SocialLinksRow extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: const Text('FOLLOW US ON', style: TextStyle()),
+            child: const Text('FOLLOW US ON', style: TextStyle(fontSize: 12)),
           ),
           IconButton(
-            icon: const Icon(Bootstrap.instagram),
-            onPressed: () => ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text(''))),
+            icon: const Icon(Bootstrap.instagram, size: 18),
+            onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Bootstrap.twitter),
-            onPressed: () => ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text(''))),
+            icon: const Icon(Bootstrap.twitter, size: 18),
+            onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Bootstrap.linkedin),
-            onPressed: () => ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text(''))),
+            icon: const Icon(Bootstrap.linkedin, size: 18),
+            onPressed: () {},
           ),
         ],
       ),

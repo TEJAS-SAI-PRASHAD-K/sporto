@@ -32,7 +32,7 @@ class PlaySubTabsBar extends StatelessWidget {
                     color: selectedIndex == i ? Colors.white : Colors.black,
                   ),
                 ),
-                selectedColor: Colors.green,
+                selectedColor: Theme.of(context).colorScheme.primary,
                 backgroundColor: const Color(0xFFF2F3F4),
                 onSelected: (_) => onTabSelected(i),
               ),

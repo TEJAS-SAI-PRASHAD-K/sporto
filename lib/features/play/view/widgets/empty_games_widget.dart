@@ -47,7 +47,8 @@ class EmptyGamesWidget extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.6,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[600],
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(

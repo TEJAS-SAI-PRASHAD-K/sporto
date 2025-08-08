@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:playo/features/play/viewmodel/play_page_viewmodel.dart';
 
@@ -11,21 +12,17 @@ class PlayAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<PlayPageViewModel>(
-      builder: (context, viewModel, _) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        color: const Color(0xFF27313C),
-        child: SafeArea(
-          child: Row(
-            children: [
-              _LocationDropdown(
-                selectedCity: viewModel.selectedCity,
-                availableCities: viewModel.availableCities,
-                onCityChanged: viewModel.setSelectedCity,
-              ),
-              const Spacer(),
-              const _AppBarActions(),
-            ],
-          ),
+      builder: (context, viewModel, _) => AppBar(
+        title: Row(
+          children: [
+            _LocationDropdown(
+              selectedCity: viewModel.selectedCity,
+              availableCities: viewModel.availableCities,
+              onCityChanged: viewModel.setSelectedCity,
+            ),
+            const Spacer(),
+            const _AppBarActions(),
+          ],
         ),
       ),
     );
@@ -47,35 +44,38 @@ class _LocationDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white24),
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
       child: DropdownButton<String>(
         value: selectedCity,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.primary,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
         underline: const SizedBox.shrink(),
-        icon: const Icon(
+        icon: Icon(
           Icons.keyboard_arrow_down,
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.primary,
           size: 20,
         ),
-        dropdownColor: const Color(0xFF27313C),
         borderRadius: BorderRadius.circular(10),
         items: availableCities.map((String city) {
           return DropdownMenuItem<String>(
             value: city,
             child: Row(
               children: [
-                const Icon(Icons.location_on, color: Colors.green, size: 18),
+                Icon(
+                  Icons.location_on,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 18,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   city,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
@@ -100,37 +100,21 @@ class _AppBarActions extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          onPressed: () {
-            // Handle notes action
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Notes clicked')));
-          },
-          icon: const Icon(Icons.notes, color: Colors.white),
+          onPressed: () {},
+          icon: const Icon(Iconsax.note_1_copy),
           tooltip: 'Notes',
         ),
         IconButton(
-          onPressed: () {
-            // Handle notifications action
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Notifications clicked')),
-            );
-          },
-          icon: const Icon(Icons.notifications, color: Colors.white),
+          onPressed: () {},
+          icon: const Icon(Iconsax.notification_1_copy),
           tooltip: 'Notifications',
         ),
         const SizedBox(width: 4),
         GestureDetector(
-          onTap: () {
-            // Handle profile action
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Profile clicked')));
-          },
+          onTap: () {},
           child: const CircleAvatar(
             radius: 18,
-            backgroundColor: Colors.white,
-            child: Icon(Icons.person, color: Colors.grey),
+            foregroundImage: AssetImage("assets/images/boy_10.png"),
           ),
         ),
       ],

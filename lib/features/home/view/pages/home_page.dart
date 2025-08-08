@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../widgets/appbar.dart';
-import '../widgets/weekly_goal_card.dart';
 import '../widgets/create_game_card.dart';
 import '../widgets/home_tile.dart';
 import '../widgets/corporate_banner.dart';
@@ -19,32 +18,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String _selectedLocation = 'Location';
 
-  void onTabTapped(int index) {
-    setState(() {});
-    switch (index) {
-      case 0:
-        break; // Home, do nothing
-      case 1:
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('')));
-        break;
-      case 2:
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('')));
-        break;
-      case 3:
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('')));
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: buildCustomAppBar(
         selectedLocation: _selectedLocation,
         onLocationChanged: (loc) {
@@ -56,31 +33,45 @@ class _HomePageState extends State<HomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const WeeklyGoalCard(),
-            const CreateGameCard(),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 6,
+              padding: const EdgeInsets.all(8.0),
+              child: ListTile(
+                tileColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadiusGeometry.circular(9),
+                ),
+                leading: const Icon(
+                  Icons.local_fire_department,
+                  color: Colors.orange,
+                  size: 35,
+                ),
+                title: const Text(
+                  'Set your weekly fit goal',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: const Text('Keep yourself fit!'),
+                trailing: const Icon(Icons.chevron_right_rounded, size: 32),
+                onTap: () {},
               ),
+            ),
+            const CreateGameCard(),
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   HomeTile(
-                    img: 'assets/images/boy_avatar.png',
+                    img: 'assets/images/football_ground.png',
                     title: 'Play',
                     description: 'Find players and join their activities',
-                    onTap: () => ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(const SnackBar(content: Text(''))),
+                    onTap: () {},
                   ),
                   HomeTile(
-                    img: 'assets/images/boy_avatar.png',
+                    img: 'assets/images/baseball_court.jpg',
                     title: 'Book',
                     description: 'Book your slots in venues nearby',
-                    onTap: () => ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(const SnackBar(content: Text(''))),
+                    onTap: () {},
                   ),
                 ],
               ),
@@ -88,13 +79,11 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: HomeTile(
-                img: 'assets/images/boy_avatar.png',
+                img: 'assets/images/tennis_court.png',
                 title: 'Train With Us',
                 description:
                     'Connect with certified coaches nearby to level up your game',
-                onTap: () => ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text(''))),
+                onTap: () {},
                 isWide: true,
               ),
             ),
@@ -117,17 +106,13 @@ class _HomePageState extends State<HomePage> {
                     title: "Bookings",
                     subtitle: "Game History",
                     icon: Icons.bookmark_border_rounded,
-                    onTap: () => ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(const SnackBar(content: Text(''))),
+                    onTap: () {},
                   ),
                   QuickActionTile(
                     title: "Playpals",
                     subtitle: "Manage Players",
                     icon: Icons.people_alt,
-                    onTap: () => ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(const SnackBar(content: Text(''))),
+                    onTap: () {},
                   ),
                 ],
               ),
@@ -140,15 +125,8 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ),
@@ -170,10 +148,7 @@ class _HomePageState extends State<HomePage> {
                           child: SpotlightTile(
                             title: 'Play.\nRefer. Earn.\nRepeat.',
                             buttonLabel: 'Refer Now',
-                            img: 'assets/coins.png',
-                            onTap: () => ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(const SnackBar(content: Text(''))),
+                            onTap: () {},
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -181,10 +156,7 @@ class _HomePageState extends State<HomePage> {
                           child: SpotlightTile(
                             title: 'Find Your\nCoach. Crush\nYour Goals.',
                             buttonLabel: 'Train Smarter',
-                            img: 'assets/whistle.png',
-                            onTap: () => ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(const SnackBar(content: Text(''))),
+                            onTap: () {},
                           ),
                         ),
                       ],
@@ -195,6 +167,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SocialLinksRow(),
             const ReferBanner(),
+            const SizedBox(height: 24),
             const FooterSection(),
             const SizedBox(height: 24),
           ],

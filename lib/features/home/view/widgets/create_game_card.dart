@@ -58,9 +58,7 @@ class CreateGameCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(9),
                     ),
                   ),
-                  onPressed: () => ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(const SnackBar(content: Text(''))),
+                  onPressed: () {},
                   child: Text(
                     "Create",
                     style: TextStyle(

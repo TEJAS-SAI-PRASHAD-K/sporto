@@ -51,9 +51,7 @@ class FooterLink extends StatelessWidget {
             fontSize: 13,
           ),
         ),
-        onTap: () => ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(''))),
+        onTap: () {},
       ),
     );
   }

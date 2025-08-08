@@ -22,17 +22,12 @@ class CustomModelContent extends StatefulWidget {
 class _CustomModelContentState extends State<CustomModelContent> {
   void _handleEmailLogin(BuildContext context) {
     // TODO: Implement email login logic
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Email login clicked')));
+    
   }
 
   void _handleGoogleLogin(BuildContext context) {
     // TODO: Implement Google login logic
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Google login clicked')));
-  }
+      }
 
   bool receiveWhatsappUpdates = false;
 

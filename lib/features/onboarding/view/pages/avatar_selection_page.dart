@@ -166,16 +166,7 @@ class _AvatarSelectionPageState extends State<AvatarSelectionPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: GestureDetector(
-                  onTap: () {
-                    // TODO: Implement gallery picker
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Gallery picker will be implemented here',
-                        ),
-                      ),
-                    );
-                  },
+                  onTap: () {},
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     width: double.infinity,

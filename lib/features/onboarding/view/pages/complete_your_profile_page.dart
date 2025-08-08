@@ -147,18 +147,6 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Temporarily disabled validation for UI testing
-                          // if (_formKey.currentState!.validate()) {
-                          // Form is valid, proceed
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Profile saved: ${_firstNameController.text} ${_lastNameController.text}',
-                              ),
-                            ),
-                          );
-
-                          // TODO: Navigate to next page
                           Navigator.push(
                             context,
                             MaterialPageRoute(

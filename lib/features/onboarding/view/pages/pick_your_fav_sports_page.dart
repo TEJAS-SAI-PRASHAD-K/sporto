@@ -205,13 +205,6 @@ class _PickYourFavSportsPageState extends State<PickYourFavSportsPage> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
               ),
               child: SafeArea(
                 child: SizedBox(
@@ -223,14 +216,6 @@ class _PickYourFavSportsPageState extends State<PickYourFavSportsPage> {
                         context,
                         MaterialPageRoute(builder: (builder) => BottomNavBar()),
                         (Route<dynamic> route) => false,
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Selected sports: ${selectedSports.join(', ')}',
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(

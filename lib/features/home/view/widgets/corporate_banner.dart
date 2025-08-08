@@ -49,9 +49,7 @@ class CorporateBanner extends StatelessWidget {
                   ),
                 ),
                 child: const Text("Explore Corporate Offerings!"),
-                onPressed: () => ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text(''))),
+                onPressed: (){}
               ),
             ],
           ),

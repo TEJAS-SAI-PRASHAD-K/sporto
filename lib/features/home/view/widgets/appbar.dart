@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 class LocationOption {
   final String label;
@@ -94,7 +95,7 @@ class _LocationSelectorState extends State<LocationSelector> {
       }).toList(),
       child: Row(
         children: [
-          Icon(Icons.location_on, color: Colors.green, size: 22),
+          Icon(Iconsax.location_copy, color: Colors.green, size: 22),
           const SizedBox(width: 4),
           Text(
             _selected,
@@ -105,8 +106,9 @@ class _LocationSelectorState extends State<LocationSelector> {
             ),
             overflow: TextOverflow.ellipsis,
           ),
+          SizedBox(width: 2),
           const Icon(
-            Icons.keyboard_arrow_down,
+            Iconsax.arrow_down_1_copy,
             color: Colors.black54,
             size: 20,
           ),
@@ -121,7 +123,6 @@ PreferredSizeWidget buildCustomAppBar({
   ValueChanged<String>? onLocationChanged,
 }) {
   return AppBar(
-    backgroundColor: Colors.white,
     elevation: 0,
     title: Row(
       children: [
@@ -134,14 +135,14 @@ PreferredSizeWidget buildCustomAppBar({
       ],
     ),
     actions: [
-      IconButton(onPressed: () {}, icon: const Icon(Icons.message_outlined)),
+      IconButton(onPressed: () {}, icon: const Icon(Iconsax.message_2_copy)),
       IconButton(
         onPressed: () {},
-        icon: const Icon(Icons.notifications_none_outlined),
+        icon: const Icon(Iconsax.notification_1_copy),
       ),
       Padding(
         padding: const EdgeInsets.only(right: 14, left: 7),
-        child: CircleAvatar(radius: 18, child: const Icon(Icons.person)),
+        child: CircleAvatar(radius: 18, child: const Icon(Iconsax.user)),
       ),
     ],
   );

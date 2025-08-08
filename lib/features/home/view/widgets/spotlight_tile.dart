@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 class SpotlightTile extends StatelessWidget {
   final String title;
   final String buttonLabel;
-  final String img;
   final VoidCallback onTap;
 
   const SpotlightTile({
     super.key,
     required this.title,
     required this.buttonLabel,
-    required this.img,
     required this.onTap,
   });
 
@@ -28,7 +26,6 @@ class SpotlightTile extends StatelessWidget {
             child: Text(
               title,
               style: const TextStyle(
-                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
                 height: 1.28,
@@ -37,25 +34,13 @@ class SpotlightTile extends StatelessWidget {
           ),
 
           /// Image
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Center(
-              child: Image.asset(
-                img,
-                height: 50,
-                width: 50,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-
           InkWell(
             onTap: onTap,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 6),
-              decoration: const BoxDecoration(
-                color: Colors.green,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(10),
                 ),

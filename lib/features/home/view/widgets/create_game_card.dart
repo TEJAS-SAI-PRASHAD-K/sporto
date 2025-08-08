@@ -5,8 +5,10 @@ class CreateGameCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
       child: Column(
         children: [
           Padding(
@@ -20,13 +22,15 @@ class CreateGameCard extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(9),
-                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(7),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                       ),
                       child: Text(
                         "START PLAYING!",
                         style: TextStyle(
-                          color: Colors.grey[800],
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -49,20 +53,19 @@ class CreateGameCard extends StatelessWidget {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(9),
                     ),
-                    shadowColor: Colors.black,
                   ),
                   onPressed: () => ScaffoldMessenger.of(
                     context,
                   ).showSnackBar(const SnackBar(content: Text(''))),
-                  child: const Text(
+                  child: Text(
                     "Create",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -74,10 +77,7 @@ class CreateGameCard extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: GestureDetector(
-              child: const Text(
-                "View My Calendar",
-                style: TextStyle(decoration: TextDecoration.underline),
-              ),
+              child: const Text("View My Calendar"),
               onTap: () {},
             ),
           ),

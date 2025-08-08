@@ -144,7 +144,7 @@ class _PickYourFavSportsPageState extends State<PickYourFavSportsPage> {
                                     ),
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .surfaceContainerHighest
+                                        .surfaceContainerLow
                                         .withValues(alpha: 0.7),
                                   ),
                                   child: Text(
@@ -219,9 +219,10 @@ class _PickYourFavSportsPageState extends State<PickYourFavSportsPage> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (builder) => BottomNavBar()),
+                        (Route<dynamic> route) => false,
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -236,7 +237,7 @@ class _PickYourFavSportsPageState extends State<PickYourFavSportsPage> {
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(9),
                       ),
                       elevation: 0,
                     ),

@@ -21,13 +21,14 @@ class HomeTile extends StatelessWidget {
     return Expanded(
       flex: isWide ? 2 : 1,
       child: InkWell(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(9),
+
         onTap: onTap,
         child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          margin: const EdgeInsets.only(bottom: 10),
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          margin: const EdgeInsets.only(bottom: 10, right: 4, left: 4),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -35,7 +36,7 @@ class HomeTile extends StatelessWidget {
               children: [
                 /// Image Section
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(9),
                   child: Image.asset(
                     img,
                     height: 70,

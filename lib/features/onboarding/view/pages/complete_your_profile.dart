@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:playo/features/onboarding/view/pages/avatar.dart';
 import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
-import 'package:playo/features/onboarding/view/widgets/otp_input_bottom_modelsheet.dart';
 
 class CompleteYourProfile extends StatefulWidget {
   const CompleteYourProfile({super.key});

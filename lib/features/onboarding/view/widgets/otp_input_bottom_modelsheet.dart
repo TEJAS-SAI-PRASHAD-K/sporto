@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/onboarding/view/pages/complete_your_profile.dart';
+import 'package:playo/features/onboarding/view/pages/complete_your_profile_page.dart';
 import 'package:playo/features/onboarding/view/widgets/otp_input_row.dart';
 
 class OtpInputSheet extends StatelessWidget {
@@ -33,7 +33,7 @@ class OtpInputSheet extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "+1-212-456-7890",
+                  "+1-123-456-7890",
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                     fontSize: 14,
@@ -52,7 +52,6 @@ class OtpInputSheet extends StatelessWidget {
               style: TextStyle(
                 decoration: TextDecoration.underline,
                 fontSize: 14,
-                fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.inverseSurface,
               ),
             ),
@@ -63,15 +62,16 @@ class OtpInputSheet extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  Navigator.push(
+                  Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
                       builder: (builder) => CompleteYourProfile(),
                     ),
+                    (Route<dynamic> route) => false,
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(9),
                   ),

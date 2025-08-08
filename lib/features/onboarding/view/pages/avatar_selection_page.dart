@@ -1,75 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/onboarding/view/pages/pick_your_fav.dart';
-import 'package:playo/features/onboarding/view/pages/complete_your_profile.dart';
+import 'package:playo/features/onboarding/view/pages/pick_your_fav_sports_page.dart';
 
-class Avatar extends StatefulWidget {
-  const Avatar({super.key});
+class AvatarSelectionPage extends StatefulWidget {
+  const AvatarSelectionPage({super.key});
 
   @override
-  State<Avatar> createState() => _AvatarState();
+  State<AvatarSelectionPage> createState() => _AvatarSelectionPageState();
 }
 
-class _AvatarState extends State<Avatar> {
+class _AvatarSelectionPageState extends State<AvatarSelectionPage> {
   int? selectedAvatarIndex;
 
   final List<String> avatarImages = [
-    'assets/images/google_icon.png', // Replace with actual avatar images
-    'assets/images/google_icon.png',
-    'assets/images/google_icon.png',
-    'assets/images/google_icon.png',
-    'assets/images/google_icon.png',
-    'assets/images/google_icon.png',
+    'assets/images/boy_1.png',
+    'assets/images/girl_9.png',
+    'assets/images/boy_8.png',
+    'assets/images/girl_11.png',
+    'assets/images/boy_9.png',
+    'assets/images/girl_10.png',
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(120),
-        child: SafeArea(
-          child: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            flexibleSpace: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (builder) => CompleteYourProfile(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.arrow_back, size: 30),
-                    style: IconButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      'Complete Your Profile',
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      appBar: AppBar(
+        title: Text(
+          'Complete Your Profile',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 0,
+        automaticallyImplyLeading: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -119,32 +83,7 @@ class _AvatarState extends State<Avatar> {
                             height: isSelected ? 90 : 80,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(
-                                        context,
-                                      ).colorScheme.outline.withOpacity(0.3),
-                                width: isSelected ? 3 : 2,
-                              ),
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary.withOpacity(0.4),
-                                        blurRadius: 12,
-                                        spreadRadius: 3,
-                                      ),
-                                    ]
-                                  : [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 6,
-                                        spreadRadius: 1,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
+                              border: Border.all(width: isSelected ? 2 : 0),
                             ),
                             child: ClipOval(
                               child: Image.asset(
@@ -229,22 +168,8 @@ class _AvatarState extends State<Avatar> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
+                    color: Theme.of(context).colorScheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withOpacity(0.3),
-                      width: 2,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        spreadRadius: 1,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -282,7 +207,7 @@ class _AvatarState extends State<Avatar> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const PickYourFavPage(),
+                        builder: (context) => const PickYourFavSportsPage(),
                       ),
                     );
                   },

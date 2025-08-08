@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/onboarding/view/pages/avatar.dart';
-import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
+import 'package:playo/features/onboarding/view/pages/avatar_selection_page.dart';
 
 class CompleteYourProfile extends StatefulWidget {
   const CompleteYourProfile({super.key});
@@ -24,60 +23,25 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(120),
-        child: SafeArea(
-          child: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            flexibleSpace: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (builder) => OnboardingPage(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.arrow_back, size: 30),
-                    style: IconButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      'Complete Your Profile',
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      appBar: AppBar(
+        title: Text(
+          'Complete Your Profile',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 0,
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(5.0),
               child: Text(
@@ -98,12 +62,8 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
               width: double.infinity,
               padding: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withOpacity(0.6),
-                  width: 1,
-                ),
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(9),
               ),
               child: Form(
                 key: _formKey,
@@ -142,31 +102,9 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surface,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(9),
                           borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.outline,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.outline.withOpacity(0.5),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.error,
-                            width: 2,
                           ),
                         ),
                       ),
@@ -194,24 +132,9 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surface,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(9),
                           borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.outline,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.outline.withOpacity(0.5),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2,
                           ),
                         ),
                       ),
@@ -238,7 +161,9 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
                           // TODO: Navigate to next page
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => Avatar()),
+                            MaterialPageRoute(
+                              builder: (context) => AvatarSelectionPage(),
+                            ),
                           );
                           // }
                         },
@@ -250,7 +175,7 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
                             context,
                           ).colorScheme.onPrimary,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(9),
                           ),
                         ),
                         child: const Text(

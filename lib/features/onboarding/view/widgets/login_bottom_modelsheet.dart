@@ -88,7 +88,7 @@ class _CustomModelContentState extends State<CustomModelContent> {
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
-                backgroundColor: Colors.green,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -97,6 +97,7 @@ class _CustomModelContentState extends State<CustomModelContent> {
                 'Send OTP',
                 style: TextStyle(
                   color: Colors.white,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -195,7 +196,7 @@ class _CustomModelContentState extends State<CustomModelContent> {
                       Navigator.pop(context);
                       _handleEmailLogin(context);
                     },
-                    icon: Icon(Icons.email_outlined, size: 16),
+                    icon: Icon(Iconsax.direct_normal_bold, size: 16),
                     label: Text('Email', style: TextStyle(fontSize: 12)),
                     style: OutlinedButton.styleFrom(
                       minimumSize: Size(0, 45),

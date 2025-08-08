@@ -223,7 +223,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     showCustomModelSheet(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(9),
                     ),

@@ -12,9 +12,14 @@ void showCustomModelSheet(BuildContext context) {
   );
 }
 
-class CustomModelContent extends StatelessWidget {
+class CustomModelContent extends StatefulWidget {
   const CustomModelContent({super.key});
 
+  @override
+  State<CustomModelContent> createState() => _CustomModelContentState();
+}
+
+class _CustomModelContentState extends State<CustomModelContent> {
   void _handleEmailLogin(BuildContext context) {
     // TODO: Implement email login logic
     ScaffoldMessenger.of(
@@ -28,6 +33,8 @@ class CustomModelContent extends StatelessWidget {
       context,
     ).showSnackBar(SnackBar(content: Text('Google login clicked')));
   }
+
+  bool receiveWhatsappUpdates = false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,23 +59,25 @@ class CustomModelContent extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 24),
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Enter Mobile Number',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 6),
             TextFormField(
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(9.0)),
+                ),
                 labelText: 'Mobile Number',
-                prefixIcon: Icon(Icons.phone),
+                prefixIcon: Icon(Iconsax.call_bold),
               ),
             ),
             const SizedBox(height: 16),
@@ -96,7 +105,14 @@ class CustomModelContent extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Checkbox.adaptive(value: true, onChanged: (_) {}),
+                Checkbox.adaptive(
+                  value: receiveWhatsappUpdates,
+                  onChanged: (val) {
+                    setState(() {
+                      receiveWhatsappUpdates = val ?? false;
+                    });
+                  },
+                ),
                 Expanded(
                   child: Text(
                     'I agree to receive updates over WhatsApp',
@@ -160,7 +176,7 @@ class CustomModelContent extends StatelessWidget {
                         Navigator.pop(context);
                         _handleEmailLogin(context);
                       },
-                      icon: Icon(Icons.apple_rounded, size: 16),
+                      icon: Icon(Iconsax.apple_bold, size: 16),
                       label: Text('Apple', style: TextStyle(fontSize: 12)),
                       style: OutlinedButton.styleFrom(
                         minimumSize: Size(0, 45),
@@ -197,7 +213,7 @@ class CustomModelContent extends StatelessWidget {
                       Navigator.pop(context);
                       _handleGoogleLogin(context);
                     },
-                    icon: Icon(Bootstrap.google, size: 16),
+                    icon: Icon(Iconsax.google_1_bold, size: 16),
                     label: Text('Google', style: TextStyle(fontSize: 12)),
                     style: OutlinedButton.styleFrom(
                       minimumSize: Size(0, 45),

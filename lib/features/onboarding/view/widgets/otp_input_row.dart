@@ -76,8 +76,6 @@ class _OtpInputRowState extends State<OtpInputRow> {
             );
           }),
         ),
-        const SizedBox(height: 20),
-        Text('Entered OTP: $otpCode'),
       ],
     );
   }

@@ -20,13 +20,43 @@ class OtpInputSheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "Enter OTP",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Enter OTP",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+                Text(
+                  "+1-212-456-7890",
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.inverseSurface,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             const OtpInputRow(),
             const SizedBox(height: 32),
+            Text(
+              "Resend OTP",
+
+              style: TextStyle(
+                decoration: TextDecoration.underline,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.inverseSurface,
+              ),
+            ),
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               height: 48,

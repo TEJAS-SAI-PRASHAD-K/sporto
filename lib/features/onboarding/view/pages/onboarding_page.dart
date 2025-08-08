@@ -43,29 +43,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Image.asset(
-            'assets/images/logo_playo.png',
-            fit: BoxFit.contain,
-          ),
-        ),
-        leadingWidth: 70,
-      ),
+      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // IMAGE + OVERLAYS + PAGEVIEW
           Stack(
             children: [
               SizedBox(
                 height: imageHeight,
                 width: double.infinity,
                 child: Image.asset(
-                  'assets/images/navi.jpeg',
+                  'assets/images/abstract_map.jpg',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -90,7 +78,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             ),
                             child: ClipOval(
                               child: Image.asset(
-                                'assets/images/girl_avatar.jpeg',
+                                'assets/images/boy_4.png',
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -105,10 +93,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             "Wanna play?",
                           ],
                           imagePaths: [
-                            'assets/images/girl_avatar.jpeg',
-                            'assets/images/girl_avatar.jpeg',
-                            'assets/images/girl_avatar.jpeg',
-                            'assets/images/girl_avatar.jpeg',
+                            'assets/images/boy_6.png',
+                            'assets/images/girl_4.png',
+                            'assets/images/girl_12.png',
+                            'assets/images/boy_2.png',
                           ],
                           directions: [
                             OverlayDirection
@@ -135,7 +123,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             ),
                             child: ClipOval(
                               child: Image.asset(
-                                'assets/images/boy_avatar.png',
+                                'assets/images/golf-club.jpg',
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -143,16 +131,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ),
                         CircularOverlayPage(
                           labels: [
-                            "Football",
+                            "Swimming",
                             "Tennis",
-                            "Badminton",
-                            "Cricket",
+                            "Baseball",
+                            "Football",
                           ],
                           imagePaths: [
-                            'assets/images/boy_avatar.jpeg',
-                            'assets/images/boy_avatar.jpeg',
-                            'assets/images/boy_avatar.jpeg',
-                            'assets/images/boy_avatar.jpeg',
+                            'assets/images/swimming_pool.jpg',
+                            'assets/images/tennis_court.png',
+                            'assets/images/baseball_court.jpg',
+                            'assets/images/football_ground.png',
                           ],
                           directions: [
                             OverlayDirection.right,

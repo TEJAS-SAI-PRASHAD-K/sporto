@@ -96,34 +96,18 @@ class CircularBubbleWithDirection extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white, width: 3),
       ),
-      child: ClipOval(child: Image.asset(image)),
+      child: ClipOval(child: Image.asset(image, fit: BoxFit.fill)),
     );
 
     switch (direction) {
       case OverlayDirection.right:
-        return Row(children: [
-          avatarWidget,       
-          labelWidget,
-        ]);
+        return Row(children: [avatarWidget, labelWidget]);
       case OverlayDirection.left:
-        return Row(children: [
-          labelWidget,       
-          avatarWidget,
-        ]);
+        return Row(children: [labelWidget, avatarWidget]);
       case OverlayDirection.top:
-        return Column(
-          children: [
-            labelWidget,          
-            avatarWidget,
-          ],
-        );
+        return Column(children: [labelWidget, avatarWidget]);
       case OverlayDirection.bottom:
-        return Column(
-          children: [
-            avatarWidget,
-            labelWidget,
-          ],
-        );
+        return Column(children: [avatarWidget, labelWidget]);
     }
   }
 }

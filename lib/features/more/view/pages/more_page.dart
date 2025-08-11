@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:playo/features/more/view/pages/playpals_page.dart';
 import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
 import 'package:playo/features/more/view/pages/my_bookings_page.dart';
 
@@ -121,7 +122,14 @@ class _MorePageState extends State<MorePage> {
                           style: TextStyle(fontSize: 12),
                         ),
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlaypalsPage(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     Divider(height: 1),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
 
 class MorePage extends StatefulWidget {
   const MorePage({super.key});
@@ -219,7 +220,61 @@ class _MorePageState extends State<MorePage> {
                           style: TextStyle(fontSize: 12),
                         ),
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {},
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+
+                              content: Text(
+                                'Do you want to sign out of your account?',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                                  ),
+                                  onPressed: () => Navigator.of(context).pop(),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Sign Out',
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimary,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => OnboardingPage(),
+                                      ),
+                                      (Route<dynamic> route) => false,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],

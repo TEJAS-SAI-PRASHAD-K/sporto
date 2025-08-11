@@ -76,6 +76,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
               }),
             ),
           ),
+          Divider(height: 15, thickness: 23),
           Expanded(
             child: Center(
               child: Text(

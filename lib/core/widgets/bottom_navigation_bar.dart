@@ -24,8 +24,8 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
   List<Widget> _buildPages() {
     return [
       const HomePage(),
-      const PlayPage(),
       const TrainPage(),
+      const PlayPage(),
       const BookPage(),
       const MorePage(),
     ];

@@ -123,7 +123,7 @@ class _MorePageState extends State<MorePage> {
                       child: ListTile(
                         leading: Icon(Icons.privacy_tip, color: Colors.purple),
                         title: Text(
-                          'Priference and Privacy',
+                          'Preference and Privacy',
                           style: TextStyle(fontSize: 14),
                         ),
                         subtitle: Text(

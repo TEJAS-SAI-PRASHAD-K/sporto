@@ -8,7 +8,7 @@ class CorporateBanner extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Card(
         elevation: 0,
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -42,14 +42,14 @@ class CorporateBanner extends StatelessWidget {
               const SizedBox(height: 8),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: const Text("Explore Corporate Offerings!"),
-                onPressed: (){}
+                onPressed: () {},
               ),
             ],
           ),

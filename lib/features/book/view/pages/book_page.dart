@@ -27,7 +27,6 @@ class BookPageContent extends StatelessWidget {
     return Consumer<BookPageViewModel>(
       builder: (context, viewModel, child) {
         return Scaffold(
-          backgroundColor: Colors.white,
           appBar: BookAppBar(
             selectedLocation: viewModel.selectedLocation,
             onLocationChanged: viewModel.setSelectedLocation,

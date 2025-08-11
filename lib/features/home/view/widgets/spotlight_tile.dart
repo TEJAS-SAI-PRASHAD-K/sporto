@@ -48,8 +48,8 @@ class SpotlightTile extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 buttonLabel,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
                 ),
               ),

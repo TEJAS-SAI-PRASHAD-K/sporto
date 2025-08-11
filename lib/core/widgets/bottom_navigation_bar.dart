@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/core/providers/bottom_nav_provider.dart';
 import 'package:playo/features/book/view/pages/book_page.dart';
-import 'package:playo/features/train/pages/train_page.dart';
+import 'package:playo/features/train/view/pages/train_page.dart';
 import 'package:playo/features/home/view/pages/home_page.dart';
 import 'package:playo/features/more/view/pages/more_page.dart';
 import 'package:playo/features/play/view/pages/play_page.dart';
@@ -36,10 +36,10 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
     final currentIndex = ref.watch(bottomNavIndexProvider);
 
     return PopScope(
-      canPop: currentIndex == 0,
+      canPop: currentIndex == 2,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop && currentIndex != 0) {
-          ref.read(bottomNavIndexProvider.notifier).state = 0;
+        if (!didPop && currentIndex != 2) {
+          ref.read(bottomNavIndexProvider.notifier).state = 2;
         }
       },
       child: Scaffold(
@@ -62,11 +62,6 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
           },
           items: [
             BottomNavigationBarItem(
-              icon: _buildNavIcon(Iconsax.home, 0),
-              activeIcon: _buildActiveIcon(Iconsax.home, 0),
-              label: "Home",
-            ),
-            BottomNavigationBarItem(
               icon: _buildNavIcon(Iconsax.play, 1),
               activeIcon: _buildActiveIcon(Iconsax.play, 1),
               label: "Play",
@@ -75,6 +70,11 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
               icon: _buildNavIcon(Iconsax.user, 2),
               activeIcon: _buildActiveIcon(Iconsax.user, 2),
               label: "Train",
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(Iconsax.home, 0),
+              activeIcon: _buildActiveIcon(Iconsax.home, 0),
+              label: "Home",
             ),
             BottomNavigationBarItem(
               icon: _buildNavIcon(Iconsax.book, 3),

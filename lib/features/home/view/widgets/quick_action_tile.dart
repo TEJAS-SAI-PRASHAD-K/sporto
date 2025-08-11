@@ -22,7 +22,7 @@ class QuickActionTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
 
         child: Card(
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

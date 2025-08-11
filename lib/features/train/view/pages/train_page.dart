@@ -14,7 +14,89 @@ class _TrainPageState extends State<TrainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildCustomAppBar(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        shadowColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+        title: GestureDetector(
+          onTap: () {
+            // Handle location selection
+            _showLocationPicker(context);
+          },
+          child: Row(
+            children: [
+              Icon(
+                Icons.location_on,
+                color: Theme.of(context).colorScheme.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Train',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            currentLocation,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.7),
+                                  fontSize: 12,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.6),
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.notifications_none_outlined,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            tooltip: 'Notifications',
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 14, left: 7),
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              child: Icon(
+                Icons.person,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                size: 20,
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -23,7 +105,6 @@ class _TrainPageState extends State<TrainPage> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Row(
@@ -41,21 +122,14 @@ class _TrainPageState extends State<TrainPage> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: const Color.fromARGB(255, 209, 209, 209),
-                  width: 2,
-                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        print("List with Us");
-                      },
+                      onTap: () {},
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -77,9 +151,7 @@ class _TrainPageState extends State<TrainPage> {
 
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        print("Queries");
-                      },
+                      onTap: () {},
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -97,97 +169,6 @@ class _TrainPageState extends State<TrainPage> {
           ),
         ],
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildCustomAppBar() {
-    return AppBar(
-      automaticallyImplyLeading: false,
-      elevation: 0,
-      shadowColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
-      title: GestureDetector(
-        onTap: () {
-          // Handle location selection
-          _showLocationPicker(context);
-        },
-        child: Row(
-          children: [
-            Icon(
-              Icons.location_on,
-              color: Theme.of(context).colorScheme.primary,
-              size: 24,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Train',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          currentLocation,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withOpacity(0.7),
-                                fontSize: 12,
-                              ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withOpacity(0.6),
-                        size: 16,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        IconButton(
-          onPressed: () {
-            // Handle notifications action
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Notifications')));
-          },
-          icon: Icon(
-            Icons.notifications_none_outlined,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          tooltip: 'Notifications',
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 14, left: 7),
-          child: CircleAvatar(
-            radius: 18,
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            child: Icon(
-              Icons.person,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              size: 20,
-            ),
-          ),
-        ),
-      ],
     );
   }
 

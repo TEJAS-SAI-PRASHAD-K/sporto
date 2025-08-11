@@ -12,7 +12,6 @@ class _MorePageState extends State<MorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
@@ -34,16 +33,9 @@ class _MorePageState extends State<MorePage> {
               children: [
                 Text(
                   'Profile Name',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
-                Text(
-                  'View your profile',
-                  style: TextStyle(color: Colors.black54, fontSize: 12),
-                ),
+                Text('View your profile', style: TextStyle(fontSize: 12)),
               ],
             ),
           ],
@@ -72,7 +64,7 @@ class _MorePageState extends State<MorePage> {
                         ),
                         tileColor: Theme.of(
                           context,
-                        ).colorScheme.surfaceContainerLow,
+                        ).colorScheme.surfaceContainer,
                         leading: Icon(Icons.person, color: Colors.blueAccent),
                         title: Text(
                           'Profile Settings',
@@ -89,6 +81,9 @@ class _MorePageState extends State<MorePage> {
                     Divider(height: 1),
                     Flexible(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         leading: Icon(Icons.payment, color: Colors.orange),
                         title: Text(
                           'My Bookings',
@@ -105,6 +100,9 @@ class _MorePageState extends State<MorePage> {
                     Divider(height: 1),
                     Flexible(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         leading: Icon(
                           Icons.people,
                           color: Theme.of(context).colorScheme.primary,
@@ -121,6 +119,9 @@ class _MorePageState extends State<MorePage> {
                     Divider(height: 1),
                     Flexible(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         leading: Icon(Icons.privacy_tip, color: Colors.purple),
                         title: Text(
                           'Preference and Privacy',
@@ -155,6 +156,9 @@ class _MorePageState extends State<MorePage> {
                   children: [
                     Flexible(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         leading: Icon(Icons.help, color: Colors.blue),
                         title: Text(
                           'Help & Support',
@@ -171,6 +175,9 @@ class _MorePageState extends State<MorePage> {
                     Divider(height: 1),
                     Flexible(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         leading: Icon(Icons.info, color: Colors.teal),
                         title: Text('About', style: TextStyle(fontSize: 14)),
                         subtitle: Text(
@@ -184,6 +191,9 @@ class _MorePageState extends State<MorePage> {
                     Divider(height: 1),
                     Flexible(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         leading: Icon(Icons.star, color: Colors.amber),
                         title: Text('Rate Us', style: TextStyle(fontSize: 14)),
                         subtitle: Text(
@@ -197,6 +207,9 @@ class _MorePageState extends State<MorePage> {
                     Divider(height: 1),
                     Flexible(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         leading: Icon(Icons.share, color: Colors.indigo),
                         title: Text(
                           'Share App',
@@ -213,6 +226,9 @@ class _MorePageState extends State<MorePage> {
                     Divider(height: 1),
                     Flexible(
                       child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         leading: Icon(Icons.logout, color: Colors.red),
                         title: Text('Logout', style: TextStyle(fontSize: 14)),
                         subtitle: Text(

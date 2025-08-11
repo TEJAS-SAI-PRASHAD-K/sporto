@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:playo/core/widgets/theme_switch_icon_button.dart';
 import 'package:playo/features/onboarding/view/widgets/login_bottom_modelsheet.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:playo/features/onboarding/view/widgets/circular_overlay.dart';
@@ -43,7 +44,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [ThemeSwitchIconButton()],
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -182,7 +187,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   style: const TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -191,7 +195,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ? 'Just like you did as a kid!'
                       : 'Get your squad to play together!',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
                 ),
               ],
             ),
@@ -207,11 +214,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             children: [
               const Text(
                 "Let's get playing!",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 6),

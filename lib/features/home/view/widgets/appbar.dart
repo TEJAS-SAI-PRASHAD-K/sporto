@@ -105,15 +105,15 @@ class _LocationSelectorState extends State<LocationSelector> {
       }).toList(),
       child: Row(
         children: [
-          Icon(Iconsax.location_copy, color: Colors.green, size: 22),
+          Icon(
+            Iconsax.location_copy,
+            color: Theme.of(context).colorScheme.primary,
+            size: 22,
+          ),
           const SizedBox(width: 4),
           Text(
             _selected,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 17,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
             overflow: TextOverflow.ellipsis,
           ),
           SizedBox(width: 2),

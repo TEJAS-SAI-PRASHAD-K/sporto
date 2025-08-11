@@ -17,15 +17,21 @@ class BookSearchBar extends StatelessWidget {
       child: Container(
         height: 48,
         decoration: BoxDecoration(
-          color: const Color(0xFFF5F5F5),
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(12),
         ),
         child: TextField(
           onChanged: onSearchChanged,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Search For Location',
-            hintStyle: TextStyle(color: Color(0xFF9E9E9E), fontSize: 16),
-            prefixIcon: Icon(Icons.search, color: Color(0xFF9E9E9E)),
+            hintStyle: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 16,
+            ),
+            prefixIcon: Icon(
+              Icons.search,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             border: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           ),

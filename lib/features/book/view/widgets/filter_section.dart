@@ -21,10 +21,14 @@ class FilterSection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFE0E0E0)),
+              border: Border.all(color: Theme.of(context).colorScheme.outline),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.tune, color: Color(0xFF757575), size: 20),
+            child: Icon(
+              Icons.tune,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -47,13 +51,8 @@ class FilterSection extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFF4CAF50)
-                              : Colors.white,
-                          border: Border.all(
-                            color: isSelected
-                                ? const Color(0xFF4CAF50)
-                                : const Color(0xFFE0E0E0),
-                          ),
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.secondaryFixedDim,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -62,7 +61,11 @@ class FilterSection extends StatelessWidget {
                             Text(
                               option,
                               style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.black,
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.onPrimary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryFixedVariant,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -70,7 +73,11 @@ class FilterSection extends StatelessWidget {
                               const SizedBox(width: 4),
                               Icon(
                                 Icons.keyboard_arrow_down,
-                                color: isSelected ? Colors.white : Colors.black,
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.onPrimary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                 size: 16,
                               ),
                             ],

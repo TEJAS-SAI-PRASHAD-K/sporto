@@ -60,7 +60,6 @@ class _PlayPageBodyState extends State<PlayPageBody> {
       builder: (context, vm, _) => GestureDetector(
         onTap: _hideMenu,
         child: Scaffold(
-          backgroundColor: const Color(0xFFF2F3F4),
           appBar: const PlayAppBar(),
           body: Column(
             children: [

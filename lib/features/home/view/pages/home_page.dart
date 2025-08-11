@@ -21,7 +21,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: buildCustomAppBar(
         selectedLocation: _selectedLocation,
         onLocationChanged: (loc) {
@@ -36,7 +35,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ListTile(
-                tileColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                tileColor: Theme.of(context).colorScheme.surfaceContainer,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadiusGeometry.circular(9),
                 ),
@@ -125,7 +124,7 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  color: Theme.of(context).colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(

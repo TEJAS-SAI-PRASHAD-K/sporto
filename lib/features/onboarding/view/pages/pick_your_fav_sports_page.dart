@@ -114,7 +114,7 @@ class _PickYourFavSportsPageState extends State<PickYourFavSportsPage> {
                                 ? Theme.of(context).colorScheme.primaryContainer
                                 : Theme.of(
                                     context,
-                                  ).colorScheme.surfaceContainerLow,
+                                  ).colorScheme.surfaceContainer,
                           ),
                           child: Stack(
                             children: [
@@ -144,7 +144,7 @@ class _PickYourFavSportsPageState extends State<PickYourFavSportsPage> {
                                     ),
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .surfaceContainerLow
+                                        .surfaceContainer
                                         .withValues(alpha: 0.7),
                                   ),
                                   child: Text(

@@ -62,7 +62,7 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
               width: double.infinity,
               padding: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(9),
               ),
               child: Form(

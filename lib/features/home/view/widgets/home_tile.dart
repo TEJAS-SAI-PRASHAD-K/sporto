@@ -24,7 +24,7 @@ class HomeTile extends StatelessWidget {
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         margin: const EdgeInsets.only(bottom: 10, right: 4, left: 4),
         child: Padding(
           padding: const EdgeInsets.all(12),

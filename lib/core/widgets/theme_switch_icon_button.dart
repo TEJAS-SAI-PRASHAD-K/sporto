@@ -13,8 +13,8 @@ class ThemeSwitchIconButton extends ConsumerWidget {
     return IconButton(
       onPressed: themeNotifier.toggleTheme,
       icon: theme == lightTheme
-          ? Icon(Icons.dark_mode_rounded, color: Theme.of(context).primaryColor)
-          : Icon(Icons.light_mode_rounded, color: Colors.white),
+          ? Icon(Icons.dark_mode_rounded, color: Colors.indigoAccent)
+          : Icon(Icons.light_mode_rounded, color: Colors.amber),
     );
   }
 }

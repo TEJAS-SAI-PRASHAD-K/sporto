@@ -38,7 +38,7 @@ class MoreListTile extends StatelessWidget {
             thickness: 0.4,
           ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
           child: ListTile(
             leading: Container(
               padding: const EdgeInsets.all(9),

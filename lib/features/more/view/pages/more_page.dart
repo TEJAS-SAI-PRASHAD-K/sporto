@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/more/view/pages/playpals_page.dart';
-import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/features/more/view/pages/my_bookings_page.dart';
+import 'package:playo/features/more/view/pages/playpals_page.dart';
+import 'package:playo/features/more/view/widgets/more_list_tile.dart';
+import 'package:playo/features/more/view/widgets/signout_dialogue_box.dart';
 
 class MorePage extends StatefulWidget {
   const MorePage({super.key});
@@ -44,57 +46,26 @@ class _MorePageState extends State<MorePage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // First Container with 4 ListTiles
-            Flexible(
-              flex: 4,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        tileColor: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainer,
-                        leading: Icon(Icons.person, color: Colors.blueAccent),
-                        title: Text(
-                          'Profile Settings',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        subtitle: Text(
-                          'Manage your personal information',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {},
-                      ),
-                    ),
-                    Divider(height: 1),
-                    Flexible(
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        leading: Icon(Icons.payment, color: Colors.orange),
-                        title: Text(
-                          'My Bookings',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        subtitle: Text(
-                          'View Transactions and Receipts',
-                          style: TextStyle(fontSize: 12),
-                        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      MoreListTile(
+                        isFirst: true,
+                        leading: Iconsax.receipt_copy,
+                        title: 'My Bookings',
+                        subTitle: "View Transactions & Receipts",
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {
                           Navigator.push(
@@ -104,23 +75,14 @@ class _MorePageState extends State<MorePage> {
                             ),
                           );
                         },
+                        tileColor: null,
+                        titleStyle: TextStyle(fontSize: 16),
                       ),
-                    ),
-                    Divider(height: 1),
-                    Flexible(
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        leading: Icon(
-                          Icons.people,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        title: Text('PlayPals', style: TextStyle(fontSize: 14)),
-                        subtitle: Text(
-                          'Edit and Manage Players',
-                          style: TextStyle(fontSize: 12),
-                        ),
+                      MoreListTile(
+                        isFirst: false,
+                        leading: Iconsax.people_copy,
+                        title: 'PlayPals',
+                        subTitle: "View & Manage Players",
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {
                           Navigator.push(
@@ -130,190 +92,91 @@ class _MorePageState extends State<MorePage> {
                             ),
                           );
                         },
+                        tileColor: null,
+                        titleStyle: TextStyle(fontSize: 16),
                       ),
-                    ),
-                    Divider(height: 1),
-                    Flexible(
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        leading: Icon(Icons.privacy_tip, color: Colors.purple),
-                        title: Text(
-                          'Preferences and Privacy',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        subtitle: Text(
-                          'Sports, Location, Notifications, etc',
-                          style: TextStyle(fontSize: 12),
-                        ),
+                      MoreListTile(
+                        isFirst: false,
+                        leading: Iconsax.money_copy,
+                        title: 'Passbook',
+                        subTitle: "Manage Score, Playo credits, etc",
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {},
+                        tileColor: null,
+                        titleStyle: TextStyle(fontSize: 16),
                       ),
-                    ),
-                  ],
+                      MoreListTile(
+                        isFirst: false,
+                        leading: Iconsax.security_copy,
+                        title: 'Preference and Privacy',
+                        subTitle: "Sports, Locations, notifications, etc",
+                        trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {},
+                        tileColor: null,
+                        titleStyle: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Second Container with 5 ListTiles
-            Flexible(
-              flex: 5,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        leading: Icon(Icons.help, color: Colors.blue),
-                        title: Text(
-                          'Help & Support',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        subtitle: Text(
-                          'Get help and contact support',
-                          style: TextStyle(fontSize: 12),
-                        ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      MoreListTile(
+                        isFirst: true,
+                        leading: Iconsax.discount_shape_copy,
+                        title: 'Offers',
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {},
+                        tileColor: null,
+                        titleStyle: TextStyle(fontSize: 16),
                       ),
-                    ),
-                    Divider(height: 1),
-                    Flexible(
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        leading: Icon(Icons.info, color: Colors.teal),
-                        title: Text('About', style: TextStyle(fontSize: 14)),
-                        subtitle: Text(
-                          'App version and information',
-                          style: TextStyle(fontSize: 12),
-                        ),
+                      MoreListTile(
+                        isFirst: false,
+                        leading: Iconsax.gift_copy,
+                        title: 'Invite and Earn',
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {},
+                        tileColor: null,
+                        titleStyle: TextStyle(fontSize: 16),
                       ),
-                    ),
-                    Divider(height: 1),
-                    Flexible(
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        leading: Icon(Icons.star, color: Colors.amber),
-                        title: Text('Rate Us', style: TextStyle(fontSize: 14)),
-                        subtitle: Text(
-                          'Rate our app on the store',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                      MoreListTile(
+                        isFirst: false,
+                        leading: Iconsax.support_copy,
+                        title: 'Help & Support',
                         onTap: () {},
+                        tileColor: null,
+                        titleStyle: TextStyle(fontSize: 16),
                       ),
-                    ),
-                    Divider(height: 1),
-                    Flexible(
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        leading: Icon(Icons.share, color: Colors.indigo),
-                        title: Text(
-                          'Share App',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        subtitle: Text(
-                          'Share with friends and family',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {},
-                      ),
-                    ),
-                    Divider(height: 1),
-                    Flexible(
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        leading: Icon(Icons.logout, color: Colors.red),
-                        title: Text('Logout', style: TextStyle(fontSize: 14)),
-                        subtitle: Text(
-                          'Sign out of your account',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                      MoreListTile(
+                        isFirst: false,
+                        leading: Iconsax.logout_copy,
+                        title: 'Logout',
                         onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-
-                              content: Text(
-                                'Do you want to sign out of your account?',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: Text(
-                                    'Cancel',
-                                    style: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
-                                  ),
-                                  onPressed: () => Navigator.of(context).pop(),
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Sign Out',
-                                    style: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onPrimary,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => OnboardingPage(),
-                                      ),
-                                      (Route<dynamic> route) => false,
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
+                          showSignOutDialog(context);
                         },
+                        tileColor: null,
+                        leadingIconColor: Theme.of(context).colorScheme.error,
+                        titleStyle: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.error,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

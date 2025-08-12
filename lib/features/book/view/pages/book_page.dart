@@ -6,6 +6,8 @@ import '../widgets/book_search_bar.dart';
 import '../widgets/promotional_banner.dart';
 import '../widgets/filter_section.dart';
 import '../widgets/tabs_section.dart';
+import '../pages/add_venues_page.dart' show VenuesList;
+import '../pages/add_venues_page.dart' as venues_source;
 
 class BookPage extends StatelessWidget {
   const BookPage({super.key});
@@ -24,6 +26,12 @@ class BookPageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Update the venues count on first build frame.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final vm = context.read<BookPageViewModel>();
+      vm.setTabCount(0, venues_source.mockVenuesCount);
+    });
+
     return Consumer<BookPageViewModel>(
       builder: (context, viewModel, child) {
         return Scaffold(
@@ -54,6 +62,27 @@ class BookPageContent extends StatelessWidget {
                   onTabSelected: viewModel.setSelectedTabIndex,
                 ),
                 const SizedBox(height: 16),
+                if (viewModel.selectedTabIndex == 0) ...[
+                  // Venues tab content
+                  const VenuesList(embedded: true),
+                  const SizedBox(height: 16),
+                ],
+                if (viewModel.selectedTabIndex == 1) ...[
+                  // Events tab content
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                    child: Center(
+                      child: Text(
+                        'No Events found',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.6),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

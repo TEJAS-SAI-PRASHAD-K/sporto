@@ -54,4 +54,12 @@ class BookPageViewModel extends ChangeNotifier {
       return entry.value.copyWith(isSelected: entry.key == selectedIndex);
     }).toList();
   }
+
+  // Public method to update a tab's count by index.
+  void setTabCount(int index, int count) {
+    if (index < 0 || index >= _tabs.length) return;
+    if (_tabs[index].count == count) return;
+    _tabs[index] = _tabs[index].copyWith(count: count);
+    notifyListeners();
+  }
 }

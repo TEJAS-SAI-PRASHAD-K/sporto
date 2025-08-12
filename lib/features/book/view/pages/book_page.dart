@@ -73,11 +73,10 @@ class BookPageContent extends StatelessWidget {
                     child: Center(
                       child: Text(
                         'No Events found',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(
-                            context,
-                            // ignore: deprecated_member_use
-                          ).colorScheme.onSurface.withOpacity(0.6),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),

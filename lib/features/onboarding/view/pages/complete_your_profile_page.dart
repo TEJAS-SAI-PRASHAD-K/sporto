@@ -103,9 +103,6 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
                         fillColor: Theme.of(context).colorScheme.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(9),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
                         ),
                       ),
                       // validator: (value) {
@@ -133,9 +130,6 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
                         fillColor: Theme.of(context).colorScheme.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(9),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
                         ),
                       ),
                     ),

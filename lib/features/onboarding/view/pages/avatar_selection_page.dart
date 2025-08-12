@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/features/onboarding/view/pages/pick_your_fav_sports_page.dart';
 
 class AvatarSelectionPage extends StatefulWidget {
@@ -15,7 +16,7 @@ class _AvatarSelectionPageState extends State<AvatarSelectionPage> {
     'assets/images/boy_1.png',
     'assets/images/girl_9.png',
     'assets/images/boy_8.png',
-    'assets/images/girl_11.png',
+    'assets/images/girl_8.png',
     'assets/images/boy_9.png',
     'assets/images/girl_10.png',
     'assets/images/girl_1.png',
@@ -71,9 +72,9 @@ class _AvatarSelectionPageState extends State<AvatarSelectionPage> {
                 ),
               if (selectedAvatarIndex == null)
                 CircleAvatar(
-                  backgroundColor: Colors.transparent,
                   radius: 45,
-                  child: Icon(Icons.person, size: 50),
+                  backgroundColor: Colors.transparent,
+                  backgroundImage: AssetImage("assets/images/default.png"),
                 ),
               const SizedBox(height: 30),
 
@@ -179,9 +180,9 @@ class _AvatarSelectionPageState extends State<AvatarSelectionPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.photo_library_outlined,
+                          Iconsax.gallery,
                           color: Theme.of(context).colorScheme.primary,
-                          size: 24,
+                          size: 22,
                         ),
                         const SizedBox(width: 12),
                         Text(

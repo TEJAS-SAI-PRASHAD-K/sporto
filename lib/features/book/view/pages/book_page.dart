@@ -26,7 +26,6 @@ class BookPageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Update the venues count on first build frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final vm = context.read<BookPageViewModel>();
       vm.setTabCount(0, venues_source.mockVenuesCount);
@@ -77,6 +76,7 @@ class BookPageContent extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(
                             context,
+                            // ignore: deprecated_member_use
                           ).colorScheme.onSurface.withOpacity(0.6),
                         ),
                       ),

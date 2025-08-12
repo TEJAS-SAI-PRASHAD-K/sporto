@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/venue_card.dart';
+import 'book_venues_page.dart';
 
 class AddVenuesPage extends StatelessWidget {
   const AddVenuesPage({super.key});
@@ -20,6 +21,24 @@ class AddVenuesPage extends StatelessWidget {
             distanceKm: venue.distanceKm,
             startingPrice: venue.startingPrice,
             imageAsset: venue.imageAsset,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => BookVenuesPage(
+                    details: VenueDetails(
+                      name: venue.name,
+                      imageAsset: venue.imageAsset,
+                      rating: venue.rating,
+                      distanceKm: venue.distanceKm,
+                      startingPrice: venue.startingPrice,
+                      timings: venue.timings,
+                      location: venue.location,
+                      totalGames: venue.totalGames,
+                    ),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -51,6 +70,24 @@ class VenuesList extends StatelessWidget {
           distanceKm: venue.distanceKm,
           startingPrice: venue.startingPrice,
           imageAsset: venue.imageAsset,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BookVenuesPage(
+                  details: VenueDetails(
+                    name: venue.name,
+                    imageAsset: venue.imageAsset,
+                    rating: venue.rating,
+                    distanceKm: venue.distanceKm,
+                    startingPrice: venue.startingPrice,
+                    timings: venue.timings,
+                    location: venue.location,
+                    totalGames: venue.totalGames,
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -63,6 +100,9 @@ class _Venue {
   final double distanceKm;
   final double startingPrice;
   final String imageAsset;
+  final String timings;
+  final String location;
+  final int totalGames;
 
   const _Venue({
     required this.name,
@@ -70,6 +110,9 @@ class _Venue {
     required this.distanceKm,
     required this.startingPrice,
     required this.imageAsset,
+    required this.timings,
+    required this.location,
+    required this.totalGames,
   });
 }
 
@@ -80,6 +123,9 @@ const List<_Venue> _mockVenues = [
     distanceKm: 1.2,
     startingPrice: 350,
     imageAsset: 'assets/images/tennis_court.png',
+    timings: '6:00 AM - 10:00 PM',
+    location: 'MG Road, Bengaluru',
+    totalGames: 128,
   ),
   _Venue(
     name: 'Greenfield Football Arena',
@@ -87,6 +133,9 @@ const List<_Venue> _mockVenues = [
     distanceKm: 2.8,
     startingPrice: 500,
     imageAsset: 'assets/images/football_ground.png',
+    timings: '5:30 AM - 11:00 PM',
+    location: 'HSR Layout, Bengaluru',
+    totalGames: 256,
   ),
   _Venue(
     name: 'Lakeside Swimming Pool',
@@ -94,6 +143,9 @@ const List<_Venue> _mockVenues = [
     distanceKm: 3.1,
     startingPrice: 300,
     imageAsset: 'assets/images/swimming_pool.jpg',
+    timings: '6:00 AM - 9:00 PM',
+    location: 'Ulsoor, Bengaluru',
+    totalGames: 94,
   ),
   _Venue(
     name: 'Sunset Golf Club',
@@ -101,6 +153,9 @@ const List<_Venue> _mockVenues = [
     distanceKm: 5.6,
     startingPrice: 800,
     imageAsset: 'assets/images/golf-club.jpg',
+    timings: '6:00 AM - 7:00 PM',
+    location: 'Sarjapur, Bengaluru',
+    totalGames: 72,
   ),
   _Venue(
     name: 'Downtown Baseball Court',
@@ -108,6 +163,9 @@ const List<_Venue> _mockVenues = [
     distanceKm: 1.9,
     startingPrice: 420,
     imageAsset: 'assets/images/baseball_court.jpg',
+    timings: '7:00 AM - 10:00 PM',
+    location: 'Indiranagar, Bengaluru',
+    totalGames: 65,
   ),
 ];
 

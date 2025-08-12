@@ -79,7 +79,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
           Expanded(
             child: Center(
               child: Text(
-                'No Order History',
+                'No Bookings Yet',
                 style: TextStyle(
                   fontSize: 16,
                   color: theme.colorScheme.onSurfaceVariant,

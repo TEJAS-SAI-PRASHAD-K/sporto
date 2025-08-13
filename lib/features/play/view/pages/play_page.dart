@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:playo/core/common/widgets/main_app_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:playo/features/play/viewmodel/play_page_viewmodel.dart';
-import 'package:playo/features/play/view/widgets/play_app_bar.dart';
 import 'package:playo/features/play/view/widgets/play_tabs_bar.dart';
 import 'package:playo/features/play/view/widgets/play_sub_tabs_bar.dart';
 import 'package:playo/features/play/view/widgets/empty_games_widget.dart';
@@ -60,7 +60,7 @@ class _PlayPageBodyState extends State<PlayPageBody> {
       builder: (context, vm, _) => GestureDetector(
         onTap: _hideMenu,
         child: Scaffold(
-          appBar: const PlayAppBar(),
+          appBar: const MainAppBar(),
           body: Column(
             children: [
               PlayTabsBar(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:playo/core/common/widgets/main_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodel/book_page_viewmodel.dart';
-import '../widgets/book_app_bar.dart';
 import '../widgets/book_search_bar.dart';
 import '../widgets/promotional_banner.dart';
 import '../widgets/filter_section.dart';
@@ -34,10 +34,7 @@ class BookPageContent extends StatelessWidget {
     return Consumer<BookPageViewModel>(
       builder: (context, viewModel, child) {
         return Scaffold(
-          appBar: BookAppBar(
-            selectedLocation: viewModel.selectedLocation,
-            onLocationChanged: viewModel.setSelectedLocation,
-          ),
+          appBar: MainAppBar(),
           body: SingleChildScrollView(
             child: Column(
               children: [

@@ -12,7 +12,7 @@ class PlayTabsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tabs = ['Calendar', 'Recommended', 'My Sports', 'Other Sports'];
+    final tabs = ['Calendar', 'My Sports', 'Other Sports'];
 
     return Container(
       height: 54,
@@ -20,34 +20,23 @@ class PlayTabsBar extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: List.generate(tabs.length, (i) {
             final selected = selectedIndex == i;
             return Padding(
               padding: const EdgeInsets.only(left: 16, right: 4),
-              child: InkWell(
-                onTap: () => onTabSelected(i),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: selected
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Text(
-                    tabs[i],
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: selected
-                          ? Theme.of(context).colorScheme.onPrimary
-                          : null,
-                    ),
+              child: TextButton(
+                onPressed: () => onTabSelected(i),
+                style: TextButton.styleFrom(
+                  foregroundColor: selected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.outline,
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
+                child: Text(tabs[i]),
               ),
             );
           }),

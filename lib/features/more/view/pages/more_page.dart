@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/features/more/view/pages/my_bookings_page.dart';
+import 'package:playo/features/more/view/pages/offers_page.dart';
 import 'package:playo/features/more/view/pages/playpals_page.dart';
 import 'package:playo/features/more/view/pages/preference_and_privacy_page.dart';
+import 'package:playo/features/more/view/pages/refer_and_earn_page.dart';
 import 'package:playo/features/more/view/widgets/more_list_tile.dart';
 import 'package:playo/features/more/view/widgets/signout_dialogue_box.dart';
 
@@ -143,7 +145,14 @@ class _MorePageState extends State<MorePage> {
                         leading: Iconsax.discount_shape_copy,
                         title: 'Offers',
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) => OffersPage(),
+                            ),
+                          );
+                        },
                         tileColor: null,
                         titleStyle: TextStyle(fontSize: 16),
                       ),
@@ -152,7 +161,14 @@ class _MorePageState extends State<MorePage> {
                         leading: Iconsax.gift_copy,
                         title: 'Invite and Earn',
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) => ReferAndEarnPage(),
+                            ),
+                          );
+                        },
                         tileColor: null,
                         titleStyle: TextStyle(fontSize: 16),
                       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/appbar.dart';
+import 'package:playo/core/common/widgets/main_app_bar.dart';
 import '../widgets/create_game_card.dart';
 import '../widgets/home_tile.dart';
 import '../widgets/corporate_banner.dart';
@@ -16,19 +16,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _selectedLocation = 'Location';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildCustomAppBar(
-        selectedLocation: _selectedLocation,
-        onLocationChanged: (loc) {
-          setState(() {
-            _selectedLocation = loc;
-          });
-        },
-      ),
+      appBar: MainAppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [

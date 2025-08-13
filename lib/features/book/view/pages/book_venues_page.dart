@@ -33,7 +33,19 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
             pinned: true,
             stretch: true, // enables pull-to-stretch
             expandedHeight: expandedHeight,
-            leading: BackButton(color: theme.colorScheme.onSurface),
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: theme.colorScheme.surfaceContainer,
+              ),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.arrow_back),
+              ),
+            ),
             flexibleSpace: FlexibleSpaceBar(
               stretchModes: const [
                 StretchMode.zoomBackground, // zoom on pull
@@ -96,13 +108,16 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                   expandable: true,
                 ),
                 const SizedBox(height: 10),
-                OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Iconsax.google_1_bold),
-                  label: const Text('Show in map'),
-                  style: OutlinedButton.styleFrom(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: OutlinedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Iconsax.google_1_bold),
+                    label: const Text('Show in map'),
+                    style: OutlinedButton.styleFrom(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
                     ),
                   ),
                 ),

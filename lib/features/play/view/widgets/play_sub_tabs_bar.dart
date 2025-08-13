@@ -14,7 +14,7 @@ class PlaySubTabsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subTabs = ['Upcoming', 'Past'];
+    final subTabs = ['Badminton', 'Soccer', 'Swimming'];
 
     return SizedBox(
       height: 48,
@@ -24,21 +24,25 @@ class PlaySubTabsBar extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: ChoiceChip(
-                checkmarkColor: Theme.of(context).colorScheme.onPrimary,
+                showCheckmark: false,
                 selected: selectedIndex == i,
                 label: Text(
                   subTabs[i],
                   style: TextStyle(
                     color: selectedIndex == i
                         ? Theme.of(context).colorScheme.onPrimary
-                        : Theme.of(context).colorScheme.onPrimaryFixedVariant,
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 selectedColor: Theme.of(context).colorScheme.primary,
                 backgroundColor: Theme.of(
                   context,
-                ).colorScheme.secondaryFixedDim,
-                onSelected: (_) => onTabSelected(i),
+                ).colorScheme.surfaceContainerHighest,
+                onSelected: (bool selected) {
+                  if (selected) {
+                    onTabSelected(i);
+                  }
+                },
               ),
             ),
           const Spacer(),

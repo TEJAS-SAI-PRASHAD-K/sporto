@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/venue_card.dart';
 import 'book_venues_page.dart';
+import 'package:playo/features/book/model/venue_details.dart';
 
 class AddVenuesPage extends StatelessWidget {
   const AddVenuesPage({super.key});
@@ -34,7 +35,7 @@ class AddVenuesPage extends StatelessWidget {
                       timings: venue.timings,
                       location: venue.location,
                       totalGames: venue.totalGames,
-                      ratingsCount: null,
+                      ratingsCount: (index + 1) * 250,
                     ),
                   ),
                 ),
@@ -80,7 +81,7 @@ class VenuesList extends StatelessWidget {
                     timings: venue.timings,
                     location: venue.location,
                     totalGames: venue.totalGames,
-                    ratingsCount: null,
+                    ratingsCount: (index + 1) * 250,
                   ),
                 ),
               ),

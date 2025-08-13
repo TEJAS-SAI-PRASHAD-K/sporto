@@ -34,6 +34,7 @@ class AddVenuesPage extends StatelessWidget {
                       timings: venue.timings,
                       location: venue.location,
                       totalGames: venue.totalGames,
+                      ratingsCount: null,
                     ),
                   ),
                 ),
@@ -46,12 +47,8 @@ class AddVenuesPage extends StatelessWidget {
   }
 }
 
-/// Embeddable venues list for use inside other screens (e.g., under a tab).
-/// When [embedded] is true, the list will shrinkWrap and disable its own
-/// scrolling so it can be placed inside a parent scroll view.
 class VenuesList extends StatelessWidget {
   const VenuesList({super.key, this.embedded = false});
-
   final bool embedded;
 
   @override
@@ -83,6 +80,7 @@ class VenuesList extends StatelessWidget {
                     timings: venue.timings,
                     location: venue.location,
                     totalGames: venue.totalGames,
+                    ratingsCount: null,
                   ),
                 ),
               ),
@@ -169,5 +167,4 @@ const List<_Venue> _mockVenues = [
   ),
 ];
 
-// Expose mock venues count for tabs badge usage
 int get mockVenuesCount => _mockVenues.length;

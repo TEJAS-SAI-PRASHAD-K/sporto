@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:playo/core/common/pages/alerts_page.dart';
 
 class MainAppBar extends StatefulWidget implements PreferredSizeWidget {
   const MainAppBar({super.key});
@@ -57,8 +58,13 @@ class _MainAppBarState extends State<MainAppBar> {
           tooltip: 'Notes',
         ),
         IconButton(
-          onPressed: () {},
-          icon: const Icon(Iconsax.notification_1_copy),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (builder) => AlertsPage()),
+            );
+          },
+          icon: const Icon(Iconsax.notification_copy),
           tooltip: 'Notifications',
         ),
         const SizedBox(width: 4),

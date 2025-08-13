@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/core/common/pages/alerts_page.dart';
+import 'package:playo/core/common/pages/conversations/conversations_page.dart';
 
 class MainAppBar extends StatefulWidget implements PreferredSizeWidget {
   const MainAppBar({super.key});
@@ -53,7 +54,12 @@ class _MainAppBarState extends State<MainAppBar> {
       ),
       actions: [
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (builder) => ConversationsPage()),
+            );
+          },
           icon: const Icon(Iconsax.message_2_copy),
           tooltip: 'Notes',
         ),

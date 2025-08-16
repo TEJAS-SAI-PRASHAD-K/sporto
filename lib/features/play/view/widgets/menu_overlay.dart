@@ -9,7 +9,7 @@ class MenuOverlay {
     required VoidCallback onClose,
   }) {
     return OverlayEntry(
-      builder: (_) => Positioned(
+      builder: (context) => Positioned(
         top: top,
         right: right,
         child: Material(
@@ -17,7 +17,7 @@ class MenuOverlay {
           child: Container(
             width: 185,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(10),
               boxShadow: const [
                 BoxShadow(color: Colors.black26, blurRadius: 4),
@@ -35,11 +35,18 @@ class MenuOverlay {
                     ),
                     child: Row(
                       children: [
-                        Icon(action.icon, size: 18, color: Colors.black),
+                        Icon(
+                          action.icon,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                         const SizedBox(width: 14),
                         Text(
                           action.title,
-                          style: const TextStyle(fontSize: 15),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       ],
                     ),

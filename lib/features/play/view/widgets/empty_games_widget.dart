@@ -27,9 +27,10 @@ class EmptyGamesWidget extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 2,
@@ -38,7 +39,10 @@ class EmptyGamesWidget extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'in $selectedCity',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 if (buttonText.isNotEmpty) ...[

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/features/more/view/pages/my_bookings_page.dart';
 import 'package:playo/features/more/view/pages/offers_page.dart';
+import 'package:playo/features/more/view/pages/pasbook_page.dart';
 import 'package:playo/features/more/view/pages/playpals_page.dart';
 import 'package:playo/features/more/view/pages/preference_and_privacy_page.dart';
 import 'package:playo/features/more/view/pages/refer_and_earn_page.dart';
@@ -104,7 +105,14 @@ class _MorePageState extends State<MorePage> {
                         title: 'Passbook',
                         subTitle: "Manage Score, Playo credits, etc",
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) => PasbookPage(),
+                            ),
+                          );
+                        },
                         tileColor: null,
                         titleStyle: TextStyle(fontSize: 16),
                       ),

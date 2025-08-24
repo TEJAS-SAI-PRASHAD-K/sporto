@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:playo/features/more/view/pages/help_and_support_page.dart';
 import 'package:playo/features/more/view/pages/my_bookings_page.dart';
 import 'package:playo/features/more/view/pages/offers_page.dart';
 import 'package:playo/features/more/view/pages/playpals_page.dart';
@@ -183,7 +184,14 @@ class _MorePageState extends State<MorePage> {
                         isFirst: false,
                         leading: Iconsax.support_copy,
                         title: 'Help & Support',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) => HelpAndSupportPage(),
+                            ),
+                          );
+                        },
                         tileColor: null,
                         titleStyle: TextStyle(fontSize: 16),
                       ),

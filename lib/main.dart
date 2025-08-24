@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/core/providers/theme_provider.dart';
 import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
+import 'package:playo/features/more/view/pages/help_and_support_page.dart';
 
 void main() {
   runApp(ProviderScope(child: MyApp()));

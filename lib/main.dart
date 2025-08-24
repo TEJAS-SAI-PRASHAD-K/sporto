@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/core/providers/theme_provider.dart';
 import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
-import 'package:playo/features/more/view/pages/help_and_support_page.dart';
+import 'package:playo/init_dependecies.dart';
 
-void main() {
+Future<void> main() async {
+  await initDependencies();
   runApp(ProviderScope(child: MyApp()));
 }
 

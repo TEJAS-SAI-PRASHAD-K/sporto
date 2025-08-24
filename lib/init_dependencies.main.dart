@@ -1,12 +1,12 @@
-import 'package:get_it/get_it.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'objbox.dart';
+part of 'init_dependecies.dart';
 
 /// Service locator for dependency injection
 final GetIt serviceLocator = GetIt.instance;
 
 /// Initialize all dependencies
 Future<void> initDependencies() async {
+  await dotenv.load(fileName: ".env");
+
   await _initSupabase();
   await _initDatabase();
   await _initServices();
@@ -17,8 +17,8 @@ Future<void> initDependencies() async {
 /// Initialize Supabase client
 Future<void> _initSupabase() async {
   await Supabase.initialize(
-    url: 'YOUR_SUPABASE_URL',
-    anonKey: 'YOUR_SUPABASE_ANON_KEY',
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
   serviceLocator.registerSingleton<SupabaseClient>(Supabase.instance.client);

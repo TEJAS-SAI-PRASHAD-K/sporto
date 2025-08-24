@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:playo/core/theme/wolt_modal_theme_config.dart';
 
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
@@ -8,7 +7,6 @@ final ThemeData lightTheme = ThemeData(
     dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
     brightness: Brightness.light,
   ),
-  extensions: <ThemeExtension>[WoltModalThemeConfig.lightTheme()],
   // fontFamily: 'Poppins',
 );
 
@@ -19,6 +17,5 @@ final ThemeData darkTheme = ThemeData(
     dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot,
     brightness: Brightness.dark,
   ),
-  extensions: <ThemeExtension>[WoltModalThemeConfig.darkTheme()],
   // fontFamily: 'Poppins',
 );

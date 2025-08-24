@@ -19,7 +19,7 @@ class MyApp extends ConsumerWidget {
       title: 'Playo',
       theme: theme,
       debugShowCheckedModeBanner: false,
-      home: HelpAndSupportPage(),
+      home: OnboardingPage(),
     );
   }
 }

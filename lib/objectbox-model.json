@@ -1,0 +1,3500 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:5447968802973702213",
+      "lastPropertyId": "35:982429832415569317",
+      "name": "Game",
+      "properties": [
+        {
+          "id": "1:6868970239042948147",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8583747823717663717",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "1:2354988503313835993"
+        },
+        {
+          "id": "3:5487164275421877943",
+          "name": "organizerId",
+          "type": 9
+        },
+        {
+          "id": "4:2279274274967589690",
+          "name": "sportId",
+          "type": 9
+        },
+        {
+          "id": "5:5129186890086622957",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "6:3834210076942846763",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "7:4822844430197060246",
+          "name": "gameType",
+          "type": 9
+        },
+        {
+          "id": "8:8511905625060329654",
+          "name": "skillLevel",
+          "type": 9
+        },
+        {
+          "id": "9:5313623517864642364",
+          "name": "startTime",
+          "type": 10
+        },
+        {
+          "id": "10:8985665550320210478",
+          "name": "endTime",
+          "type": 10
+        },
+        {
+          "id": "11:26305888867765198",
+          "name": "venueId",
+          "type": 9
+        },
+        {
+          "id": "12:4984262479760352177",
+          "name": "venueName",
+          "type": 9
+        },
+        {
+          "id": "13:5662434482100406773",
+          "name": "venueAddress",
+          "type": 9
+        },
+        {
+          "id": "14:5002438430392493982",
+          "name": "latitude",
+          "type": 8
+        },
+        {
+          "id": "15:8780200072925380317",
+          "name": "longitude",
+          "type": 8
+        },
+        {
+          "id": "16:5503028247373454241",
+          "name": "capacity",
+          "type": 6
+        },
+        {
+          "id": "17:1496973385888364396",
+          "name": "currentPlayers",
+          "type": 6
+        },
+        {
+          "id": "18:4525876737649421379",
+          "name": "playerIds",
+          "type": 30
+        },
+        {
+          "id": "19:6618302703190853421",
+          "name": "waitlistIds",
+          "type": 30
+        },
+        {
+          "id": "20:8834354001364532897",
+          "name": "entryFee",
+          "type": 8
+        },
+        {
+          "id": "21:9173144425402340203",
+          "name": "currency",
+          "type": 9
+        },
+        {
+          "id": "22:2457715584259896538",
+          "name": "rules",
+          "type": 30
+        },
+        {
+          "id": "23:1745004601118242435",
+          "name": "equipmentProvided",
+          "type": 30
+        },
+        {
+          "id": "24:7959924781902110874",
+          "name": "equipmentRequired",
+          "type": 30
+        },
+        {
+          "id": "25:5094162876240367946",
+          "name": "isPublic",
+          "type": 1
+        },
+        {
+          "id": "26:3128800858072868586",
+          "name": "allowWaitlist",
+          "type": 1
+        },
+        {
+          "id": "27:7445719103565644080",
+          "name": "requiresApproval",
+          "type": 1
+        },
+        {
+          "id": "28:8621388071605858572",
+          "name": "contactInfo",
+          "type": 9
+        },
+        {
+          "id": "29:4483294545617975678",
+          "name": "tags",
+          "type": 30
+        },
+        {
+          "id": "30:669192672215640723",
+          "name": "notes",
+          "type": 9
+        },
+        {
+          "id": "31:1431835702602753878",
+          "name": "rating",
+          "type": 6
+        },
+        {
+          "id": "32:5109090198142660122",
+          "name": "viewCount",
+          "type": 6
+        },
+        {
+          "id": "33:6161431593564138226",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "34:3103424895034795151",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "35:982429832415569317",
+          "name": "dbStatus",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:4848752636166733127",
+      "lastPropertyId": "13:2219698313903786630",
+      "name": "GameInvite",
+      "properties": [
+        {
+          "id": "1:1166677163671324902",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7370383259020231526",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "2:5955781866712820641"
+        },
+        {
+          "id": "3:1240111978549306956",
+          "name": "gameId",
+          "type": 9
+        },
+        {
+          "id": "4:1425433603402085229",
+          "name": "inviterId",
+          "type": 9
+        },
+        {
+          "id": "5:6654442715448417069",
+          "name": "inviteeId",
+          "type": 9
+        },
+        {
+          "id": "6:4185477975502908148",
+          "name": "message",
+          "type": 9
+        },
+        {
+          "id": "7:8522881032086414898",
+          "name": "sentAt",
+          "type": 10
+        },
+        {
+          "id": "8:293744023462060706",
+          "name": "respondedAt",
+          "type": 10
+        },
+        {
+          "id": "9:6682645646920936659",
+          "name": "expiresAt",
+          "type": 10
+        },
+        {
+          "id": "10:4110377556870748622",
+          "name": "response",
+          "type": 9
+        },
+        {
+          "id": "11:3536607360766066762",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "12:4136613750551539937",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "13:2219698313903786630",
+          "name": "dbStatus",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:2400588393561177912",
+      "lastPropertyId": "17:432050218008983897",
+      "name": "GameParticipation",
+      "properties": [
+        {
+          "id": "1:4945200161829947773",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7997357284610432272",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "3:7796735434504193068"
+        },
+        {
+          "id": "3:8527206189955495127",
+          "name": "gameId",
+          "type": 9
+        },
+        {
+          "id": "4:7921129111892970032",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "5:3011975587842451169",
+          "name": "joinedAt",
+          "type": 10
+        },
+        {
+          "id": "6:2902349502132116059",
+          "name": "position",
+          "type": 9
+        },
+        {
+          "id": "7:360274244187642637",
+          "name": "partnerUserId",
+          "type": 9
+        },
+        {
+          "id": "8:5673096986464829666",
+          "name": "notes",
+          "type": 9
+        },
+        {
+          "id": "9:8600563789885631600",
+          "name": "ratingGiven",
+          "type": 8
+        },
+        {
+          "id": "10:2858136074124711499",
+          "name": "feedback",
+          "type": 9
+        },
+        {
+          "id": "11:5291375304313690487",
+          "name": "isOrganizer",
+          "type": 1
+        },
+        {
+          "id": "12:7662109912789619095",
+          "name": "isPaid",
+          "type": 1
+        },
+        {
+          "id": "13:329667324262019788",
+          "name": "paidAt",
+          "type": 10
+        },
+        {
+          "id": "14:2498199510337179351",
+          "name": "leftAt",
+          "type": 10
+        },
+        {
+          "id": "15:4531392446401599193",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "16:4693210321437245644",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "17:432050218008983897",
+          "name": "dbStatus",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:5268645284516713537",
+      "lastPropertyId": "20:6588880385866902682",
+      "name": "Sport",
+      "properties": [
+        {
+          "id": "1:9177446147051994098",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2080467068938680445",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "4:4411662478720611336"
+        },
+        {
+          "id": "3:5951279736736964601",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "4:5936046995833808163",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "5:3965362310273775868",
+          "name": "iconUrl",
+          "type": 9
+        },
+        {
+          "id": "6:2120553232454691726",
+          "name": "imageUrl",
+          "type": 9
+        },
+        {
+          "id": "7:2859272998961994888",
+          "name": "aliases",
+          "type": 30
+        },
+        {
+          "id": "8:2977897051775249427",
+          "name": "skillLevels",
+          "type": 30
+        },
+        {
+          "id": "9:7481657663993394941",
+          "name": "gameTypes",
+          "type": 30
+        },
+        {
+          "id": "10:1490511727590644778",
+          "name": "positions",
+          "type": 30
+        },
+        {
+          "id": "11:9150343824369969698",
+          "name": "minPlayers",
+          "type": 6
+        },
+        {
+          "id": "12:5697136518744584289",
+          "name": "maxPlayers",
+          "type": 6
+        },
+        {
+          "id": "13:2086600298047428797",
+          "name": "typicalDurationMinutes",
+          "type": 6
+        },
+        {
+          "id": "14:6511377174169882292",
+          "name": "equipmentRequired",
+          "type": 30
+        },
+        {
+          "id": "15:2663684893575343982",
+          "name": "rules",
+          "type": 30
+        },
+        {
+          "id": "16:5511062583968959633",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "17:253215132978960982",
+          "name": "popularityScore",
+          "type": 6
+        },
+        {
+          "id": "18:660290320020962248",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "19:354272756441915718",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "20:6588880385866902682",
+          "name": "dbCategory",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:5056401660058327954",
+      "lastPropertyId": "10:4225506837570374012",
+      "name": "SportSkillLevel",
+      "properties": [
+        {
+          "id": "1:2853140152031581069",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2254341740695240975",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "5:5913964530464953488"
+        },
+        {
+          "id": "3:8753463240271118208",
+          "name": "sportId",
+          "type": 9
+        },
+        {
+          "id": "4:1763221469754103882",
+          "name": "level",
+          "type": 9
+        },
+        {
+          "id": "5:6657582824234451532",
+          "name": "displayName",
+          "type": 9
+        },
+        {
+          "id": "6:5113965018790271817",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "7:7505641454987256729",
+          "name": "order",
+          "type": 6
+        },
+        {
+          "id": "8:4600000540514161999",
+          "name": "characteristics",
+          "type": 30
+        },
+        {
+          "id": "9:6725500345651130040",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "10:4225506837570374012",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:6437417866006621905",
+      "lastPropertyId": "30:7423503852505802121",
+      "name": "User",
+      "properties": [
+        {
+          "id": "1:6214529246321627485",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2090954985574471975",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "6:8897919478961449600"
+        },
+        {
+          "id": "3:8950314823025867658",
+          "name": "email",
+          "type": 9
+        },
+        {
+          "id": "4:5974223073971145139",
+          "name": "phone",
+          "type": 9
+        },
+        {
+          "id": "5:4454121082576827846",
+          "name": "fullName",
+          "type": 9
+        },
+        {
+          "id": "6:4248852093485009506",
+          "name": "firstName",
+          "type": 9
+        },
+        {
+          "id": "7:8191362489314631578",
+          "name": "lastName",
+          "type": 9
+        },
+        {
+          "id": "8:9048617359090090050",
+          "name": "profilePictureUrl",
+          "type": 9
+        },
+        {
+          "id": "9:4771056294623662660",
+          "name": "bio",
+          "type": 9
+        },
+        {
+          "id": "10:6280185410955101855",
+          "name": "dateOfBirth",
+          "type": 10
+        },
+        {
+          "id": "11:8511029273514280123",
+          "name": "gender",
+          "type": 9
+        },
+        {
+          "id": "12:1366904880427490282",
+          "name": "city",
+          "type": 9
+        },
+        {
+          "id": "13:8711964793260864983",
+          "name": "state",
+          "type": 9
+        },
+        {
+          "id": "14:921505823691011399",
+          "name": "country",
+          "type": 9
+        },
+        {
+          "id": "15:5344392866341957180",
+          "name": "latitude",
+          "type": 8
+        },
+        {
+          "id": "16:8107136958910939446",
+          "name": "longitude",
+          "type": 8
+        },
+        {
+          "id": "17:3036582213991928871",
+          "name": "preferredSports",
+          "type": 30
+        },
+        {
+          "id": "18:3717789748825165649",
+          "name": "subscriptionExpiresAt",
+          "type": 10
+        },
+        {
+          "id": "19:7443910296191777937",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "20:3781332845651664283",
+          "name": "isEmailVerified",
+          "type": 1
+        },
+        {
+          "id": "21:862777103931401226",
+          "name": "isPhoneVerified",
+          "type": 1
+        },
+        {
+          "id": "22:3772817847702640587",
+          "name": "isProfileCompleted",
+          "type": 1
+        },
+        {
+          "id": "23:2455340806905398966",
+          "name": "fcmToken",
+          "type": 9
+        },
+        {
+          "id": "24:594046986217615849",
+          "name": "lastActiveAt",
+          "type": 10
+        },
+        {
+          "id": "25:3230226577514336820",
+          "name": "isOnline",
+          "type": 1
+        },
+        {
+          "id": "26:3373694078036096792",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "27:275951076494590945",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "28:4080792475157077736",
+          "name": "dbRole",
+          "type": 6
+        },
+        {
+          "id": "29:8803806232566561297",
+          "name": "dbAuthProvider",
+          "type": 6
+        },
+        {
+          "id": "30:7423503852505802121",
+          "name": "dbSubscriptionStatus",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:6033510634137516491",
+      "lastPropertyId": "11:4484308086823011965",
+      "name": "UserConnection",
+      "properties": [
+        {
+          "id": "1:2753535489724453843",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4801938344851097642",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "7:3347254689285434318"
+        },
+        {
+          "id": "3:3316922197082810003",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:7381573590017955895",
+          "name": "connectedUserId",
+          "type": 9
+        },
+        {
+          "id": "5:5828258692546363809",
+          "name": "requestedAt",
+          "type": 10
+        },
+        {
+          "id": "6:3553877073308432194",
+          "name": "acceptedAt",
+          "type": 10
+        },
+        {
+          "id": "7:5086955450603898241",
+          "name": "blockedAt",
+          "type": 10
+        },
+        {
+          "id": "8:5163850453461780334",
+          "name": "notes",
+          "type": 9
+        },
+        {
+          "id": "9:746437692446702424",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "10:5750943512369691791",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "11:4484308086823011965",
+          "name": "dbStatus",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "8:5499376141494643110",
+      "lastPropertyId": "14:7808731377045404547",
+      "name": "UserPreferences",
+      "properties": [
+        {
+          "id": "1:2613484293380515257",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6232600695704192502",
+          "name": "userId",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "8:5638586828035198320"
+        },
+        {
+          "id": "3:3131430925413980729",
+          "name": "notificationsEnabled",
+          "type": 1
+        },
+        {
+          "id": "4:572327685069774000",
+          "name": "gameInvitesEnabled",
+          "type": 1
+        },
+        {
+          "id": "5:8402471732637802866",
+          "name": "promotionalEmailsEnabled",
+          "type": 1
+        },
+        {
+          "id": "6:6893109472921541912",
+          "name": "locationSharingEnabled",
+          "type": 1
+        },
+        {
+          "id": "7:7823310448729068455",
+          "name": "themeMode",
+          "type": 9
+        },
+        {
+          "id": "8:8814883195481918580",
+          "name": "language",
+          "type": 9
+        },
+        {
+          "id": "9:6727568059712920611",
+          "name": "distanceUnit",
+          "type": 9
+        },
+        {
+          "id": "10:1970538560002315892",
+          "name": "timeFormat",
+          "type": 9
+        },
+        {
+          "id": "11:6290923704895098170",
+          "name": "searchRadius",
+          "type": 8
+        },
+        {
+          "id": "12:8525293755002441289",
+          "name": "defaultSkillLevel",
+          "type": 9
+        },
+        {
+          "id": "13:6146450537193970296",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "14:7808731377045404547",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "9:7512683585706106467",
+      "lastPropertyId": "19:5974699337801255799",
+      "name": "UserSportProfile",
+      "properties": [
+        {
+          "id": "1:7307262755187077100",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7400067130096562315",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "9:8445393486857595285"
+        },
+        {
+          "id": "3:7112459373136546096",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:8358002202388837586",
+          "name": "sportName",
+          "type": 9
+        },
+        {
+          "id": "5:1447731446296689437",
+          "name": "skillLevel",
+          "type": 9
+        },
+        {
+          "id": "6:281602656096610518",
+          "name": "yearsOfExperience",
+          "type": 6
+        },
+        {
+          "id": "7:1019600884999218457",
+          "name": "position",
+          "type": 9
+        },
+        {
+          "id": "8:2161277545146967210",
+          "name": "achievements",
+          "type": 30
+        },
+        {
+          "id": "9:590154456673980869",
+          "name": "bio",
+          "type": 9
+        },
+        {
+          "id": "10:8704525505174664146",
+          "name": "rating",
+          "type": 8
+        },
+        {
+          "id": "11:7195316741062164137",
+          "name": "totalGamesPlayed",
+          "type": 6
+        },
+        {
+          "id": "12:1010342271272755087",
+          "name": "totalWins",
+          "type": 6
+        },
+        {
+          "id": "13:7475742429142506986",
+          "name": "totalLosses",
+          "type": 6
+        },
+        {
+          "id": "14:1521122880815614414",
+          "name": "preferredGameType",
+          "type": 9
+        },
+        {
+          "id": "15:639916531971983325",
+          "name": "certifications",
+          "type": 30
+        },
+        {
+          "id": "16:551639807132088636",
+          "name": "equipmentOwned",
+          "type": 9
+        },
+        {
+          "id": "17:4272864101180834528",
+          "name": "isPublic",
+          "type": 1
+        },
+        {
+          "id": "18:3982298856800532843",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "19:5974699337801255799",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "10:4018666950528459098",
+      "lastPropertyId": "12:4885181387157204457",
+      "name": "Achievement",
+      "properties": [
+        {
+          "id": "1:3871439787681784383",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8251135219384335882",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "10:5362960791887415854"
+        },
+        {
+          "id": "3:5390824714391457065",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "4:7632459184430324207",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "5:5933161757946533630",
+          "name": "icon",
+          "type": 9
+        },
+        {
+          "id": "6:8041623391412312327",
+          "name": "sportId",
+          "type": 9
+        },
+        {
+          "id": "7:4038250851627532192",
+          "name": "points",
+          "type": 6
+        },
+        {
+          "id": "8:8299274737768033312",
+          "name": "criteria",
+          "type": 9
+        },
+        {
+          "id": "9:196592743232560030",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "10:7625413716588325794",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "11:3668888667900912169",
+          "name": "dbCategory",
+          "type": 6
+        },
+        {
+          "id": "12:4885181387157204457",
+          "name": "dbRarity",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "11:7521690863004994337",
+      "lastPropertyId": "14:6270637782700796823",
+      "name": "AuthSession",
+      "properties": [
+        {
+          "id": "1:4941235390019588829",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4592713195141154133",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "11:2760588754796716725"
+        },
+        {
+          "id": "3:5386893660955302271",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:8841030971421172276",
+          "name": "accessToken",
+          "type": 9
+        },
+        {
+          "id": "5:3022806793662689276",
+          "name": "refreshToken",
+          "type": 9
+        },
+        {
+          "id": "6:423874112862791438",
+          "name": "expiresAt",
+          "type": 10
+        },
+        {
+          "id": "7:343195994119535217",
+          "name": "deviceId",
+          "type": 9
+        },
+        {
+          "id": "8:4269063648626452388",
+          "name": "deviceName",
+          "type": 9
+        },
+        {
+          "id": "9:2442162031439048356",
+          "name": "ipAddress",
+          "type": 9
+        },
+        {
+          "id": "10:6934491733880324884",
+          "name": "userAgent",
+          "type": 9
+        },
+        {
+          "id": "11:871440702483653108",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "12:4367866036456334138",
+          "name": "lastUsedAt",
+          "type": 10
+        },
+        {
+          "id": "13:7005578983605627650",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "14:6270637782700796823",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "12:4563724670227534230",
+      "lastPropertyId": "18:7536154078938328900",
+      "name": "Conversation",
+      "properties": [
+        {
+          "id": "1:690087116657033323",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5021727980599197361",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "12:8157381593226349000"
+        },
+        {
+          "id": "3:653562898878851660",
+          "name": "participantIds",
+          "type": 30
+        },
+        {
+          "id": "4:6186461486238337801",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "5:7165115604633382927",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "6:7947237067725521476",
+          "name": "imageUrl",
+          "type": 9
+        },
+        {
+          "id": "7:9175346911636181595",
+          "name": "isGroup",
+          "type": 1
+        },
+        {
+          "id": "8:4195534664618426024",
+          "name": "lastMessageId",
+          "type": 9
+        },
+        {
+          "id": "9:25903208708964776",
+          "name": "lastMessageContent",
+          "type": 9
+        },
+        {
+          "id": "10:5653388473370019759",
+          "name": "lastMessageAt",
+          "type": 10
+        },
+        {
+          "id": "11:4692239446492461181",
+          "name": "lastMessageSenderId",
+          "type": 9
+        },
+        {
+          "id": "12:1495195669072848844",
+          "name": "unreadCount",
+          "type": 6
+        },
+        {
+          "id": "13:4157833015383273452",
+          "name": "isMuted",
+          "type": 1
+        },
+        {
+          "id": "14:3340886983941949395",
+          "name": "isArchived",
+          "type": 1
+        },
+        {
+          "id": "15:18340645450626442",
+          "name": "relatedEntityId",
+          "type": 9
+        },
+        {
+          "id": "16:4629354567931405646",
+          "name": "relatedEntityType",
+          "type": 9
+        },
+        {
+          "id": "17:5983418596873094201",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "18:7536154078938328900",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "13:1472083622722770072",
+      "lastPropertyId": "17:5445580748797307721",
+      "name": "Court",
+      "properties": [
+        {
+          "id": "1:7734886840473179065",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7497098897754203762",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "13:3550068686443442584"
+        },
+        {
+          "id": "3:6059476689846076492",
+          "name": "venueId",
+          "type": 9
+        },
+        {
+          "id": "4:23255285368403889",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "5:2669687472434955701",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "6:606750988728763413",
+          "name": "sportId",
+          "type": 9
+        },
+        {
+          "id": "7:1668297044873923860",
+          "name": "surface",
+          "type": 9
+        },
+        {
+          "id": "8:8981362742190972861",
+          "name": "features",
+          "type": 30
+        },
+        {
+          "id": "9:7919023120182345644",
+          "name": "equipment",
+          "type": 30
+        },
+        {
+          "id": "10:1491970834330185350",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "11:7992781676601625878",
+          "name": "isBookable",
+          "type": 1
+        },
+        {
+          "id": "12:2177150213882739094",
+          "name": "hourlyRate",
+          "type": 8
+        },
+        {
+          "id": "13:659468244617121431",
+          "name": "currency",
+          "type": 9
+        },
+        {
+          "id": "14:1986572065016323423",
+          "name": "images",
+          "type": 30
+        },
+        {
+          "id": "15:8898829293107974598",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "16:2318879057541624674",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "17:5445580748797307721",
+          "name": "dbType",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "14:5184618469839703891",
+      "lastPropertyId": "13:6371643912324148136",
+      "name": "DeviceInfo",
+      "properties": [
+        {
+          "id": "1:6528525125601797515",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8579792712360111342",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "14:5097275164170826336"
+        },
+        {
+          "id": "3:9015689423889806761",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:8598492881212883694",
+          "name": "deviceId",
+          "type": 9
+        },
+        {
+          "id": "5:7825015236938655695",
+          "name": "deviceName",
+          "type": 9
+        },
+        {
+          "id": "6:7144252790181821352",
+          "name": "platform",
+          "type": 9
+        },
+        {
+          "id": "7:7076721247633125875",
+          "name": "osVersion",
+          "type": 9
+        },
+        {
+          "id": "8:5678363920665596793",
+          "name": "appVersion",
+          "type": 9
+        },
+        {
+          "id": "9:3062871886497374892",
+          "name": "fcmToken",
+          "type": 9
+        },
+        {
+          "id": "10:5753101745443021464",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "11:7141291493871761101",
+          "name": "lastSeenAt",
+          "type": 10
+        },
+        {
+          "id": "12:3648579817754150890",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "13:6371643912324148136",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "15:8068392352340397022",
+      "lastPropertyId": "18:3324429345660863580",
+      "name": "Location",
+      "properties": [
+        {
+          "id": "1:2186035517267114246",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1046537418053493378",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "15:2639421112065519590"
+        },
+        {
+          "id": "3:407984858327064630",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "4:4691651927183121908",
+          "name": "displayName",
+          "type": 9
+        },
+        {
+          "id": "5:7696608925297179191",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "6:5612156721364243721",
+          "name": "latitude",
+          "type": 8
+        },
+        {
+          "id": "7:4428329620262698056",
+          "name": "longitude",
+          "type": 8
+        },
+        {
+          "id": "8:7825719933240084945",
+          "name": "address",
+          "type": 9
+        },
+        {
+          "id": "9:2712379535548721615",
+          "name": "city",
+          "type": 9
+        },
+        {
+          "id": "10:6937492576543037576",
+          "name": "state",
+          "type": 9
+        },
+        {
+          "id": "11:5183471729856783026",
+          "name": "country",
+          "type": 9
+        },
+        {
+          "id": "12:1451884704049907860",
+          "name": "zipCode",
+          "type": 9
+        },
+        {
+          "id": "13:9151589506312895331",
+          "name": "parentLocationId",
+          "type": 9
+        },
+        {
+          "id": "14:4124341559108256836",
+          "name": "childLocationIds",
+          "type": 30
+        },
+        {
+          "id": "15:7999533808886764696",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "16:8444405240962237921",
+          "name": "popularityScore",
+          "type": 6
+        },
+        {
+          "id": "17:825991914705425923",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "18:3324429345660863580",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "16:6930107725947730751",
+      "lastPropertyId": "19:62344820932307617",
+      "name": "Message",
+      "properties": [
+        {
+          "id": "1:8501792207678511315",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5958261168744968861",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "16:6209386020091159244"
+        },
+        {
+          "id": "3:6147694818940877831",
+          "name": "conversationId",
+          "type": 9
+        },
+        {
+          "id": "4:5624225054028786668",
+          "name": "senderId",
+          "type": 9
+        },
+        {
+          "id": "5:7247643428192643411",
+          "name": "receiverId",
+          "type": 9
+        },
+        {
+          "id": "6:7731752200218192243",
+          "name": "content",
+          "type": 9
+        },
+        {
+          "id": "7:8104566393266361579",
+          "name": "replyToId",
+          "type": 9
+        },
+        {
+          "id": "8:7232368651457205496",
+          "name": "attachments",
+          "type": 30
+        },
+        {
+          "id": "9:2408330605823854795",
+          "name": "relatedEntityId",
+          "type": 9
+        },
+        {
+          "id": "10:4179363142200738851",
+          "name": "relatedEntityType",
+          "type": 9
+        },
+        {
+          "id": "11:5466950164637652370",
+          "name": "isRead",
+          "type": 1
+        },
+        {
+          "id": "12:6099305403686687945",
+          "name": "isDelivered",
+          "type": 1
+        },
+        {
+          "id": "13:1505852263799740731",
+          "name": "isSystem",
+          "type": 1
+        },
+        {
+          "id": "14:7147379119399177454",
+          "name": "readAt",
+          "type": 10
+        },
+        {
+          "id": "15:2288128936785115456",
+          "name": "deliveredAt",
+          "type": 10
+        },
+        {
+          "id": "16:7356216356292286442",
+          "name": "editedAt",
+          "type": 10
+        },
+        {
+          "id": "17:7084672932854029248",
+          "name": "deletedAt",
+          "type": 10
+        },
+        {
+          "id": "18:3146866069123646840",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "19:62344820932307617",
+          "name": "dbType",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "17:7809267347504587229",
+      "lastPropertyId": "21:7261618579906672701",
+      "name": "NotificationModel",
+      "properties": [
+        {
+          "id": "1:1977430120214713510",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:9051371733783410956",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "17:6334765966504091298"
+        },
+        {
+          "id": "3:7194028008442169336",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:1420132687456124946",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "5:3740796233971420610",
+          "name": "body",
+          "type": 9
+        },
+        {
+          "id": "6:7153574521028581139",
+          "name": "imageUrl",
+          "type": 9
+        },
+        {
+          "id": "7:3351005082536706559",
+          "name": "deepLink",
+          "type": 9
+        },
+        {
+          "id": "8:415015934457211670",
+          "name": "relatedEntityId",
+          "type": 9
+        },
+        {
+          "id": "9:3025450554774656021",
+          "name": "relatedEntityType",
+          "type": 9
+        },
+        {
+          "id": "10:6471875892403849225",
+          "name": "actionUrl",
+          "type": 9
+        },
+        {
+          "id": "11:4566583879660487010",
+          "name": "actionText",
+          "type": 9
+        },
+        {
+          "id": "12:2435560701695198645",
+          "name": "tags",
+          "type": 30
+        },
+        {
+          "id": "13:4933537558197366817",
+          "name": "isRead",
+          "type": 1
+        },
+        {
+          "id": "14:4086226606708630788",
+          "name": "isPersistent",
+          "type": 1
+        },
+        {
+          "id": "15:465858040193282931",
+          "name": "readAt",
+          "type": 10
+        },
+        {
+          "id": "16:7668781339259781563",
+          "name": "expiresAt",
+          "type": 10
+        },
+        {
+          "id": "17:3370324371116683425",
+          "name": "scheduledAt",
+          "type": 10
+        },
+        {
+          "id": "18:8514419485483806823",
+          "name": "sentAt",
+          "type": 10
+        },
+        {
+          "id": "19:2318736129752789727",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "20:7081066726531116694",
+          "name": "dbType",
+          "type": 6
+        },
+        {
+          "id": "21:7261618579906672701",
+          "name": "dbPriority",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "18:6374120163621274678",
+      "lastPropertyId": "20:1774188934998853906",
+      "name": "NotificationSettings",
+      "properties": [
+        {
+          "id": "1:5649557005955656824",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4062668309023710770",
+          "name": "userId",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "18:5961064853716415725"
+        },
+        {
+          "id": "3:4870081598396231008",
+          "name": "pushEnabled",
+          "type": 1
+        },
+        {
+          "id": "4:2516487170490791055",
+          "name": "emailEnabled",
+          "type": 1
+        },
+        {
+          "id": "5:548063511829301711",
+          "name": "inAppEnabled",
+          "type": 1
+        },
+        {
+          "id": "6:6661627143115138160",
+          "name": "gameNotifications",
+          "type": 1
+        },
+        {
+          "id": "7:2898136094440104747",
+          "name": "trainingNotifications",
+          "type": 1
+        },
+        {
+          "id": "8:8039529436384152052",
+          "name": "venueNotifications",
+          "type": 1
+        },
+        {
+          "id": "9:2335432731614738106",
+          "name": "socialNotifications",
+          "type": 1
+        },
+        {
+          "id": "10:5902505050466281329",
+          "name": "promotionalNotifications",
+          "type": 1
+        },
+        {
+          "id": "11:2700591906559331957",
+          "name": "securityNotifications",
+          "type": 1
+        },
+        {
+          "id": "12:6952352573881036479",
+          "name": "quietHoursStart",
+          "type": 9
+        },
+        {
+          "id": "13:5024853495989439333",
+          "name": "quietHoursEnd",
+          "type": 9
+        },
+        {
+          "id": "14:4052413711021599341",
+          "name": "enabledDays",
+          "type": 30
+        },
+        {
+          "id": "15:2501614960723103124",
+          "name": "fcmToken",
+          "type": 9
+        },
+        {
+          "id": "16:5082249154706215136",
+          "name": "apnsToken",
+          "type": 9
+        },
+        {
+          "id": "17:4325244621963281170",
+          "name": "deviceId",
+          "type": 9
+        },
+        {
+          "id": "18:2292420670108546097",
+          "name": "platform",
+          "type": 9
+        },
+        {
+          "id": "19:8562318206339998556",
+          "name": "lastUpdated",
+          "type": 10
+        },
+        {
+          "id": "20:1774188934998853906",
+          "name": "createdAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "19:5265582024264862990",
+      "lastPropertyId": "12:4932800456746765022",
+      "name": "OTPVerification",
+      "properties": [
+        {
+          "id": "1:8549138080330000383",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1416685953036559613",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "19:7456774259254377885"
+        },
+        {
+          "id": "3:2013600655808211751",
+          "name": "identifier",
+          "type": 9
+        },
+        {
+          "id": "4:2306931068224875295",
+          "name": "code",
+          "type": 9
+        },
+        {
+          "id": "5:7149763702484994951",
+          "name": "isVerified",
+          "type": 1
+        },
+        {
+          "id": "6:7132744798151058747",
+          "name": "isUsed",
+          "type": 1
+        },
+        {
+          "id": "7:4561083590961090692",
+          "name": "expiresAt",
+          "type": 10
+        },
+        {
+          "id": "8:1974529932849302846",
+          "name": "attempts",
+          "type": 6
+        },
+        {
+          "id": "9:6510569783973606715",
+          "name": "maxAttempts",
+          "type": 6
+        },
+        {
+          "id": "10:4274392592208906074",
+          "name": "verifiedAt",
+          "type": 10
+        },
+        {
+          "id": "11:1641311611340150554",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "12:4932800456746765022",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "20:6395032292985117953",
+      "lastPropertyId": "25:1191807673621409259",
+      "name": "Payment",
+      "properties": [
+        {
+          "id": "1:2252100231713839363",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4324734651810368370",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "20:3275389170862242991"
+        },
+        {
+          "id": "3:5363512495761921768",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:290997082602805136",
+          "name": "sourceId",
+          "type": 9
+        },
+        {
+          "id": "5:6221291333720596972",
+          "name": "sourceType",
+          "type": 9
+        },
+        {
+          "id": "6:2632449577098024207",
+          "name": "amount",
+          "type": 8
+        },
+        {
+          "id": "7:318823919423976075",
+          "name": "currency",
+          "type": 9
+        },
+        {
+          "id": "8:7983009742045187084",
+          "name": "gatewayTransactionId",
+          "type": 9
+        },
+        {
+          "id": "9:3886738261501552874",
+          "name": "gatewayOrderId",
+          "type": 9
+        },
+        {
+          "id": "10:3031308776605272175",
+          "name": "gatewayPaymentId",
+          "type": 9
+        },
+        {
+          "id": "11:117616086985349765",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "12:2719842458443796253",
+          "name": "fees",
+          "type": 8
+        },
+        {
+          "id": "13:3507482485356081887",
+          "name": "taxes",
+          "type": 8
+        },
+        {
+          "id": "14:3479324582675911861",
+          "name": "netAmount",
+          "type": 8
+        },
+        {
+          "id": "15:6881232415338768662",
+          "name": "failureReason",
+          "type": 9
+        },
+        {
+          "id": "16:5681429197520879117",
+          "name": "initiatedAt",
+          "type": 10
+        },
+        {
+          "id": "17:7437439239855769617",
+          "name": "succeededAt",
+          "type": 10
+        },
+        {
+          "id": "18:7247260364246078662",
+          "name": "failedAt",
+          "type": 10
+        },
+        {
+          "id": "19:8960194462997352571",
+          "name": "refundedAt",
+          "type": 10
+        },
+        {
+          "id": "20:5673274098197590432",
+          "name": "refundAmount",
+          "type": 8
+        },
+        {
+          "id": "21:7826198010810884919",
+          "name": "refundReason",
+          "type": 9
+        },
+        {
+          "id": "22:7103756304984582321",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "23:4280266353755046806",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "24:6993048166945302102",
+          "name": "dbStatus",
+          "type": 6
+        },
+        {
+          "id": "25:1191807673621409259",
+          "name": "dbMethod",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "21:1989003362165258129",
+      "lastPropertyId": "11:5246226664077269748",
+      "name": "SavedLocation",
+      "properties": [
+        {
+          "id": "1:3309855567191758526",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7285076047749370762",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "21:7183653472842049879"
+        },
+        {
+          "id": "3:877600511392295261",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:1547579328259128680",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "5:2196298825488519712",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "6:6835196858504211416",
+          "name": "latitude",
+          "type": 8
+        },
+        {
+          "id": "7:2115584437020640386",
+          "name": "longitude",
+          "type": 8
+        },
+        {
+          "id": "8:7223721445214354909",
+          "name": "address",
+          "type": 9
+        },
+        {
+          "id": "9:2504683547532809706",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "10:4046578161593251120",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "11:5246226664077269748",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "22:6064918344527253575",
+      "lastPropertyId": "13:2554246221209128700",
+      "name": "SocialAuthProfile",
+      "properties": [
+        {
+          "id": "1:3479996545656915107",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1387936251054904926",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "22:1054911740994903137"
+        },
+        {
+          "id": "3:6222563940141516237",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:4443390733568737155",
+          "name": "provider",
+          "type": 9
+        },
+        {
+          "id": "5:52629861553179866",
+          "name": "providerId",
+          "type": 9
+        },
+        {
+          "id": "6:1630723121881503877",
+          "name": "email",
+          "type": 9
+        },
+        {
+          "id": "7:1046171560937096457",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "8:659256357366899786",
+          "name": "pictureUrl",
+          "type": 9
+        },
+        {
+          "id": "9:3901751715085254639",
+          "name": "connectedAt",
+          "type": 10
+        },
+        {
+          "id": "10:5569362219695756394",
+          "name": "lastSyncAt",
+          "type": 10
+        },
+        {
+          "id": "11:6004659908274775304",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "12:491713900593646963",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "13:2554246221209128700",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "23:3655022575506700890",
+      "lastPropertyId": "33:2024490904542361103",
+      "name": "Trainer",
+      "properties": [
+        {
+          "id": "1:6404509825270864706",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2187028098571004158",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "23:3104926670947314944"
+        },
+        {
+          "id": "3:4504138834533736053",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:4950387180665713730",
+          "name": "businessName",
+          "type": 9
+        },
+        {
+          "id": "5:2003780735703884898",
+          "name": "tagline",
+          "type": 9
+        },
+        {
+          "id": "6:590413203242800968",
+          "name": "bio",
+          "type": 9
+        },
+        {
+          "id": "7:2217033679239461887",
+          "name": "sportIds",
+          "type": 30
+        },
+        {
+          "id": "8:7068935000361713614",
+          "name": "specializations",
+          "type": 30
+        },
+        {
+          "id": "9:4326946969484870420",
+          "name": "certifications",
+          "type": 30
+        },
+        {
+          "id": "10:4001679626613322075",
+          "name": "qualifications",
+          "type": 30
+        },
+        {
+          "id": "11:6655841706115998148",
+          "name": "yearsOfExperience",
+          "type": 6
+        },
+        {
+          "id": "12:6997354880230240613",
+          "name": "serviceAreas",
+          "type": 30
+        },
+        {
+          "id": "13:6903786823158619801",
+          "name": "audienceTypes",
+          "type": 30
+        },
+        {
+          "id": "14:5749236545752917954",
+          "name": "gymAffiliation",
+          "type": 9
+        },
+        {
+          "id": "15:7239647936016240992",
+          "name": "website",
+          "type": 9
+        },
+        {
+          "id": "16:5669142900578824453",
+          "name": "instagramHandle",
+          "type": 9
+        },
+        {
+          "id": "17:7882096057238796376",
+          "name": "youtubeChannel",
+          "type": 9
+        },
+        {
+          "id": "18:734669994661931060",
+          "name": "languagesSpoken",
+          "type": 30
+        },
+        {
+          "id": "19:6542724179619440030",
+          "name": "hourlyRate",
+          "type": 8
+        },
+        {
+          "id": "20:8441140064461623400",
+          "name": "currency",
+          "type": 9
+        },
+        {
+          "id": "21:8362040647245708773",
+          "name": "isAvailable",
+          "type": 1
+        },
+        {
+          "id": "22:4329935625629762954",
+          "name": "isVerified",
+          "type": 1
+        },
+        {
+          "id": "23:1191673328038542893",
+          "name": "rating",
+          "type": 8
+        },
+        {
+          "id": "24:8184239443782838504",
+          "name": "totalReviews",
+          "type": 6
+        },
+        {
+          "id": "25:8064478162997993220",
+          "name": "totalStudents",
+          "type": 6
+        },
+        {
+          "id": "26:8038771485210144614",
+          "name": "completedSessions",
+          "type": 6
+        },
+        {
+          "id": "27:2163544790513526839",
+          "name": "profileVideoUrl",
+          "type": 9
+        },
+        {
+          "id": "28:3799357224886904386",
+          "name": "portfolioImages",
+          "type": 30
+        },
+        {
+          "id": "29:7949418257189084165",
+          "name": "achievements",
+          "type": 30
+        },
+        {
+          "id": "30:6253626945629166512",
+          "name": "tags",
+          "type": 30
+        },
+        {
+          "id": "31:6482349475940517872",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "32:6952805973236495313",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "33:2024490904542361103",
+          "name": "dbType",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "24:7225080756635218818",
+      "lastPropertyId": "15:2474063804865011658",
+      "name": "TrainerReview",
+      "properties": [
+        {
+          "id": "1:1337100945560737190",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2969802782620872562",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "24:178782240548226322"
+        },
+        {
+          "id": "3:2085678458174908004",
+          "name": "trainerId",
+          "type": 9
+        },
+        {
+          "id": "4:4421697861325141552",
+          "name": "reviewerId",
+          "type": 9
+        },
+        {
+          "id": "5:5963270466009388278",
+          "name": "sessionId",
+          "type": 9
+        },
+        {
+          "id": "6:7294003704013874456",
+          "name": "rating",
+          "type": 8
+        },
+        {
+          "id": "7:2931844353076327724",
+          "name": "comment",
+          "type": 9
+        },
+        {
+          "id": "8:6553806040654758459",
+          "name": "tags",
+          "type": 30
+        },
+        {
+          "id": "9:5848204148632776860",
+          "name": "isAnonymous",
+          "type": 1
+        },
+        {
+          "id": "10:4527886138617897746",
+          "name": "isPublic",
+          "type": 1
+        },
+        {
+          "id": "11:738150301939839594",
+          "name": "isReported",
+          "type": 1
+        },
+        {
+          "id": "12:406270727259057777",
+          "name": "trainerResponse",
+          "type": 9
+        },
+        {
+          "id": "13:8749529139910459254",
+          "name": "respondedAt",
+          "type": 10
+        },
+        {
+          "id": "14:7419484975873372528",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "15:2474063804865011658",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "25:481858683161776844",
+      "lastPropertyId": "20:2530084563544480868",
+      "name": "TrainingService",
+      "properties": [
+        {
+          "id": "1:3928497618003308679",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5460030575044334913",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "25:922498794412092084"
+        },
+        {
+          "id": "3:1892511139740966829",
+          "name": "trainerId",
+          "type": 9
+        },
+        {
+          "id": "4:7309121149152546068",
+          "name": "sportId",
+          "type": 9
+        },
+        {
+          "id": "5:4308131262455387261",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "6:5227316263924792184",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "7:559461095231866579",
+          "name": "duration",
+          "type": 6
+        },
+        {
+          "id": "8:2754086673323364969",
+          "name": "price",
+          "type": 8
+        },
+        {
+          "id": "9:3364311784338722894",
+          "name": "currency",
+          "type": 9
+        },
+        {
+          "id": "10:2373432780313437757",
+          "name": "maxParticipants",
+          "type": 6
+        },
+        {
+          "id": "11:4053225763467996965",
+          "name": "skillLevels",
+          "type": 30
+        },
+        {
+          "id": "12:6678769475731187549",
+          "name": "ageGroups",
+          "type": 30
+        },
+        {
+          "id": "13:8752303499864632434",
+          "name": "equipmentProvided",
+          "type": 30
+        },
+        {
+          "id": "14:2461863612498205579",
+          "name": "equipmentRequired",
+          "type": 30
+        },
+        {
+          "id": "15:8506445229652772749",
+          "name": "location",
+          "type": 9
+        },
+        {
+          "id": "16:4706544847886826279",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "17:2860011307409905310",
+          "name": "isOnline",
+          "type": 1
+        },
+        {
+          "id": "18:618218820349937445",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "19:8521117893779227249",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "20:2530084563544480868",
+          "name": "dbType",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "26:2835282633675355434",
+      "lastPropertyId": "27:8348680700720292873",
+      "name": "TrainingSession",
+      "properties": [
+        {
+          "id": "1:2142330328404736396",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6276377578738280642",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "26:5441666338218140074"
+        },
+        {
+          "id": "3:32005733736749236",
+          "name": "serviceId",
+          "type": 9
+        },
+        {
+          "id": "4:65635031344147562",
+          "name": "trainerId",
+          "type": 9
+        },
+        {
+          "id": "5:8389218176810185271",
+          "name": "studentId",
+          "type": 9
+        },
+        {
+          "id": "6:8643473706882976037",
+          "name": "scheduledAt",
+          "type": 10
+        },
+        {
+          "id": "7:5001301765280211769",
+          "name": "endsAt",
+          "type": 10
+        },
+        {
+          "id": "8:160312687561262748",
+          "name": "location",
+          "type": 9
+        },
+        {
+          "id": "9:4332580055052172127",
+          "name": "notes",
+          "type": 9
+        },
+        {
+          "id": "10:1072299654603304462",
+          "name": "trainerNotes",
+          "type": 9
+        },
+        {
+          "id": "11:8758040187620614105",
+          "name": "studentNotes",
+          "type": 9
+        },
+        {
+          "id": "12:6729785054663556513",
+          "name": "participantIds",
+          "type": 30
+        },
+        {
+          "id": "13:264188391932836602",
+          "name": "amount",
+          "type": 8
+        },
+        {
+          "id": "14:6757919765753203823",
+          "name": "currency",
+          "type": 9
+        },
+        {
+          "id": "15:8281035989863984964",
+          "name": "isPaid",
+          "type": 1
+        },
+        {
+          "id": "16:1191241790237284055",
+          "name": "paidAt",
+          "type": 10
+        },
+        {
+          "id": "17:4670892883228091961",
+          "name": "paymentId",
+          "type": 9
+        },
+        {
+          "id": "18:3310496507074657496",
+          "name": "studentRating",
+          "type": 8
+        },
+        {
+          "id": "19:399869956480920149",
+          "name": "studentFeedback",
+          "type": 9
+        },
+        {
+          "id": "20:8587303645152939598",
+          "name": "trainerRating",
+          "type": 8
+        },
+        {
+          "id": "21:9172381843471870667",
+          "name": "trainerFeedback",
+          "type": 9
+        },
+        {
+          "id": "22:2991881181535971841",
+          "name": "completedAt",
+          "type": 10
+        },
+        {
+          "id": "23:97711962774302512",
+          "name": "cancelledAt",
+          "type": 10
+        },
+        {
+          "id": "24:3106034911457702302",
+          "name": "cancellationReason",
+          "type": 9
+        },
+        {
+          "id": "25:4479983898211011415",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "26:6449246618618266406",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "27:8348680700720292873",
+          "name": "dbStatus",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "27:8239073691926757112",
+      "lastPropertyId": "10:2302358163890036905",
+      "name": "UserAchievement",
+      "properties": [
+        {
+          "id": "1:2844622741712644258",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3640443036138676816",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "27:4696777046436114754"
+        },
+        {
+          "id": "3:2632368356927010664",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:2838484046384962341",
+          "name": "achievementId",
+          "type": 9
+        },
+        {
+          "id": "5:2322679693415193236",
+          "name": "unlockedAt",
+          "type": 10
+        },
+        {
+          "id": "6:6055891065215169242",
+          "name": "gameId",
+          "type": 9
+        },
+        {
+          "id": "7:8340297206513492655",
+          "name": "sessionId",
+          "type": 9
+        },
+        {
+          "id": "8:6210856177244292692",
+          "name": "progress",
+          "type": 6
+        },
+        {
+          "id": "9:7210849772217991090",
+          "name": "isNotified",
+          "type": 1
+        },
+        {
+          "id": "10:2302358163890036905",
+          "name": "createdAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "28:8877102635496917741",
+      "lastPropertyId": "29:6114291859939370034",
+      "name": "UserAnalytics",
+      "properties": [
+        {
+          "id": "1:5873885653551392456",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5058620289274989609",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "28:3022768158231214856"
+        },
+        {
+          "id": "3:3052295307341220056",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:8101504515502759158",
+          "name": "totalGamesPlayed",
+          "type": 6
+        },
+        {
+          "id": "5:1966743063152400033",
+          "name": "totalGamesWon",
+          "type": 6
+        },
+        {
+          "id": "6:118251277584682045",
+          "name": "totalGamesLost",
+          "type": 6
+        },
+        {
+          "id": "7:6361589853737455037",
+          "name": "totalGamesCancelled",
+          "type": 6
+        },
+        {
+          "id": "8:6245334705170689123",
+          "name": "averageRating",
+          "type": 8
+        },
+        {
+          "id": "9:8929608347082227263",
+          "name": "totalRatingsReceived",
+          "type": 6
+        },
+        {
+          "id": "10:3401238237909035469",
+          "name": "totalTrainingSessions",
+          "type": 6
+        },
+        {
+          "id": "11:924941476011610220",
+          "name": "totalTrainingHours",
+          "type": 6
+        },
+        {
+          "id": "12:1353892142365381090",
+          "name": "totalTrainingAmount",
+          "type": 8
+        },
+        {
+          "id": "13:720312421641332867",
+          "name": "totalVenueBookings",
+          "type": 6
+        },
+        {
+          "id": "14:3306005877123082186",
+          "name": "totalVenueHours",
+          "type": 6
+        },
+        {
+          "id": "15:5928722592942104869",
+          "name": "totalVenueAmount",
+          "type": 8
+        },
+        {
+          "id": "16:4864502652936010660",
+          "name": "totalFriends",
+          "type": 6
+        },
+        {
+          "id": "17:1034098681565845729",
+          "name": "totalGameInvitesSent",
+          "type": 6
+        },
+        {
+          "id": "18:784945652603961241",
+          "name": "totalGameInvitesReceived",
+          "type": 6
+        },
+        {
+          "id": "19:6058147594438474411",
+          "name": "totalGameInvitesAccepted",
+          "type": 6
+        },
+        {
+          "id": "20:8690380870679758515",
+          "name": "currentActiveStreak",
+          "type": 6
+        },
+        {
+          "id": "21:149045647781553049",
+          "name": "longestActiveStreak",
+          "type": 6
+        },
+        {
+          "id": "22:8106572548812657891",
+          "name": "lastActiveDate",
+          "type": 10
+        },
+        {
+          "id": "23:1462102184435415772",
+          "name": "currentMonth",
+          "type": 9
+        },
+        {
+          "id": "24:6485014317479764499",
+          "name": "monthlyGames",
+          "type": 6
+        },
+        {
+          "id": "25:2768753197479958481",
+          "name": "monthlyTrainingSessions",
+          "type": 6
+        },
+        {
+          "id": "26:1832732076012601155",
+          "name": "monthlyVenueBookings",
+          "type": 6
+        },
+        {
+          "id": "27:8032700843472150006",
+          "name": "monthlySpending",
+          "type": 8
+        },
+        {
+          "id": "28:6164016952610903677",
+          "name": "lastUpdated",
+          "type": 10
+        },
+        {
+          "id": "29:6114291859939370034",
+          "name": "createdAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "29:8752386624520208006",
+      "lastPropertyId": "22:7751685191923183219",
+      "name": "UserSportStats",
+      "properties": [
+        {
+          "id": "1:1559904617413395413",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2830963312985085434",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "29:4508175254105270445"
+        },
+        {
+          "id": "3:7104260217422855623",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "4:2675778333414160667",
+          "name": "sportId",
+          "type": 9
+        },
+        {
+          "id": "5:3830334673027982341",
+          "name": "skillRating",
+          "type": 8
+        },
+        {
+          "id": "6:6518963093733578223",
+          "name": "totalMatches",
+          "type": 6
+        },
+        {
+          "id": "7:4891051422851245350",
+          "name": "wins",
+          "type": 6
+        },
+        {
+          "id": "8:7581470538370460502",
+          "name": "losses",
+          "type": 6
+        },
+        {
+          "id": "9:1725312896820978683",
+          "name": "draws",
+          "type": 6
+        },
+        {
+          "id": "10:7120340603580222858",
+          "name": "winRate",
+          "type": 8
+        },
+        {
+          "id": "11:8412527178760665857",
+          "name": "averagePerformanceRating",
+          "type": 8
+        },
+        {
+          "id": "12:3813440269726878258",
+          "name": "totalPerformanceRatings",
+          "type": 6
+        },
+        {
+          "id": "13:38822979263219799",
+          "name": "mvpCount",
+          "type": 6
+        },
+        {
+          "id": "14:8623585421173053030",
+          "name": "totalHoursPlayed",
+          "type": 6
+        },
+        {
+          "id": "15:8143954653789274183",
+          "name": "firstGameDate",
+          "type": 10
+        },
+        {
+          "id": "16:2385655925118342195",
+          "name": "lastGameDate",
+          "type": 10
+        },
+        {
+          "id": "17:6437403316471723868",
+          "name": "achievementIds",
+          "type": 30
+        },
+        {
+          "id": "18:3128441468469571797",
+          "name": "badgeIds",
+          "type": 30
+        },
+        {
+          "id": "19:6318413055102572761",
+          "name": "lastSkillUpdate",
+          "type": 10
+        },
+        {
+          "id": "20:2724111528589793384",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "21:7127318171608063085",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "22:7751685191923183219",
+          "name": "dbSkillLevel",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "30:3865944076676043269",
+      "lastPropertyId": "37:5401502637684048001",
+      "name": "Venue",
+      "properties": [
+        {
+          "id": "1:5810517838427139773",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5627374388530439088",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "30:9153174981891674483"
+        },
+        {
+          "id": "3:4055176081835381021",
+          "name": "ownerId",
+          "type": 9
+        },
+        {
+          "id": "4:8988515902990786677",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "5:2544367324763738470",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "6:6153619115576301409",
+          "name": "address",
+          "type": 9
+        },
+        {
+          "id": "7:7519334559670488789",
+          "name": "city",
+          "type": 9
+        },
+        {
+          "id": "8:4502596258267543467",
+          "name": "state",
+          "type": 9
+        },
+        {
+          "id": "9:5524193932922532741",
+          "name": "country",
+          "type": 9
+        },
+        {
+          "id": "10:6749162067266064174",
+          "name": "zipCode",
+          "type": 9
+        },
+        {
+          "id": "11:6985400018254986927",
+          "name": "latitude",
+          "type": 8
+        },
+        {
+          "id": "12:5909073939735506847",
+          "name": "longitude",
+          "type": 8
+        },
+        {
+          "id": "13:7997525610826213290",
+          "name": "phone",
+          "type": 9
+        },
+        {
+          "id": "14:5184344248750131766",
+          "name": "email",
+          "type": 9
+        },
+        {
+          "id": "15:246428078847077228",
+          "name": "website",
+          "type": 9
+        },
+        {
+          "id": "16:5752935830428095307",
+          "name": "images",
+          "type": 30
+        },
+        {
+          "id": "17:1187821490357907933",
+          "name": "primaryImage",
+          "type": 9
+        },
+        {
+          "id": "18:6812874383679345739",
+          "name": "sportIds",
+          "type": 30
+        },
+        {
+          "id": "19:6671344712688125634",
+          "name": "amenities",
+          "type": 30
+        },
+        {
+          "id": "20:7511176029910182889",
+          "name": "facilities",
+          "type": 30
+        },
+        {
+          "id": "21:5502224597681123863",
+          "name": "equipment",
+          "type": 30
+        },
+        {
+          "id": "22:5040521482696889603",
+          "name": "rules",
+          "type": 30
+        },
+        {
+          "id": "23:9181444512811632349",
+          "name": "openingHours",
+          "type": 9
+        },
+        {
+          "id": "24:1877124450720424001",
+          "name": "closingHours",
+          "type": 9
+        },
+        {
+          "id": "25:5910652328510950212",
+          "name": "nonOperatingDays",
+          "type": 30
+        },
+        {
+          "id": "26:5919517572514185462",
+          "name": "rating",
+          "type": 8
+        },
+        {
+          "id": "27:4195036235017086526",
+          "name": "totalReviews",
+          "type": 6
+        },
+        {
+          "id": "28:7123854833237939566",
+          "name": "totalBookings",
+          "type": 6
+        },
+        {
+          "id": "29:868391514661075518",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "30:6642374588736351330",
+          "name": "isVerified",
+          "type": 1
+        },
+        {
+          "id": "31:3613940723740784802",
+          "name": "allowsOnlineBooking",
+          "type": 1
+        },
+        {
+          "id": "32:1033095226182915941",
+          "name": "requiresApproval",
+          "type": 1
+        },
+        {
+          "id": "33:5066201858785732753",
+          "name": "cancellationHours",
+          "type": 8
+        },
+        {
+          "id": "34:6982965623048768682",
+          "name": "tags",
+          "type": 30
+        },
+        {
+          "id": "35:9149122864299282602",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "36:7388350182778283420",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "37:5401502637684048001",
+          "name": "dbType",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "31:2701925513644867540",
+      "lastPropertyId": "35:5108554508321711939",
+      "name": "VenueBooking",
+      "properties": [
+        {
+          "id": "1:5341787446710874879",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6655630197491182304",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "31:2219126626384606771"
+        },
+        {
+          "id": "3:4941482828131597918",
+          "name": "venueId",
+          "type": 9
+        },
+        {
+          "id": "4:3725477026970158942",
+          "name": "courtId",
+          "type": 9
+        },
+        {
+          "id": "5:2189142610720492647",
+          "name": "userId",
+          "type": 9
+        },
+        {
+          "id": "6:1392029187753640074",
+          "name": "sportId",
+          "type": 9
+        },
+        {
+          "id": "7:5731141075703552867",
+          "name": "startTime",
+          "type": 10
+        },
+        {
+          "id": "8:4300475477255960481",
+          "name": "endTime",
+          "type": 10
+        },
+        {
+          "id": "9:473756088621815683",
+          "name": "totalAmount",
+          "type": 8
+        },
+        {
+          "id": "10:8963734237336365954",
+          "name": "currency",
+          "type": 9
+        },
+        {
+          "id": "11:6009627474294479247",
+          "name": "purpose",
+          "type": 9
+        },
+        {
+          "id": "12:3579854530207393319",
+          "name": "notes",
+          "type": 9
+        },
+        {
+          "id": "13:6624171388418277055",
+          "name": "specialRequests",
+          "type": 9
+        },
+        {
+          "id": "14:1170425335572643861",
+          "name": "participantIds",
+          "type": 30
+        },
+        {
+          "id": "15:8061691136006017595",
+          "name": "expectedParticipants",
+          "type": 6
+        },
+        {
+          "id": "16:9190670968961176706",
+          "name": "equipmentRequested",
+          "type": 30
+        },
+        {
+          "id": "17:13120818610663028",
+          "name": "paymentId",
+          "type": 9
+        },
+        {
+          "id": "18:7472633575395585629",
+          "name": "isPaid",
+          "type": 1
+        },
+        {
+          "id": "19:5883690791932128212",
+          "name": "paidAt",
+          "type": 10
+        },
+        {
+          "id": "20:5342951440270569282",
+          "name": "confirmedAt",
+          "type": 10
+        },
+        {
+          "id": "21:7650353141724534746",
+          "name": "cancelledAt",
+          "type": 10
+        },
+        {
+          "id": "22:4183555093651020530",
+          "name": "cancellationReason",
+          "type": 9
+        },
+        {
+          "id": "23:4979370105438999377",
+          "name": "cancellationFee",
+          "type": 8
+        },
+        {
+          "id": "24:3214236735181394130",
+          "name": "refundAmount",
+          "type": 8
+        },
+        {
+          "id": "25:4566292889235455278",
+          "name": "venueResponse",
+          "type": 9
+        },
+        {
+          "id": "26:6192983001851166958",
+          "name": "checkedInAt",
+          "type": 10
+        },
+        {
+          "id": "27:6599319297979848158",
+          "name": "checkedOutAt",
+          "type": 10
+        },
+        {
+          "id": "28:5839366326191952161",
+          "name": "userRating",
+          "type": 8
+        },
+        {
+          "id": "29:2118076875987716548",
+          "name": "userFeedback",
+          "type": 9
+        },
+        {
+          "id": "30:2758145141821059534",
+          "name": "venueRating",
+          "type": 8
+        },
+        {
+          "id": "31:5086250294615186844",
+          "name": "venueFeedback",
+          "type": 9
+        },
+        {
+          "id": "32:2241169277931072402",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "33:5705435825979817202",
+          "name": "updatedAt",
+          "type": 10
+        },
+        {
+          "id": "34:7111981082346392753",
+          "name": "dbStatus",
+          "type": 6
+        },
+        {
+          "id": "35:5108554508321711939",
+          "name": "dbType",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "32:560869551841122384",
+      "lastPropertyId": "16:6899470424531931866",
+      "name": "VenueReview",
+      "properties": [
+        {
+          "id": "1:5701487379583794715",
+          "name": "localId",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6060335439485342606",
+          "name": "id",
+          "type": 9,
+          "flags": 2080,
+          "indexId": "32:8629485287885592981"
+        },
+        {
+          "id": "3:4872262727915565376",
+          "name": "venueId",
+          "type": 9
+        },
+        {
+          "id": "4:5323602820848414083",
+          "name": "reviewerId",
+          "type": 9
+        },
+        {
+          "id": "5:914065774761484520",
+          "name": "bookingId",
+          "type": 9
+        },
+        {
+          "id": "6:6325109709365574121",
+          "name": "rating",
+          "type": 8
+        },
+        {
+          "id": "7:4070716201950880902",
+          "name": "comment",
+          "type": 9
+        },
+        {
+          "id": "8:8992293516443450108",
+          "name": "tags",
+          "type": 30
+        },
+        {
+          "id": "9:8024676789408835820",
+          "name": "images",
+          "type": 30
+        },
+        {
+          "id": "10:3306664122205130159",
+          "name": "isAnonymous",
+          "type": 1
+        },
+        {
+          "id": "11:4492174861469281730",
+          "name": "isPublic",
+          "type": 1
+        },
+        {
+          "id": "12:8450898973191980213",
+          "name": "isReported",
+          "type": 1
+        },
+        {
+          "id": "13:8958571574966009097",
+          "name": "venueResponse",
+          "type": 9
+        },
+        {
+          "id": "14:3041939765018592987",
+          "name": "respondedAt",
+          "type": 10
+        },
+        {
+          "id": "15:5607446076564508397",
+          "name": "createdAt",
+          "type": 10
+        },
+        {
+          "id": "16:6899470424531931866",
+          "name": "updatedAt",
+          "type": 10
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "32:560869551841122384",
+  "lastIndexId": "32:8629485287885592981",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}

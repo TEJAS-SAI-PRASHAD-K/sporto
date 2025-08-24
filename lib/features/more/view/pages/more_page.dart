@@ -105,7 +105,14 @@ class _MorePageState extends State<MorePage> {
                         title: 'Passbook',
                         subTitle: "Manage Score, Playo credits, etc",
                         trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {},
+                        onTap: () {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => PassbookPage(),
+                          //   ),
+                          // );
+                        },
                         tileColor: null,
                         titleStyle: TextStyle(fontSize: 16),
                       ),

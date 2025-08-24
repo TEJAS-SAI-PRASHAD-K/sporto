@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:playo/core/widgets/theme_switch_icon_button.dart';
-import 'package:playo/features/onboarding/view/widgets/auth/login_bottom_modal_sheet.dart';
+import 'package:playo/features/onboarding/view/widgets/auth/auth_bottom_modal_sheet.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:playo/features/onboarding/view/widgets/circular_overlay.dart';
 
@@ -223,7 +223,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    showCustomModelSheet(context);
+                    showAuthBottomModalSheet(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,

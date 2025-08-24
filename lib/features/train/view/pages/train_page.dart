@@ -64,7 +64,6 @@ class _TrainPageState extends State<TrainPage> {
                     color: Colors.grey,
                     margin: EdgeInsets.symmetric(horizontal: 12),
                   ),
-
                   Expanded(
                     child: GestureDetector(
                       onTap: () {},
@@ -82,6 +81,10 @@ class _TrainPageState extends State<TrainPage> {
                 ],
               ),
             ),
+          ),
+          Text(
+            "What're you looking up to level up on?",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
           ),
         ],
       ),

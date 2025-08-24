@@ -184,6 +184,7 @@ class _MorePageState extends State<MorePage> {
                         isFirst: false,
                         leading: Iconsax.support_copy,
                         title: 'Help & Support',
+                        trailing: Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: () {
                           Navigator.push(
                             context,

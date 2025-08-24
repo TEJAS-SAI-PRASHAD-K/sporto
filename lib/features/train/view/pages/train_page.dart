@@ -10,7 +10,7 @@ import 'package:playo/features/train/view/pages/trainer_details_page.dart';
 class TrainPage extends StatefulWidget {
   const TrainPage({super.key});
 
-  @override
+  @override 
   State<TrainPage> createState() => _TrainPageState();
 }
 

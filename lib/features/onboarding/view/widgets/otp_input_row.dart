@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class OtpInputRow extends StatefulWidget {
-  const OtpInputRow({super.key});
+  final Function(String)? onOtpChanged;
+
+  const OtpInputRow({super.key, this.onOtpChanged});
 
   @override
   State<OtpInputRow> createState() => _OtpInputRowState();
 }
 
 class _OtpInputRowState extends State<OtpInputRow> {
-  final int _otpLength = 5;
+  final int _otpLength = 6;
   late List<TextEditingController> _controllers;
   late List<FocusNode> _focusNodes;
 
@@ -49,6 +51,12 @@ class _OtpInputRowState extends State<OtpInputRow> {
         otpCode = _controllers.map((c) => c.text).join();
       });
       print("OTP Entered: $otpCode"); // You can use it now
+      widget.onOtpChanged?.call(otpCode);
+    } else {
+      setState(() {
+        otpCode = '';
+      });
+      widget.onOtpChanged?.call('');
     }
   }
 

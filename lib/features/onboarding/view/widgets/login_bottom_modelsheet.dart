@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/features/onboarding/view/widgets/otp_input_bottom_modelsheet.dart';
+import 'package:playo/features/onboarding/viewmodel/auth_view_model.dart';
 import 'package:icons_plus/icons_plus.dart';
 
 void showCustomModelSheet(BuildContext context) {
@@ -12,22 +14,45 @@ void showCustomModelSheet(BuildContext context) {
   );
 }
 
-class CustomModelContent extends StatefulWidget {
+class CustomModelContent extends ConsumerStatefulWidget {
   const CustomModelContent({super.key});
 
   @override
-  State<CustomModelContent> createState() => _CustomModelContentState();
+  ConsumerState<CustomModelContent> createState() => _CustomModelContentState();
 }
 
-class _CustomModelContentState extends State<CustomModelContent> {
+class _CustomModelContentState extends ConsumerState<CustomModelContent> {
+  final TextEditingController _mobileController = TextEditingController();
+
   void _handleEmailLogin(BuildContext context) {
     // TODO: Implement email login logic
-    
   }
 
   void _handleGoogleLogin(BuildContext context) {
     // TODO: Implement Google login logic
-      }
+  }
+
+  void _handleSendOtp() async {
+    final mobileNumber = _mobileController.text.trim();
+
+    if (mobileNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a mobile number')),
+      );
+      return;
+    }
+
+    // Call the auth view model to send OTP
+    await ref
+        .read(authViewModelProvider.notifier)
+        .signUpWithOtp(mobileNumber: mobileNumber);
+  }
+
+  @override
+  void dispose() {
+    _mobileController.dispose();
+    super.dispose();
+  }
 
   bool receiveWhatsappUpdates = false;
 
@@ -66,6 +91,7 @@ class _CustomModelContentState extends State<CustomModelContent> {
             ),
             const SizedBox(height: 6),
             TextFormField(
+              controller: _mobileController,
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(
@@ -76,26 +102,60 @@ class _CustomModelContentState extends State<CustomModelContent> {
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the current bottom sheet
-                showOtpInputBottomSheet(context); // Show OTP entry sheet
+            Consumer(
+              builder: (context, ref, child) {
+                final authState = ref.watch(authViewModelProvider);
+
+                // Listen for auth state changes
+                ref.listen<AsyncValue<void>?>(authViewModelProvider, (
+                  previous,
+                  next,
+                ) {
+                  if (next?.hasError == true) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(next!.error.toString())),
+                    );
+                  } else if (next?.hasValue == true) {
+                    Navigator.pop(context); // Close the current bottom sheet
+                    showOtpInputBottomSheet(
+                      context,
+                      _mobileController.text.trim(),
+                    ); // Show OTP entry sheet
+                  }
+                });
+
+                return ElevatedButton(
+                  onPressed: authState?.isLoading == true
+                      ? null
+                      : () {
+                          _handleSendOtp();
+                        },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: authState?.isLoading == true
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text(
+                          'Send OTP',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                );
               },
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                'Send OTP',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -161,62 +221,59 @@ class _CustomModelContentState extends State<CustomModelContent> {
               ],
             ),
             SizedBox(height: 16),
-
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (Platform.isIOS || Platform.isMacOS) ...[
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // Handle email login
-                        Navigator.pop(context);
-                        _handleEmailLogin(context);
-                      },
-                      icon: Icon(Iconsax.apple_bold, size: 16),
-                      label: Text('Apple', style: TextStyle(fontSize: 12)),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: Size(0, 45),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                ],
-                Expanded(
-                  child: OutlinedButton.icon(
+                  IconButton(
                     onPressed: () {
                       // Handle email login
                       Navigator.pop(context);
                       _handleEmailLogin(context);
                     },
-                    icon: Icon(Iconsax.direct_normal_bold, size: 16),
-                    label: Text('Email', style: TextStyle(fontSize: 12)),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: Size(0, 45),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                    icon: Icon(Iconsax.apple_bold, size: 28),
+                    style: IconButton.styleFrom(
+                      maximumSize: Size(50, 50),
+                      minimumSize: Size(28, 28),
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.black,
                     ),
+                  ),
+
+                  SizedBox(width: 12),
+                ],
+                IconButton(
+                  onPressed: () {
+                    // Handle Email login
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.email_rounded, size: 28),
+                  style: IconButton.styleFrom(
+                    maximumSize: Size(50, 50),
+                    minimumSize: Size(28, 28),
+                    foregroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onInverseSurface,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      // Handle Google login
-                      Navigator.pop(context);
-                      _handleGoogleLogin(context);
-                    },
-                    icon: Icon(Iconsax.google_1_bold, size: 16),
-                    label: Text('Google', style: TextStyle(fontSize: 12)),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: Size(0, 45),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
+                IconButton(
+                  onPressed: () {
+                    // Handle Google login
+                    Navigator.pop(context);
+                    _handleGoogleLogin(context);
+                  },
+                  icon: Image.asset(
+                    "assets/logos/google_light.png",
+                    height: 80,
+                  ),
+                  style: IconButton.styleFrom(
+                    padding: EdgeInsets.all(0),
+                    maximumSize: Size(50, 50),
+                    minimumSize: Size(28, 28),
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.white,
                   ),
                 ),
               ],
@@ -229,11 +286,11 @@ class _CustomModelContentState extends State<CustomModelContent> {
   }
 }
 
-void showOtpInputBottomSheet(BuildContext context) {
+void showOtpInputBottomSheet(BuildContext context, String mobileNumber) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (context) => const OtpInputSheet(),
+    builder: (context) => OtpInputSheet(mobileNumber: mobileNumber),
   );
 }

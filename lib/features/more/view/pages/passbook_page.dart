@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/more/view/pages/passbook/credits.dart';
-import 'package:playo/features/more/view/pages/passbook/gametime_unlock.dart';
+import 'package:playo/features/more/view/pages/passbook/credits_tab.dart';
+import 'package:playo/features/more/view/pages/passbook/gametime_unlocked_tab.dart';
 import 'package:playo/features/more/view/pages/passbook/karma_tab.dart';
+import 'package:playo/features/more/view/pages/passbook/loyalty_tab.dart';
+import 'package:playo/features/more/view/pages/passbook/savedcard_tab.dart';
 
 class PassbookPage extends StatefulWidget {
   const PassbookPage({super.key});
@@ -38,8 +40,10 @@ class _PassbookPageState extends State<PassbookPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Passbook'),
-        centerTitle: true,
+        title: const Text(
+          'Passbook',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         elevation: 0,
       ),
       body: Column(
@@ -57,11 +61,11 @@ class _PassbookPageState extends State<PassbookPage>
             child: TabBarView(
               controller: _tabController,
               children: [
-                GametimeUnlock(),
-                Credits(),
+                GametimeUnlockedTab(),
+                CreditsTab(),
                 KarmaTab(),
-                Center(child: Text('Content for Tab 4')),
-                Center(child: Text('Content for Tab 5')),
+                SavedcardTab(),
+                LoyaltyTab(),
               ],
             ),
           ),

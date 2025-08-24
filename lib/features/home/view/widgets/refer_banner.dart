@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:playo/features/more/view/pages/refer_and_earn_page.dart';
 
 class ReferBanner extends StatelessWidget {
   const ReferBanner({super.key});
@@ -11,7 +12,12 @@ class ReferBanner extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (builder) => ReferAndEarnPage()),
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(

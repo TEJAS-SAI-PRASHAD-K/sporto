@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:playo/core/utils/show_snackbar.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ReferAndEarnPage extends StatefulWidget {
   const ReferAndEarnPage({super.key});
@@ -8,6 +10,15 @@ class ReferAndEarnPage extends StatefulWidget {
 }
 
 class _ReferAndEarnPageState extends State<ReferAndEarnPage> {
+  Future<ShareParams> _shareContent() async {
+    final shareParams = ShareParams(
+      text: 'Hey you have to checkout this is the bestq qThis is the referral link to be shared',
+      subject: 'refer and earn',
+      title: 'Referral Link',
+    );
+    return shareParams;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,11 +117,16 @@ class _ReferAndEarnPageState extends State<ReferAndEarnPage> {
                 borderRadius: BorderRadiusGeometry.circular(9),
               ),
             ),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (builder) => Text("share_plus"),
-              );
+            onPressed: () async {
+              final shareParams = _shareContent();
+              final result = await SharePlus.instance.share(await shareParams);
+              if (result.status == ShareResultStatus.success) {
+                showSnackBar(
+                  context,
+                  'You now earned 50 credits',
+                  SnackBarType.success,
+                );
+              }
             },
             child: Text(
               "REFER NOW",

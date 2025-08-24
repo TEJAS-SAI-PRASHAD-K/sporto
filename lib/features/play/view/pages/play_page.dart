@@ -6,6 +6,9 @@ import 'package:playo/features/play/view/widgets/play_tabs_bar.dart';
 import 'package:playo/features/play/view/widgets/play_sub_tabs_bar.dart';
 import 'package:playo/features/play/view/widgets/empty_games_widget.dart';
 import 'package:playo/features/play/view/widgets/menu_overlay.dart';
+import 'package:playo/features/play/model/game.dart';
+import 'package:playo/features/play/view/widgets/game_card.dart';
+import 'package:playo/features/play/view/pages/game_details_page.dart';
 
 class PlayPage extends StatelessWidget {
   const PlayPage({super.key});
@@ -77,16 +80,107 @@ class _PlayPageBodyState extends State<PlayPageBody> {
                     _showMenu(ctx, vm);
                   }
                 },
+                items: vm.subTabs,
               ),
-              Expanded(
-                child: EmptyGamesWidget(
-                  title: vm.emptyTitle,
-                  buttonText: vm.buttonLabel,
-                  selectedCity: vm.selectedCity,
+              if (vm.tabIndex == 1)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      _ActionButton(
+                        icon: Icons.add,
+                        label: 'Create Game',
+                        color: Theme.of(context).colorScheme.primary,
+                        onTap: () {},
+                      ),
+                      const Spacer(),
+                      _ActionButton(
+                        icon: Icons.filter_list,
+                        label: 'Filter',
+                        color: Theme.of(context).colorScheme.onSurface,
+                        onTap: () {},
+                      ),
+                      const SizedBox(width: 8),
+                      _ActionButton(
+                        icon: Icons.sort,
+                        label: 'Sort',
+                        color: Theme.of(context).colorScheme.onSurface,
+                        onTap: () {},
+                      ),
+                    ],
+                  ),
                 ),
+              Expanded(
+                child: vm.tabIndex == 1
+                    ? ListView.builder(
+                        itemCount: vm.currentSportGames.length,
+                        itemBuilder: (context, index) {
+                          final Game g = vm.currentSportGames[index];
+                          return GameCard(
+                            game: g,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => GameDetailsPage(game: g),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      )
+                    : EmptyGamesWidget(
+                        title: vm.emptyTitle,
+                        buttonText: vm.buttonLabel,
+                        selectedCity: vm.selectedCity,
+                      ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: color),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            ),
+          ],
         ),
       ),
     );

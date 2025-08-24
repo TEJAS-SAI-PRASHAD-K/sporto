@@ -121,9 +121,6 @@ class _TrainPageState extends State<TrainPage> {
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
 
                   // Categories grid 3xN like in screenshot
                   SliverPadding(
@@ -219,11 +216,6 @@ class _FilterPill extends StatelessWidget {
           border: Border.all(
             color: Theme.of(context).colorScheme.outlineVariant,
           ),
-          Text(
-            "What're you looking up to level up on?",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-          ),
-        ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:playo/features/more/view/pages/passbook/credits.dart';
 import 'package:playo/features/more/view/pages/passbook/gametime_unlock.dart';
+import 'package:playo/features/more/view/pages/passbook/karma_tab.dart';
 
 class PassbookPage extends StatefulWidget {
   const PassbookPage({super.key});
@@ -56,8 +58,8 @@ class _PassbookPageState extends State<PassbookPage>
               controller: _tabController,
               children: [
                 GametimeUnlock(),
-                Center(child: Text('Content for Tab 2')),
-                Center(child: Text('Content for Tab 3')),
+                Credits(),
+                KarmaTab(),
                 Center(child: Text('Content for Tab 4')),
                 Center(child: Text('Content for Tab 5')),
               ],

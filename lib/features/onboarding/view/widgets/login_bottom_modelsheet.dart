@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:playo/features/onboarding/view/widgets/otp_input_bottom_modelsheet.dart';
+import 'package:playo/features/onboarding/view/widgets/auth/otp_input_bottom_modal_sheet.dart';
 import 'package:playo/features/onboarding/viewmodel/auth_view_model.dart';
 import 'package:icons_plus/icons_plus.dart';
 

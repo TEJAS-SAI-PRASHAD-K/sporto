@@ -41,6 +41,21 @@ class AuthRemoteRepository {
     }
   }
 
+  Future<Either<Failure, void>> resendPhoneOtp({
+    required String mobileNumber,
+  }) async {
+    try {
+      debugPrint(mobileNumber);
+      await supabase.auth.resend(phone: mobileNumber, type: OtpType.sms);
+      return Right(null);
+    } on SocketException {
+      return Left(Failure("No internet connection"));
+    } catch (e) {
+      debugPrint(e.toString());
+      return Left(Failure("Unexpected error: ${e.toString()}"));
+    }
+  }
+
   Future<Either<Failure, AuthResponse>> verifyWithPhoneOtp({
     required String mobileNumber,
     required String token,
@@ -66,7 +81,24 @@ class AuthRemoteRepository {
   }) async {
     try {
       debugPrint(email);
-      await supabase.auth.signInWithOtp(email: email, shouldCreateUser: true);
+      await supabase.auth.signInWithOtp(
+        email: email,
+        shouldCreateUser: true,
+        emailRedirectTo: null,
+      );
+      return Right(null);
+    } on SocketException {
+      return Left(Failure("No internet connection"));
+    } catch (e) {
+      debugPrint(e.toString());
+      return Left(Failure("Unexpected error: ${e.toString()}"));
+    }
+  }
+
+  Future<Either<Failure, void>> resendEmailOtp({required String email}) async {
+    try {
+      debugPrint(email);
+      await supabase.auth.resend(email: email, type: OtpType.email);
       return Right(null);
     } on SocketException {
       return Left(Failure("No internet connection"));

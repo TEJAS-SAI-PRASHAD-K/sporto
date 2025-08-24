@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
+import 'package:playo/core/common/widgets/loader.dart';
 import 'package:playo/core/utils/show_snackbar.dart';
 import 'package:playo/features/onboarding/providers/auth_state_provider.dart';
 import 'package:playo/features/onboarding/viewmodel/auth_view_model.dart';
@@ -70,15 +71,21 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
 
     return Consumer(
       builder: (context, ref, child) {
-        final authViewState = ref.watch(authViewModelProvider);
+        final isLoading = ref.watch(
+          authViewModelProvider.select((val) => val?.isLoading == true),
+        );
 
-        // Listen for auth state changes
-        ref.listen<AsyncValue<void>?>(authViewModelProvider, (previous, next) {
-          if (next?.hasError == true) {
-            showSnackBar(context, next!.error.toString(), SnackBarType.error);
-          } else if (next?.hasValue == true) {
-            WoltModalSheet.of(context).showAtIndex(2); // Navigate to OTP page
-          }
+        // Listen to auth state changes
+        ref.listen(authViewModelProvider, (_, next) {
+          next?.when(
+            data: (_) {
+              WoltModalSheet.of(context).showAtIndex(2); // Navigate to OTP page
+            },
+            error: (error, st) {
+              showSnackBar(context, error.toString(), SnackBarType.error);
+            },
+            loading: () {},
+          );
         });
 
         return Column(
@@ -111,9 +118,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: authViewState?.isLoading == true
-                  ? null
-                  : _handleSendOtp,
+              onPressed: isLoading ? null : _handleSendOtp,
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, _buttonHeight),
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -121,15 +126,8 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
                   borderRadius: BorderRadius.circular(9),
                 ),
               ),
-              child: authViewState?.isLoading == true
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
+              child: isLoading
+                  ? const SizedBox(width: 20, height: 20, child: Loader())
                   : const Text(
                       'Send OTP',
                       style: TextStyle(

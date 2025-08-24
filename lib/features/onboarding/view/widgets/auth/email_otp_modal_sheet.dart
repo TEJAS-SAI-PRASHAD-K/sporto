@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
+import 'package:playo/core/common/widgets/loader.dart';
 import 'package:playo/core/utils/show_snackbar.dart';
 import 'package:playo/features/onboarding/providers/auth_state_provider.dart';
 import 'package:playo/features/onboarding/view/pages/complete_your_profile_page.dart';
@@ -33,8 +34,6 @@ class EmailOtpPageContent extends ConsumerStatefulWidget {
 
 class _EmailOtpPageContentState extends ConsumerState<EmailOtpPageContent> {
   String _otpCode = '';
-  bool _isVerifying = false;
-  bool _isResending = false;
 
   void _onOtpChanged(String otp) {
     setState(() {
@@ -54,10 +53,6 @@ class _EmailOtpPageContentState extends ConsumerState<EmailOtpPageContent> {
       return;
     }
 
-    setState(() {
-      _isVerifying = true;
-    });
-
     await ref
         .read(authViewModelProvider.notifier)
         .verifyEmailOtp(email: authState.email!, token: _otpCode);
@@ -67,17 +62,9 @@ class _EmailOtpPageContentState extends ConsumerState<EmailOtpPageContent> {
     final authState = ref.read(authStateProvider);
     if (authState.email == null) return;
 
-    setState(() {
-      _isResending = true;
-    });
-
     await ref
         .read(authViewModelProvider.notifier)
         .signUpWithEmailOtp(email: authState.email!);
-
-    setState(() {
-      _isResending = false;
-    });
 
     if (mounted) {
       showSnackBar(context, 'OTP sent successfully', SnackBarType.success);
@@ -88,46 +75,73 @@ class _EmailOtpPageContentState extends ConsumerState<EmailOtpPageContent> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
 
-    // Listen to auth state changes
-    ref.listen<AsyncValue<void>?>(authViewModelProvider, (previous, next) {
-      if (next != null) {
-        if (next.hasError) {
-          setState(() {
-            _isVerifying = false;
-          });
-          showSnackBar(context, next.error.toString(), SnackBarType.error);
-        } else if (next.hasValue) {
-          setState(() {
-            _isVerifying = false;
-          });
-          Navigator.of(context).pop(); // Close the modal
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (builder) => const CompleteYourProfile(),
-            ),
-            (Route<dynamic> route) => false,
-          );
-        }
-      }
-    });
+    return Consumer(
+      builder: (context, ref, child) {
+        final isLoading = ref.watch(
+          authViewModelProvider.select((val) => val?.isLoading == true),
+        );
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 20),
-        const Text(
-          'Enter OTP',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        Row(
+        // Listen to auth state changes
+        ref.listen(authViewModelProvider, (_, next) {
+          next?.when(
+            data: (_) {
+              Navigator.of(context).pop(); // Close the modal
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (builder) => const CompleteYourProfile(),
+                ),
+                (Route<dynamic> route) => false,
+              );
+            },
+            error: (error, st) {
+              showSnackBar(context, error.toString(), SnackBarType.error);
+            },
+            loading: () {},
+          );
+        });
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            const SizedBox(height: 20),
+            const Text(
+              'Enter OTP',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Sent to email",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.inverseSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+                if (authState.email != null)
+                  Flexible(
+                    child: Text(
+                      authState.email!,
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.inverseSurface,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
             Text(
-              "Sent to email",
+              "We've sent a 6-digit verification code to your email",
               style: TextStyle(
                 fontSize: 14,
                 color: Theme.of(
@@ -135,80 +149,50 @@ class _EmailOtpPageContentState extends ConsumerState<EmailOtpPageContent> {
                 ).colorScheme.inverseSurface.withValues(alpha: 0.7),
               ),
             ),
-            if (authState.email != null)
-              Flexible(
+            const SizedBox(height: 24),
+            OtpInputRow(onOtpChanged: _onOtpChanged),
+            const SizedBox(height: 32),
+            Center(
+              child: GestureDetector(
+                onTap: isLoading ? null : _resendOtp,
                 child: Text(
-                  authState.email!,
+                  isLoading ? "Sending..." : "Resend OTP",
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                     fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.inverseSurface,
+                    color: isLoading
+                        ? Theme.of(
+                            context,
+                          ).colorScheme.inverseSurface.withValues(alpha: 0.5)
+                        : Theme.of(context).colorScheme.inverseSurface,
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: isLoading || _otpCode.length != 6 ? null : _verifyOtp,
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, _buttonHeight),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(9),
+                ),
+              ),
+              child: isLoading
+                  ? const SizedBox(width: 20, height: 20, child: Loader())
+                  : const Text(
+                      'Verify',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+            ),
+            const SizedBox(height: 16),
           ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          "We've sent a 6-digit verification code to your email",
-          style: TextStyle(
-            fontSize: 14,
-            color: Theme.of(
-              context,
-            ).colorScheme.inverseSurface.withValues(alpha: 0.7),
-          ),
-        ),
-        const SizedBox(height: 24),
-        OtpInputRow(onOtpChanged: _onOtpChanged),
-        const SizedBox(height: 32),
-        Center(
-          child: GestureDetector(
-            onTap: _isResending ? null : _resendOtp,
-            child: Text(
-              _isResending ? "Sending..." : "Resend OTP",
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                fontSize: 14,
-                color: _isResending
-                    ? Theme.of(
-                        context,
-                      ).colorScheme.inverseSurface.withValues(alpha: 0.5)
-                    : Theme.of(context).colorScheme.inverseSurface,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: _isVerifying || _otpCode.length != 6 ? null : _verifyOtp,
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, _buttonHeight),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(9),
-            ),
-          ),
-          child: _isVerifying
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : const Text(
-                  'Verify',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-        ),
-        const SizedBox(height: 16),
-      ],
+        );
+      },
     );
   }
 }

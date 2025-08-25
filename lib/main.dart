@@ -17,7 +17,7 @@ class MyApp extends ConsumerWidget {
     final theme = ref.watch(themeModeNotifierProvider);
 
     return MaterialApp(
-      title: 'Playo',
+      title: 'Sporto',
       theme: theme,
       debugShowCheckedModeBanner: false,
       home: OnboardingPage(),

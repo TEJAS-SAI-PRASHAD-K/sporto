@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/core/common/widgets/main_app_bar.dart';
+import 'package:playo/features/more/view/pages/help_and_support_page.dart';
 import 'package:provider/provider.dart';
 import 'package:playo/features/train/viewmodel/train_view_model.dart';
 import 'package:playo/features/train/view/widgets/category_chip.dart';
 import 'package:playo/features/train/view/widgets/trainer_card.dart';
 import 'package:playo/features/train/view/pages/trainer_details_page.dart';
+import 'package:playo/features/train/view/widgets/filter_pill.dart';
 
 class TrainPage extends StatefulWidget {
   const TrainPage({super.key});
 
-  @override 
+  @override
   State<TrainPage> createState() => _TrainPageState();
 }
 
@@ -77,7 +79,7 @@ class _TrainPageState extends State<TrainPage> {
                                 onTap: () {},
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
+                                  children: [
                                     Icon(Icons.list, size: 20),
                                     SizedBox(width: 6),
                                     Text("List With Us"),
@@ -88,7 +90,7 @@ class _TrainPageState extends State<TrainPage> {
                             Container(
                               height: 20,
                               width: 1,
-                              color: Colors.grey.shade400,
+                              color: theme.colorScheme.outlineVariant,
                               margin: const EdgeInsets.symmetric(
                                 horizontal: 12,
                               ),
@@ -98,7 +100,7 @@ class _TrainPageState extends State<TrainPage> {
                                 onTap: () {},
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
+                                  children: [
                                     Icon(Icons.question_answer, size: 20),
                                     SizedBox(width: 6),
                                     Text("Queries"),
@@ -117,7 +119,9 @@ class _TrainPageState extends State<TrainPage> {
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                       child: Text(
                         "What're you looking to level up on?",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -144,31 +148,49 @@ class _TrainPageState extends State<TrainPage> {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-
-                      child: Row(
-                        children: [
-                          _FilterPill(
-                            icon: Icons.swap_vert,
-                            label: 'Filter & Sort',
-                          ),
-                          const SizedBox(width: 8),
-                          _FilterPill(
-                            icon: Icons.grid_view_rounded,
-                            label: 'Service',
-                          ),
-                          const SizedBox(width: 8),
-                          _FilterPill(
-                            icon: Icons.person_outline,
-                            label: 'Trainer',
-                          ),
-                        ],
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            FilterPill(
+                              icon: Icons.swap_vert,
+                              label: 'Filter & Sort',
+                              isSelected: vm.selectedFilter == 'Filter & Sort',
+                              onTap: () => vm.selectFilter('Filter & Sort'),
+                            ),
+                            const SizedBox(width: 8),
+                            FilterPill(
+                              icon: Icons.grid_view_rounded,
+                              label: 'Service',
+                              isSelected: vm.selectedFilter == 'Service',
+                              onTap: () => vm.selectFilter('Service'),
+                            ),
+                            const SizedBox(width: 8),
+                            FilterPill(
+                              icon: Icons.person_outline,
+                              label: 'Trainer',
+                              isSelected: vm.selectedFilter == 'Trainer',
+                              onTap: () => vm.selectFilter('Trainer'),
+                            ),
+                            const SizedBox(width: 8),
+                            FilterPill(
+                              icon: Icons.school,
+                              label: 'Academy',
+                              isSelected: vm.selectedFilter == 'Academy',
+                              onTap: () => vm.selectFilter('Academy'),
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ), // Extra padding at the end
+                          ],
+                        ),
                       ),
                     ),
                   ),
 
                   // Trainers grid
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
+                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
                     sliver: SliverGrid(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -191,40 +213,45 @@ class _TrainPageState extends State<TrainPage> {
                       }, childCount: vm.trainers.length),
                     ),
                   ),
+
+                  // FAQs Button
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => HelpAndSupportPage(),
+                              ),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: theme.colorScheme.onSurface,
+                            textStyle: theme.textTheme.bodyLarge,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(9),
+                              side: BorderSide(
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                          child: const Text('FAQs'),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _FilterPill extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  const _FilterPill({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 18),
-            const SizedBox(width: 8),
-            Text(label),
-          ],
-        ),
       ),
     );
   }

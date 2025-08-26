@@ -9,7 +9,6 @@ part of 'analytics.dart';
 UserAnalytics _$UserAnalyticsFromJson(
   Map<String, dynamic> json,
 ) => UserAnalytics(
-  localId: (json['localId'] as num?)?.toInt() ?? 0,
   id: json['id'] as String,
   userId: json['userId'] as String,
   totalGamesPlayed: (json['totalGamesPlayed'] as num?)?.toInt() ?? 0,
@@ -51,7 +50,6 @@ UserAnalytics _$UserAnalyticsFromJson(
 
 Map<String, dynamic> _$UserAnalyticsToJson(UserAnalytics instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
       'id': instance.id,
       'userId': instance.userId,
       'totalGamesPlayed': instance.totalGamesPlayed,
@@ -84,7 +82,6 @@ Map<String, dynamic> _$UserAnalyticsToJson(UserAnalytics instance) =>
 
 UserSportStats _$UserSportStatsFromJson(Map<String, dynamic> json) =>
     UserSportStats(
-      localId: (json['localId'] as num?)?.toInt() ?? 0,
       id: json['id'] as String,
       userId: json['userId'] as String,
       sportId: json['sportId'] as String,
@@ -128,16 +125,14 @@ UserSportStats _$UserSportStatsFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
-    )..dbSkillLevel = (json['dbSkillLevel'] as num?)?.toInt();
+    );
 
 Map<String, dynamic> _$UserSportStatsToJson(UserSportStats instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
       'id': instance.id,
       'userId': instance.userId,
       'sportId': instance.sportId,
-      'skillLevel': _$UserSkillLevelEnumMap[instance.skillLevel],
-      'dbSkillLevel': instance.dbSkillLevel,
+      'skillLevel': _$UserSkillLevelEnumMap[instance.skillLevel]!,
       'skillRating': instance.skillRating,
       'totalMatches': instance.totalMatches,
       'wins': instance.wins,
@@ -166,44 +161,34 @@ const _$UserSkillLevelEnumMap = {
   UserSkillLevel.professional: 'professional',
 };
 
-Achievement _$AchievementFromJson(Map<String, dynamic> json) =>
-    Achievement(
-        localId: (json['localId'] as num?)?.toInt() ?? 0,
-        id: json['id'] as String,
-        name: json['name'] as String,
-        description: json['description'] as String,
-        icon: json['icon'] as String?,
-        category:
-            $enumDecodeNullable(
-              _$AchievementCategoryEnumMap,
-              json['category'],
-            ) ??
-            AchievementCategory.games,
-        rarity:
-            $enumDecodeNullable(_$AchievementRarityEnumMap, json['rarity']) ??
-            AchievementRarity.common,
-        sportId: json['sportId'] as String?,
-        points: (json['points'] as num?)?.toInt() ?? 0,
-        criteria: json['criteria'] as String?,
-        isActive: json['isActive'] as bool? ?? true,
-        createdAt: json['createdAt'] == null
-            ? null
-            : DateTime.parse(json['createdAt'] as String),
-      )
-      ..dbCategory = (json['dbCategory'] as num?)?.toInt()
-      ..dbRarity = (json['dbRarity'] as num?)?.toInt();
+Achievement _$AchievementFromJson(Map<String, dynamic> json) => Achievement(
+  id: json['id'] as String,
+  name: json['name'] as String,
+  description: json['description'] as String,
+  icon: json['icon'] as String?,
+  category:
+      $enumDecodeNullable(_$AchievementCategoryEnumMap, json['category']) ??
+      AchievementCategory.games,
+  rarity:
+      $enumDecodeNullable(_$AchievementRarityEnumMap, json['rarity']) ??
+      AchievementRarity.common,
+  sportId: json['sportId'] as String?,
+  points: (json['points'] as num?)?.toInt() ?? 0,
+  criteria: json['criteria'] as String?,
+  isActive: json['isActive'] as bool? ?? true,
+  createdAt: json['createdAt'] == null
+      ? null
+      : DateTime.parse(json['createdAt'] as String),
+);
 
 Map<String, dynamic> _$AchievementToJson(Achievement instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
       'id': instance.id,
       'name': instance.name,
       'description': instance.description,
       'icon': instance.icon,
-      'category': _$AchievementCategoryEnumMap[instance.category],
-      'rarity': _$AchievementRarityEnumMap[instance.rarity],
-      'dbCategory': instance.dbCategory,
-      'dbRarity': instance.dbRarity,
+      'category': _$AchievementCategoryEnumMap[instance.category]!,
+      'rarity': _$AchievementRarityEnumMap[instance.rarity]!,
       'sportId': instance.sportId,
       'points': instance.points,
       'criteria': instance.criteria,
@@ -231,7 +216,6 @@ const _$AchievementRarityEnumMap = {
 
 UserAchievement _$UserAchievementFromJson(Map<String, dynamic> json) =>
     UserAchievement(
-      localId: (json['localId'] as num?)?.toInt() ?? 0,
       id: json['id'] as String,
       userId: json['userId'] as String,
       achievementId: json['achievementId'] as String,
@@ -247,7 +231,6 @@ UserAchievement _$UserAchievementFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$UserAchievementToJson(UserAchievement instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
       'id': instance.id,
       'userId': instance.userId,
       'achievementId': instance.achievementId,

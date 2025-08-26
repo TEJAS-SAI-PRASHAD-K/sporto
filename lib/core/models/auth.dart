@@ -1,36 +1,25 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:objectbox/objectbox.dart';
 
 part 'auth.g.dart';
 
 /// Authentication session data
-@Entity()
 @JsonSerializable()
 class AuthSession {
-  @Id()
-  int localId;
-
-  @Unique()
   String id;
   String userId;
   String accessToken;
   String? refreshToken;
-  @Property(type: PropertyType.date)
   DateTime expiresAt;
   String? deviceId;
   String? deviceName;
   String? ipAddress;
   String? userAgent;
   bool isActive;
-  @Property(type: PropertyType.date)
   DateTime? lastUsedAt;
-  @Property(type: PropertyType.date)
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
   DateTime? updatedAt;
 
   AuthSession({
-    this.localId = 0,
     required this.id,
     required this.userId,
     required this.accessToken,
@@ -52,58 +41,37 @@ class AuthSession {
 }
 
 /// OTP verification data
-@Entity()
 @JsonSerializable()
 class OTPVerification {
-  @Id()
-  int localId;
-
-  @Unique()
   String id;
-  String identifier; // email or phone
-  String code;
-
-  // Store enums as int for ObjectBox compatibility
-  int _type;
-  int _purpose;
-
-  // Getters and setters for enum properties
-  OTPType get type => OTPType.values[_type];
-  set type(OTPType value) => _type = value.index;
-
-  OTPPurpose get purpose => OTPPurpose.values[_purpose];
-  set purpose(OTPPurpose value) => _purpose = value.index;
-
-  bool isVerified;
+  String? phone;
+  String? email;
+  String otpCode;
+  OTPType type;
   bool isUsed;
-  @Property(type: PropertyType.date)
   DateTime expiresAt;
-  int? attempts;
+  int attemptCount;
   int maxAttempts;
-  @Property(type: PropertyType.date)
   DateTime? verifiedAt;
-  @Property(type: PropertyType.date)
+  String? deviceId;
+  String? ipAddress;
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
-  DateTime? updatedAt;
 
   OTPVerification({
-    this.localId = 0,
     required this.id,
-    required this.identifier,
-    required this.code,
-    OTPType type = OTPType.sms,
-    OTPPurpose purpose = OTPPurpose.registration,
-    this.isVerified = false,
+    this.phone,
+    this.email,
+    required this.otpCode,
+    required this.type,
     this.isUsed = false,
     required this.expiresAt,
-    this.attempts,
-    this.maxAttempts = 3,
+    this.attemptCount = 0,
+    this.maxAttempts = 5,
     this.verifiedAt,
+    this.deviceId,
+    this.ipAddress,
     this.createdAt,
-    this.updatedAt,
-  }) : _type = type.index,
-       _purpose = purpose.index;
+  });
 
   factory OTPVerification.fromJson(Map<String, dynamic> json) =>
       _$OTPVerificationFromJson(json);
@@ -111,112 +79,86 @@ class OTPVerification {
 }
 
 enum OTPType {
-  @JsonValue('email')
-  email,
-  @JsonValue('sms')
-  sms,
-}
-
-enum OTPPurpose {
-  @JsonValue('registration')
-  registration,
-  @JsonValue('login')
-  login,
-  @JsonValue('password_reset')
-  passwordReset,
-  @JsonValue('email_verification')
-  emailVerification,
+  @JsonValue('unknown')
+  unknown,
   @JsonValue('phone_verification')
   phoneVerification,
+  @JsonValue('email_verification')
+  emailVerification,
+  @JsonValue('password_reset')
+  passwordReset,
+  @JsonValue('two_factor')
+  twoFactor,
+  @JsonValue('login_verification')
+  loginVerification,
 }
 
-/// Social auth profile data
-@Entity()
+/// Social login data
 @JsonSerializable()
-class SocialAuthProfile {
-  @Id()
-  int localId;
-
-  @Unique()
+class SocialLoginData {
   String id;
-  String userId;
-  String provider; // google, apple, facebook
-  String providerId;
+  String provider; // google, facebook, apple, etc.
+  String socialId; // ID from the social provider
   String? email;
   String? name;
-  String? pictureUrl;
-  @Property(type: PropertyType.date)
-  DateTime? connectedAt;
-  @Property(type: PropertyType.date)
-  DateTime? lastSyncAt;
+  String? profileImageUrl;
+  String? accessToken;
+  String? refreshToken;
+  DateTime? tokenExpiresAt;
+  Map<String, dynamic>? rawData; // store full response
   bool isActive;
-  @Property(type: PropertyType.date)
+  DateTime? lastUsedAt;
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
   DateTime? updatedAt;
 
-  SocialAuthProfile({
-    this.localId = 0,
+  SocialLoginData({
     required this.id,
-    required this.userId,
     required this.provider,
-    required this.providerId,
+    required this.socialId,
     this.email,
     this.name,
-    this.pictureUrl,
-    this.connectedAt,
-    this.lastSyncAt,
+    this.profileImageUrl,
+    this.accessToken,
+    this.refreshToken,
+    this.tokenExpiresAt,
+    this.rawData,
     this.isActive = true,
+    this.lastUsedAt,
     this.createdAt,
     this.updatedAt,
   });
 
-  factory SocialAuthProfile.fromJson(Map<String, dynamic> json) =>
-      _$SocialAuthProfileFromJson(json);
-  Map<String, dynamic> toJson() => _$SocialAuthProfileToJson(this);
+  factory SocialLoginData.fromJson(Map<String, dynamic> json) =>
+      _$SocialLoginDataFromJson(json);
+  Map<String, dynamic> toJson() => _$SocialLoginDataToJson(this);
 }
 
-/// Device info for security tracking
-@Entity()
+/// Password reset tokens
 @JsonSerializable()
-class DeviceInfo {
-  @Id()
-  int localId;
-
-  @Unique()
+class PasswordResetToken {
   String id;
   String userId;
-  String deviceId;
-  String? deviceName;
-  String? platform; // iOS, Android
-  String? osVersion;
-  String? appVersion;
-  String? fcmToken;
-  bool isActive;
-  @Property(type: PropertyType.date)
-  DateTime? lastSeenAt;
-  @Property(type: PropertyType.date)
+  String token;
+  bool isUsed;
+  DateTime expiresAt;
+  String? ipAddress;
+  String? userAgent;
+  DateTime? usedAt;
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
-  DateTime? updatedAt;
 
-  DeviceInfo({
-    this.localId = 0,
+  PasswordResetToken({
     required this.id,
     required this.userId,
-    required this.deviceId,
-    this.deviceName,
-    this.platform,
-    this.osVersion,
-    this.appVersion,
-    this.fcmToken,
-    this.isActive = true,
-    this.lastSeenAt,
+    required this.token,
+    this.isUsed = false,
+    required this.expiresAt,
+    this.ipAddress,
+    this.userAgent,
+    this.usedAt,
     this.createdAt,
-    this.updatedAt,
   });
 
-  factory DeviceInfo.fromJson(Map<String, dynamic> json) =>
-      _$DeviceInfoFromJson(json);
-  Map<String, dynamic> toJson() => _$DeviceInfoToJson(this);
+  factory PasswordResetToken.fromJson(Map<String, dynamic> json) =>
+      _$PasswordResetTokenFromJson(json);
+  Map<String, dynamic> toJson() => _$PasswordResetTokenToJson(this);
 }

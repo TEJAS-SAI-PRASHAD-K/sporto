@@ -6,101 +6,90 @@ part of 'user.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-User _$UserFromJson(Map<String, dynamic> json) =>
-    User(
-        localId: (json['localId'] as num?)?.toInt() ?? 0,
-        id: json['id'] as String,
-        email: json['email'] as String,
-        phone: json['phone'] as String?,
-        fullName: json['fullName'] as String,
-        firstName: json['firstName'] as String?,
-        lastName: json['lastName'] as String?,
-        profilePictureUrl: json['profilePictureUrl'] as String?,
-        role:
-            $enumDecodeNullable(_$UserRoleEnumMap, json['role']) ??
-            UserRole.player,
-        authProvider:
-            $enumDecodeNullable(_$AuthProviderEnumMap, json['authProvider']) ??
-            AuthProvider.email,
-        bio: json['bio'] as String?,
-        dateOfBirth: json['dateOfBirth'] == null
-            ? null
-            : DateTime.parse(json['dateOfBirth'] as String),
-        gender: json['gender'] as String?,
-        city: json['city'] as String?,
-        state: json['state'] as String?,
-        country: json['country'] as String?,
-        latitude: (json['latitude'] as num?)?.toDouble(),
-        longitude: (json['longitude'] as num?)?.toDouble(),
-        preferredSports:
-            (json['preferredSports'] as List<dynamic>?)
-                ?.map((e) => e as String)
-                .toList() ??
-            const [],
-        subscriptionStatus:
-            $enumDecodeNullable(
-              _$SubscriptionStatusEnumMap,
-              json['subscriptionStatus'],
-            ) ??
-            SubscriptionStatus.free,
-        subscriptionExpiresAt: json['subscriptionExpiresAt'] == null
-            ? null
-            : DateTime.parse(json['subscriptionExpiresAt'] as String),
-        isActive: json['isActive'] as bool? ?? true,
-        isEmailVerified: json['isEmailVerified'] as bool? ?? false,
-        isPhoneVerified: json['isPhoneVerified'] as bool? ?? false,
-        isProfileCompleted: json['isProfileCompleted'] as bool? ?? false,
-        fcmToken: json['fcmToken'] as String?,
-        lastActiveAt: json['lastActiveAt'] == null
-            ? null
-            : DateTime.parse(json['lastActiveAt'] as String),
-        isOnline: json['isOnline'] as bool? ?? false,
-        createdAt: json['createdAt'] == null
-            ? null
-            : DateTime.parse(json['createdAt'] as String),
-        updatedAt: json['updatedAt'] == null
-            ? null
-            : DateTime.parse(json['updatedAt'] as String),
-      )
-      ..dbRole = (json['dbRole'] as num?)?.toInt()
-      ..dbAuthProvider = (json['dbAuthProvider'] as num?)?.toInt()
-      ..dbSubscriptionStatus = (json['dbSubscriptionStatus'] as num?)?.toInt();
+User _$UserFromJson(Map<String, dynamic> json) => User(
+  id: json['id'] as String,
+  email: json['email'] as String,
+  phone: json['phone'] as String?,
+  fullName: json['full_name'] as String,
+  firstName: json['first_name'] as String?,
+  lastName: json['last_name'] as String?,
+  profilePictureUrl: json['profile_picture_url'] as String?,
+  role: $enumDecodeNullable(_$UserRoleEnumMap, json['role']) ?? UserRole.player,
+  authProvider:
+      $enumDecodeNullable(_$AuthProviderEnumMap, json['auth_provider']) ??
+      AuthProvider.email,
+  subscriptionStatus:
+      $enumDecodeNullable(
+        _$SubscriptionStatusEnumMap,
+        json['subscription_status'],
+      ) ??
+      SubscriptionStatus.free,
+  bio: json['bio'] as String?,
+  dateOfBirth: json['date_of_birth'] == null
+      ? null
+      : DateTime.parse(json['date_of_birth'] as String),
+  gender: json['gender'] as String?,
+  city: json['city'] as String?,
+  state: json['state'] as String?,
+  country: json['country'] as String?,
+  latitude: (json['latitude'] as num?)?.toDouble(),
+  longitude: (json['longitude'] as num?)?.toDouble(),
+  preferredSports:
+      (json['preferred_sports'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
+  subscriptionExpiresAt: json['subscription_expires_at'] == null
+      ? null
+      : DateTime.parse(json['subscription_expires_at'] as String),
+  isActive: json['is_active'] as bool? ?? true,
+  isEmailVerified: json['is_email_verified'] as bool? ?? false,
+  isPhoneVerified: json['is_phone_verified'] as bool? ?? false,
+  isProfileCompleted: json['is_profile_completed'] as bool? ?? false,
+  fcmToken: json['fcm_token'] as String?,
+  lastActiveAt: json['last_active_at'] == null
+      ? null
+      : DateTime.parse(json['last_active_at'] as String),
+  isOnline: json['is_online'] as bool? ?? false,
+  createdAt: json['created_at'] == null
+      ? null
+      : DateTime.parse(json['created_at'] as String),
+  updatedAt: json['updated_at'] == null
+      ? null
+      : DateTime.parse(json['updated_at'] as String),
+);
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
-  'localId': instance.localId,
   'id': instance.id,
   'email': instance.email,
   'phone': instance.phone,
-  'fullName': instance.fullName,
-  'firstName': instance.firstName,
-  'lastName': instance.lastName,
-  'profilePictureUrl': instance.profilePictureUrl,
+  'full_name': instance.fullName,
+  'first_name': instance.firstName,
+  'last_name': instance.lastName,
+  'profile_picture_url': instance.profilePictureUrl,
   'role': _$UserRoleEnumMap[instance.role],
-  'dbRole': instance.dbRole,
-  'authProvider': _$AuthProviderEnumMap[instance.authProvider],
-  'dbAuthProvider': instance.dbAuthProvider,
-  'subscriptionStatus':
+  'auth_provider': _$AuthProviderEnumMap[instance.authProvider],
+  'subscription_status':
       _$SubscriptionStatusEnumMap[instance.subscriptionStatus],
-  'dbSubscriptionStatus': instance.dbSubscriptionStatus,
   'bio': instance.bio,
-  'dateOfBirth': instance.dateOfBirth?.toIso8601String(),
+  'date_of_birth': instance.dateOfBirth?.toIso8601String(),
   'gender': instance.gender,
   'city': instance.city,
   'state': instance.state,
   'country': instance.country,
   'latitude': instance.latitude,
   'longitude': instance.longitude,
-  'preferredSports': instance.preferredSports,
-  'subscriptionExpiresAt': instance.subscriptionExpiresAt?.toIso8601String(),
-  'isActive': instance.isActive,
-  'isEmailVerified': instance.isEmailVerified,
-  'isPhoneVerified': instance.isPhoneVerified,
-  'isProfileCompleted': instance.isProfileCompleted,
-  'fcmToken': instance.fcmToken,
-  'lastActiveAt': instance.lastActiveAt?.toIso8601String(),
-  'isOnline': instance.isOnline,
-  'createdAt': instance.createdAt?.toIso8601String(),
-  'updatedAt': instance.updatedAt?.toIso8601String(),
+  'preferred_sports': instance.preferredSports,
+  'subscription_expires_at': instance.subscriptionExpiresAt?.toIso8601String(),
+  'is_active': instance.isActive,
+  'is_email_verified': instance.isEmailVerified,
+  'is_phone_verified': instance.isPhoneVerified,
+  'is_profile_completed': instance.isProfileCompleted,
+  'fcm_token': instance.fcmToken,
+  'last_active_at': instance.lastActiveAt?.toIso8601String(),
+  'is_online': instance.isOnline,
+  'created_at': instance.createdAt?.toIso8601String(),
+  'updated_at': instance.updatedAt?.toIso8601String(),
 };
 
 const _$UserRoleEnumMap = {
@@ -125,142 +114,137 @@ const _$SubscriptionStatusEnumMap = {
   SubscriptionStatus.pro: 'pro',
 };
 
-UserPreferences _$UserPreferencesFromJson(Map<String, dynamic> json) =>
-    UserPreferences(
-      localId: (json['localId'] as num?)?.toInt() ?? 0,
-      userId: json['userId'] as String,
-      notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
-      gameInvitesEnabled: json['gameInvitesEnabled'] as bool? ?? true,
-      promotionalEmailsEnabled:
-          json['promotionalEmailsEnabled'] as bool? ?? true,
-      locationSharingEnabled: json['locationSharingEnabled'] as bool? ?? true,
-      themeMode: json['themeMode'] as String? ?? 'system',
-      language: json['language'] as String? ?? 'en',
-      distanceUnit: json['distanceUnit'] as String? ?? 'km',
-      timeFormat: json['timeFormat'] as String? ?? '24h',
-      searchRadius: (json['searchRadius'] as num?)?.toDouble() ?? 10.0,
-      defaultSkillLevel: json['defaultSkillLevel'] as String? ?? 'intermediate',
-      createdAt: json['createdAt'] == null
-          ? null
-          : DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
-    );
+UserPreferences _$UserPreferencesFromJson(
+  Map<String, dynamic> json,
+) => UserPreferences(
+  id: json['id'] as String,
+  userId: json['user_id'] as String,
+  notificationsEnabled: json['notifications_enabled'] as bool? ?? true,
+  gameInvitesEnabled: json['game_invites_enabled'] as bool? ?? true,
+  promotionalEmailsEnabled: json['promotional_emails_enabled'] as bool? ?? true,
+  locationSharingEnabled: json['location_sharing_enabled'] as bool? ?? true,
+  themeMode: json['theme_mode'] as String? ?? 'system',
+  language: json['language'] as String? ?? 'en',
+  distanceUnit: json['distance_unit'] as String? ?? 'km',
+  timeFormat: json['time_format'] as String? ?? '24h',
+  searchRadius: (json['search_radius'] as num?)?.toDouble() ?? 10.0,
+  defaultSkillLevel: json['default_skill_level'] as String? ?? 'intermediate',
+  createdAt: json['created_at'] == null
+      ? null
+      : DateTime.parse(json['created_at'] as String),
+  updatedAt: json['updated_at'] == null
+      ? null
+      : DateTime.parse(json['updated_at'] as String),
+);
 
 Map<String, dynamic> _$UserPreferencesToJson(UserPreferences instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
-      'userId': instance.userId,
-      'notificationsEnabled': instance.notificationsEnabled,
-      'gameInvitesEnabled': instance.gameInvitesEnabled,
-      'promotionalEmailsEnabled': instance.promotionalEmailsEnabled,
-      'locationSharingEnabled': instance.locationSharingEnabled,
-      'themeMode': instance.themeMode,
+      'id': instance.id,
+      'user_id': instance.userId,
+      'notifications_enabled': instance.notificationsEnabled,
+      'game_invites_enabled': instance.gameInvitesEnabled,
+      'promotional_emails_enabled': instance.promotionalEmailsEnabled,
+      'location_sharing_enabled': instance.locationSharingEnabled,
+      'theme_mode': instance.themeMode,
       'language': instance.language,
-      'distanceUnit': instance.distanceUnit,
-      'timeFormat': instance.timeFormat,
-      'searchRadius': instance.searchRadius,
-      'defaultSkillLevel': instance.defaultSkillLevel,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'distance_unit': instance.distanceUnit,
+      'time_format': instance.timeFormat,
+      'search_radius': instance.searchRadius,
+      'default_skill_level': instance.defaultSkillLevel,
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
     };
 
 UserSportProfile _$UserSportProfileFromJson(Map<String, dynamic> json) =>
     UserSportProfile(
-      localId: (json['localId'] as num?)?.toInt() ?? 0,
       id: json['id'] as String,
-      userId: json['userId'] as String,
-      sportName: json['sportName'] as String,
-      skillLevel: json['skillLevel'] as String,
-      yearsOfExperience: (json['yearsOfExperience'] as num?)?.toInt(),
+      userId: json['user_id'] as String,
+      sportName: json['sport_name'] as String,
+      skillLevel: json['skill_level'] as String,
+      yearsOfExperience: (json['years_of_experience'] as num?)?.toInt(),
       position: json['position'] as String?,
       achievements: (json['achievements'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
       bio: json['bio'] as String?,
       rating: (json['rating'] as num?)?.toDouble(),
-      totalGamesPlayed: (json['totalGamesPlayed'] as num?)?.toInt(),
-      totalWins: (json['totalWins'] as num?)?.toInt(),
-      totalLosses: (json['totalLosses'] as num?)?.toInt(),
-      preferredGameType: json['preferredGameType'] as String?,
+      totalGamesPlayed: (json['total_games_played'] as num?)?.toInt(),
+      totalWins: (json['total_wins'] as num?)?.toInt(),
+      totalLosses: (json['total_losses'] as num?)?.toInt(),
+      preferredGameType: json['preferred_game_type'] as String?,
       certifications: (json['certifications'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
-      equipmentOwned: json['equipmentOwned'] as String?,
-      isPublic: json['isPublic'] as bool? ?? true,
-      createdAt: json['createdAt'] == null
+      equipmentOwned: json['equipment_owned'] as String?,
+      isPublic: json['is_public'] as bool? ?? true,
+      createdAt: json['created_at'] == null
           ? null
-          : DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
+          : DateTime.parse(json['created_at'] as String),
+      updatedAt: json['updated_at'] == null
           ? null
-          : DateTime.parse(json['updatedAt'] as String),
+          : DateTime.parse(json['updated_at'] as String),
     );
 
 Map<String, dynamic> _$UserSportProfileToJson(UserSportProfile instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
       'id': instance.id,
-      'userId': instance.userId,
-      'sportName': instance.sportName,
-      'skillLevel': instance.skillLevel,
-      'yearsOfExperience': instance.yearsOfExperience,
+      'user_id': instance.userId,
+      'sport_name': instance.sportName,
+      'skill_level': instance.skillLevel,
+      'years_of_experience': instance.yearsOfExperience,
       'position': instance.position,
       'achievements': instance.achievements,
       'bio': instance.bio,
       'rating': instance.rating,
-      'totalGamesPlayed': instance.totalGamesPlayed,
-      'totalWins': instance.totalWins,
-      'totalLosses': instance.totalLosses,
-      'preferredGameType': instance.preferredGameType,
+      'total_games_played': instance.totalGamesPlayed,
+      'total_wins': instance.totalWins,
+      'total_losses': instance.totalLosses,
+      'preferred_game_type': instance.preferredGameType,
       'certifications': instance.certifications,
-      'equipmentOwned': instance.equipmentOwned,
-      'isPublic': instance.isPublic,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'equipment_owned': instance.equipmentOwned,
+      'is_public': instance.isPublic,
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
     };
 
 UserConnection _$UserConnectionFromJson(Map<String, dynamic> json) =>
     UserConnection(
-      localId: (json['localId'] as num?)?.toInt() ?? 0,
       id: json['id'] as String,
-      userId: json['userId'] as String,
-      connectedUserId: json['connectedUserId'] as String,
+      userId: json['user_id'] as String,
+      connectedUserId: json['connected_user_id'] as String,
       status:
           $enumDecodeNullable(_$ConnectionStatusEnumMap, json['status']) ??
           ConnectionStatus.pending,
-      requestedAt: json['requestedAt'] == null
+      requestedAt: json['requested_at'] == null
           ? null
-          : DateTime.parse(json['requestedAt'] as String),
-      acceptedAt: json['acceptedAt'] == null
+          : DateTime.parse(json['requested_at'] as String),
+      acceptedAt: json['accepted_at'] == null
           ? null
-          : DateTime.parse(json['acceptedAt'] as String),
-      blockedAt: json['blockedAt'] == null
+          : DateTime.parse(json['accepted_at'] as String),
+      blockedAt: json['blocked_at'] == null
           ? null
-          : DateTime.parse(json['blockedAt'] as String),
+          : DateTime.parse(json['blocked_at'] as String),
       notes: json['notes'] as String?,
-      createdAt: json['createdAt'] == null
+      createdAt: json['created_at'] == null
           ? null
-          : DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
+          : DateTime.parse(json['created_at'] as String),
+      updatedAt: json['updated_at'] == null
           ? null
-          : DateTime.parse(json['updatedAt'] as String),
-    )..dbStatus = (json['dbStatus'] as num?)?.toInt();
+          : DateTime.parse(json['updated_at'] as String),
+    );
 
 Map<String, dynamic> _$UserConnectionToJson(UserConnection instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
       'id': instance.id,
-      'userId': instance.userId,
-      'connectedUserId': instance.connectedUserId,
+      'user_id': instance.userId,
+      'connected_user_id': instance.connectedUserId,
       'status': _$ConnectionStatusEnumMap[instance.status],
-      'dbStatus': instance.dbStatus,
-      'requestedAt': instance.requestedAt?.toIso8601String(),
-      'acceptedAt': instance.acceptedAt?.toIso8601String(),
-      'blockedAt': instance.blockedAt?.toIso8601String(),
+      'requested_at': instance.requestedAt?.toIso8601String(),
+      'accepted_at': instance.acceptedAt?.toIso8601String(),
+      'blocked_at': instance.blockedAt?.toIso8601String(),
       'notes': instance.notes,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
     };
 
 const _$ConnectionStatusEnumMap = {

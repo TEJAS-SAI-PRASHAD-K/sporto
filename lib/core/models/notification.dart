@@ -1,26 +1,25 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:objectbox/objectbox.dart';
 
 part 'notification.g.dart';
 
 /// Notification model for app notifications
-@Entity()
+
 @JsonSerializable()
 class NotificationModel {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String userId;
   String title;
   String body;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+  
   NotificationType? type;
 
-  @Transient()
+  
   NotificationPriority? priority;
 
   // Stable database fields for enum storage
@@ -57,15 +56,15 @@ class NotificationModel {
   List<String> tags;
   bool isRead;
   bool isPersistent; // Should not be auto-deleted
-  @Property(type: PropertyType.date)
+  
   DateTime? readAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? expiresAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? scheduledAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? sentAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
 
   NotificationModel({
@@ -265,13 +264,13 @@ enum NotificationPriority {
 }
 
 /// Push notification settings for users
-@Entity()
+
 @JsonSerializable()
 class NotificationSettings {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String userId;
 
   // Global settings
@@ -298,9 +297,9 @@ class NotificationSettings {
   String? deviceId;
   String? platform; // ios, android, web
 
-  @Property(type: PropertyType.date)
+  
   DateTime? lastUpdated;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
 
   NotificationSettings({
@@ -340,13 +339,13 @@ class NotificationSettings {
 }
 
 /// Message model for in-app messaging
-@Entity()
+
 @JsonSerializable()
 class Message {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String? conversationId;
   String senderId;
@@ -354,7 +353,7 @@ class Message {
   String content;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+  
   MessageType? type;
 
   // Stable database field for enum storage
@@ -377,15 +376,15 @@ class Message {
   bool isRead;
   bool isDelivered;
   bool isSystem; // System generated message
-  @Property(type: PropertyType.date)
+  
   DateTime? readAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? deliveredAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? editedAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? deletedAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
 
   Message({
@@ -482,13 +481,13 @@ enum MessageType {
 }
 
 /// Conversation model for organizing messages
-@Entity()
+
 @JsonSerializable()
 class Conversation {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   List<String> participantIds;
   String? name; // Group name if applicable
@@ -497,7 +496,7 @@ class Conversation {
   bool isGroup;
   String? lastMessageId;
   String? lastMessageContent;
-  @Property(type: PropertyType.date)
+  
   DateTime? lastMessageAt;
   String? lastMessageSenderId;
   int unreadCount;
@@ -505,9 +504,9 @@ class Conversation {
   bool isArchived;
   String? relatedEntityId; // gameId, trainerId for context
   String? relatedEntityType;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   Conversation({
@@ -537,13 +536,13 @@ class Conversation {
 }
 
 /// Payment model
-@Entity()
+
 @JsonSerializable()
 class Payment {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String userId;
   String sourceId; // bookingId, sessionId, gameId
@@ -552,10 +551,10 @@ class Payment {
   String? currency;
 
   // Store enums as stable int for ObjectBox compatibility
-  @Transient()
+  
   PaymentStatus? status;
 
-  @Transient()
+  
   PaymentMethod? method;
 
   // Stable database fields for enum storage
@@ -591,19 +590,19 @@ class Payment {
   double? taxes;
   double? netAmount;
   String? failureReason;
-  @Property(type: PropertyType.date)
+  
   DateTime? initiatedAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? succeededAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? failedAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? refundedAt;
   double? refundAmount;
   String? refundReason;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   Payment({

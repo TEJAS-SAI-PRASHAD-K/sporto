@@ -7,7 +7,6 @@ part of 'auth.dart';
 // **************************************************************************
 
 AuthSession _$AuthSessionFromJson(Map<String, dynamic> json) => AuthSession(
-  localId: (json['localId'] as num?)?.toInt() ?? 0,
   id: json['id'] as String,
   userId: json['userId'] as String,
   accessToken: json['accessToken'] as String,
@@ -31,7 +30,6 @@ AuthSession _$AuthSessionFromJson(Map<String, dynamic> json) => AuthSession(
 
 Map<String, dynamic> _$AuthSessionToJson(AuthSession instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
       'id': instance.id,
       'userId': instance.userId,
       'accessToken': instance.accessToken,
@@ -49,75 +47,69 @@ Map<String, dynamic> _$AuthSessionToJson(AuthSession instance) =>
 
 OTPVerification _$OTPVerificationFromJson(Map<String, dynamic> json) =>
     OTPVerification(
-      localId: (json['localId'] as num?)?.toInt() ?? 0,
       id: json['id'] as String,
-      identifier: json['identifier'] as String,
-      code: json['code'] as String,
-      type: $enumDecodeNullable(_$OTPTypeEnumMap, json['type']) ?? OTPType.sms,
-      purpose:
-          $enumDecodeNullable(_$OTPPurposeEnumMap, json['purpose']) ??
-          OTPPurpose.registration,
-      isVerified: json['isVerified'] as bool? ?? false,
+      phone: json['phone'] as String?,
+      email: json['email'] as String?,
+      otpCode: json['otpCode'] as String,
+      type: $enumDecode(_$OTPTypeEnumMap, json['type']),
       isUsed: json['isUsed'] as bool? ?? false,
       expiresAt: DateTime.parse(json['expiresAt'] as String),
-      attempts: (json['attempts'] as num?)?.toInt(),
-      maxAttempts: (json['maxAttempts'] as num?)?.toInt() ?? 3,
+      attemptCount: (json['attemptCount'] as num?)?.toInt() ?? 0,
+      maxAttempts: (json['maxAttempts'] as num?)?.toInt() ?? 5,
       verifiedAt: json['verifiedAt'] == null
           ? null
           : DateTime.parse(json['verifiedAt'] as String),
+      deviceId: json['deviceId'] as String?,
+      ipAddress: json['ipAddress'] as String?,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
     );
 
 Map<String, dynamic> _$OTPVerificationToJson(OTPVerification instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
       'id': instance.id,
-      'identifier': instance.identifier,
-      'code': instance.code,
+      'phone': instance.phone,
+      'email': instance.email,
+      'otpCode': instance.otpCode,
       'type': _$OTPTypeEnumMap[instance.type]!,
-      'purpose': _$OTPPurposeEnumMap[instance.purpose]!,
-      'isVerified': instance.isVerified,
       'isUsed': instance.isUsed,
       'expiresAt': instance.expiresAt.toIso8601String(),
-      'attempts': instance.attempts,
+      'attemptCount': instance.attemptCount,
       'maxAttempts': instance.maxAttempts,
       'verifiedAt': instance.verifiedAt?.toIso8601String(),
+      'deviceId': instance.deviceId,
+      'ipAddress': instance.ipAddress,
       'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
     };
 
-const _$OTPTypeEnumMap = {OTPType.email: 'email', OTPType.sms: 'sms'};
-
-const _$OTPPurposeEnumMap = {
-  OTPPurpose.registration: 'registration',
-  OTPPurpose.login: 'login',
-  OTPPurpose.passwordReset: 'password_reset',
-  OTPPurpose.emailVerification: 'email_verification',
-  OTPPurpose.phoneVerification: 'phone_verification',
+const _$OTPTypeEnumMap = {
+  OTPType.unknown: 'unknown',
+  OTPType.phoneVerification: 'phone_verification',
+  OTPType.emailVerification: 'email_verification',
+  OTPType.passwordReset: 'password_reset',
+  OTPType.twoFactor: 'two_factor',
+  OTPType.loginVerification: 'login_verification',
 };
 
-SocialAuthProfile _$SocialAuthProfileFromJson(Map<String, dynamic> json) =>
-    SocialAuthProfile(
-      localId: (json['localId'] as num?)?.toInt() ?? 0,
+SocialLoginData _$SocialLoginDataFromJson(Map<String, dynamic> json) =>
+    SocialLoginData(
       id: json['id'] as String,
-      userId: json['userId'] as String,
       provider: json['provider'] as String,
-      providerId: json['providerId'] as String,
+      socialId: json['socialId'] as String,
       email: json['email'] as String?,
       name: json['name'] as String?,
-      pictureUrl: json['pictureUrl'] as String?,
-      connectedAt: json['connectedAt'] == null
+      profileImageUrl: json['profileImageUrl'] as String?,
+      accessToken: json['accessToken'] as String?,
+      refreshToken: json['refreshToken'] as String?,
+      tokenExpiresAt: json['tokenExpiresAt'] == null
           ? null
-          : DateTime.parse(json['connectedAt'] as String),
-      lastSyncAt: json['lastSyncAt'] == null
-          ? null
-          : DateTime.parse(json['lastSyncAt'] as String),
+          : DateTime.parse(json['tokenExpiresAt'] as String),
+      rawData: json['rawData'] as Map<String, dynamic>?,
       isActive: json['isActive'] as bool? ?? true,
+      lastUsedAt: json['lastUsedAt'] == null
+          ? null
+          : DateTime.parse(json['lastUsedAt'] as String),
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -126,58 +118,50 @@ SocialAuthProfile _$SocialAuthProfileFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['updatedAt'] as String),
     );
 
-Map<String, dynamic> _$SocialAuthProfileToJson(SocialAuthProfile instance) =>
+Map<String, dynamic> _$SocialLoginDataToJson(SocialLoginData instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
       'id': instance.id,
-      'userId': instance.userId,
       'provider': instance.provider,
-      'providerId': instance.providerId,
+      'socialId': instance.socialId,
       'email': instance.email,
       'name': instance.name,
-      'pictureUrl': instance.pictureUrl,
-      'connectedAt': instance.connectedAt?.toIso8601String(),
-      'lastSyncAt': instance.lastSyncAt?.toIso8601String(),
+      'profileImageUrl': instance.profileImageUrl,
+      'accessToken': instance.accessToken,
+      'refreshToken': instance.refreshToken,
+      'tokenExpiresAt': instance.tokenExpiresAt?.toIso8601String(),
+      'rawData': instance.rawData,
       'isActive': instance.isActive,
+      'lastUsedAt': instance.lastUsedAt?.toIso8601String(),
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };
 
-DeviceInfo _$DeviceInfoFromJson(Map<String, dynamic> json) => DeviceInfo(
-  localId: (json['localId'] as num?)?.toInt() ?? 0,
-  id: json['id'] as String,
-  userId: json['userId'] as String,
-  deviceId: json['deviceId'] as String,
-  deviceName: json['deviceName'] as String?,
-  platform: json['platform'] as String?,
-  osVersion: json['osVersion'] as String?,
-  appVersion: json['appVersion'] as String?,
-  fcmToken: json['fcmToken'] as String?,
-  isActive: json['isActive'] as bool? ?? true,
-  lastSeenAt: json['lastSeenAt'] == null
-      ? null
-      : DateTime.parse(json['lastSeenAt'] as String),
-  createdAt: json['createdAt'] == null
-      ? null
-      : DateTime.parse(json['createdAt'] as String),
-  updatedAt: json['updatedAt'] == null
-      ? null
-      : DateTime.parse(json['updatedAt'] as String),
-);
+PasswordResetToken _$PasswordResetTokenFromJson(Map<String, dynamic> json) =>
+    PasswordResetToken(
+      id: json['id'] as String,
+      userId: json['userId'] as String,
+      token: json['token'] as String,
+      isUsed: json['isUsed'] as bool? ?? false,
+      expiresAt: DateTime.parse(json['expiresAt'] as String),
+      ipAddress: json['ipAddress'] as String?,
+      userAgent: json['userAgent'] as String?,
+      usedAt: json['usedAt'] == null
+          ? null
+          : DateTime.parse(json['usedAt'] as String),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+    );
 
-Map<String, dynamic> _$DeviceInfoToJson(DeviceInfo instance) =>
+Map<String, dynamic> _$PasswordResetTokenToJson(PasswordResetToken instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
       'id': instance.id,
       'userId': instance.userId,
-      'deviceId': instance.deviceId,
-      'deviceName': instance.deviceName,
-      'platform': instance.platform,
-      'osVersion': instance.osVersion,
-      'appVersion': instance.appVersion,
-      'fcmToken': instance.fcmToken,
-      'isActive': instance.isActive,
-      'lastSeenAt': instance.lastSeenAt?.toIso8601String(),
+      'token': instance.token,
+      'isUsed': instance.isUsed,
+      'expiresAt': instance.expiresAt.toIso8601String(),
+      'ipAddress': instance.ipAddress,
+      'userAgent': instance.userAgent,
+      'usedAt': instance.usedAt?.toIso8601String(),
       'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
     };

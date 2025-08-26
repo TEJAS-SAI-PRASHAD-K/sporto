@@ -190,7 +190,7 @@ class _TrainPageState extends State<TrainPage> {
 
                   // Trainers grid
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
                     sliver: SliverGrid(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -217,10 +217,7 @@ class _TrainPageState extends State<TrainPage> {
                   // FAQs Button
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 12,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: SizedBox(
                         width: double.infinity,
                         child: TextButton(
@@ -233,8 +230,10 @@ class _TrainPageState extends State<TrainPage> {
                             );
                           },
                           style: TextButton.styleFrom(
-                            foregroundColor: theme.colorScheme.onSurface,
+                            foregroundColor: theme.colorScheme.onInverseSurface,
+                            backgroundColor: theme.colorScheme.primary,
                             textStyle: theme.textTheme.bodyLarge,
+                            minimumSize: const Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(9),
                               side: BorderSide(
@@ -247,6 +246,7 @@ class _TrainPageState extends State<TrainPage> {
                       ),
                     ),
                   ),
+                  SliverToBoxAdapter(child: SizedBox(height: 12)),
                 ],
               ),
             ),

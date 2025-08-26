@@ -1,16 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:objectbox/objectbox.dart';
 
 part 'game.g.dart';
 
 /// Game model for play feature
-@Entity()
 @JsonSerializable()
 class Game {
-  @Id()
-  int localId;
-
-  @Unique()
   String id;
   String organizerId;
   String sportId;
@@ -20,7 +14,7 @@ class Game {
   String skillLevel;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+
   GameStatus? status;
 
   // Stable database field for enum storage
@@ -36,9 +30,8 @@ class Game {
     }
   }
 
-  @Property(type: PropertyType.date)
   DateTime startTime;
-  @Property(type: PropertyType.date)
+
   DateTime endTime;
   String? venueId;
   String? venueName;
@@ -62,13 +55,12 @@ class Game {
   String? notes;
   int? rating;
   int viewCount;
-  @Property(type: PropertyType.date)
+
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+
   DateTime? updatedAt;
 
   Game({
-    this.localId = 0,
     required this.id,
     required this.organizerId,
     required this.sportId,
@@ -170,19 +162,17 @@ enum GameStatus {
 }
 
 /// Game participation/booking
-@Entity()
+
 @JsonSerializable()
 class GameParticipation {
-  @Id()
   int localId;
 
-  @Unique()
   String id;
   String gameId;
   String userId;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+
   ParticipationStatus? status;
 
   // Stable database field for enum storage
@@ -198,7 +188,6 @@ class GameParticipation {
     }
   }
 
-  @Property(type: PropertyType.date)
   DateTime joinedAt;
   String? position; // for team sports
   String? partnerUserId; // for doubles
@@ -207,13 +196,13 @@ class GameParticipation {
   String? feedback;
   bool isOrganizer;
   bool isPaid;
-  @Property(type: PropertyType.date)
+
   DateTime? paidAt;
-  @Property(type: PropertyType.date)
+
   DateTime? leftAt;
-  @Property(type: PropertyType.date)
+
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+
   DateTime? updatedAt;
 
   GameParticipation({
@@ -308,20 +297,18 @@ enum ParticipationStatus {
 }
 
 /// Game invite system
-@Entity()
+
 @JsonSerializable()
 class GameInvite {
-  @Id()
   int localId;
 
-  @Unique()
   String id;
   String gameId;
   String inviterId;
   String inviteeId;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+
   InviteStatus? status;
 
   // Stable database field for enum storage
@@ -338,16 +325,16 @@ class GameInvite {
   }
 
   String? message;
-  @Property(type: PropertyType.date)
+
   DateTime? sentAt;
-  @Property(type: PropertyType.date)
+
   DateTime? respondedAt;
-  @Property(type: PropertyType.date)
+
   DateTime? expiresAt;
   String? response;
-  @Property(type: PropertyType.date)
+
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+
   DateTime? updatedAt;
 
   GameInvite({

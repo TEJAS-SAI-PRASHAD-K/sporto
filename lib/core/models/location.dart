@@ -1,16 +1,15 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:objectbox/objectbox.dart';
 
 part 'location.g.dart';
 
 /// Location model for geographical data
-@Entity()
+
 @JsonSerializable()
 class Location {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String name;
   String? displayName;
@@ -34,9 +33,9 @@ class Location {
   List<String> childLocationIds;
   bool isActive;
   int popularityScore;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   Location({
@@ -84,13 +83,13 @@ enum LocationType {
 }
 
 /// Saved locations for users
-@Entity()
+
 @JsonSerializable()
 class SavedLocation {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String userId;
   String name;
@@ -108,9 +107,9 @@ class SavedLocation {
   set type(SavedLocationType? value) => _type = value?.index;
 
   bool isActive;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   SavedLocation({

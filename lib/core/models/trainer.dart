@@ -1,16 +1,15 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:objectbox/objectbox.dart';
 
 part 'trainer.g.dart';
 
 /// Trainer profile model
-@Entity()
+
 @JsonSerializable()
 class Trainer {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String userId; // References User.id
   String businessName;
@@ -23,7 +22,7 @@ class Trainer {
   int? yearsOfExperience;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+  
   TrainerType? type;
 
   // Stable database field for enum storage
@@ -58,9 +57,9 @@ class Trainer {
   List<String> portfolioImages;
   List<String> achievements;
   List<String> tags;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   Trainer({
@@ -147,13 +146,13 @@ enum TrainerType {
 }
 
 /// Training service offered by trainers
-@Entity()
+
 @JsonSerializable()
 class TrainingService {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String trainerId;
   String sportId;
@@ -161,7 +160,7 @@ class TrainingService {
   String? description;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+  
   ServiceType? type;
 
   // Stable database field for enum storage
@@ -188,9 +187,9 @@ class TrainingService {
   String? location;
   bool isActive;
   bool isOnline;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   TrainingService({
@@ -276,20 +275,20 @@ enum ServiceType {
 }
 
 /// Training session bookings
-@Entity()
+
 @JsonSerializable()
 class TrainingSession {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String serviceId;
   String trainerId;
   String studentId;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+  
   SessionStatus? status;
 
   // Stable database field for enum storage
@@ -305,9 +304,9 @@ class TrainingSession {
     }
   }
 
-  @Property(type: PropertyType.date)
+  
   DateTime scheduledAt;
-  @Property(type: PropertyType.date)
+  
   DateTime endsAt;
   String? location;
   String? notes;
@@ -317,21 +316,21 @@ class TrainingSession {
   double? amount;
   String? currency;
   bool isPaid;
-  @Property(type: PropertyType.date)
+  
   DateTime? paidAt;
   String? paymentId;
   double? studentRating;
   String? studentFeedback;
   double? trainerRating;
   String? trainerFeedback;
-  @Property(type: PropertyType.date)
+  
   DateTime? completedAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? cancelledAt;
   String? cancellationReason;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   TrainingSession({
@@ -436,13 +435,13 @@ enum SessionStatus {
 }
 
 /// Trainer reviews and ratings
-@Entity()
+
 @JsonSerializable()
 class TrainerReview {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String trainerId;
   String reviewerId;
@@ -454,11 +453,11 @@ class TrainerReview {
   bool isPublic;
   bool isReported;
   String? trainerResponse;
-  @Property(type: PropertyType.date)
+  
   DateTime? respondedAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   TrainerReview({

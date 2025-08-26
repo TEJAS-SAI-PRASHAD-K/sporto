@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/features/onboarding/view/pages/pick_your_fav_sports_page.dart';
+import 'package:playo/features/onboarding/viewmodel/auth_view_model.dart';
 
-class AvatarSelectionPage extends StatefulWidget {
+class AvatarSelectionPage extends ConsumerStatefulWidget {
   const AvatarSelectionPage({super.key});
 
   @override
-  State<AvatarSelectionPage> createState() => _AvatarSelectionPageState();
+  ConsumerState<AvatarSelectionPage> createState() =>
+      _AvatarSelectionPageState();
 }
 
-class _AvatarSelectionPageState extends State<AvatarSelectionPage> {
+class _AvatarSelectionPageState extends ConsumerState<AvatarSelectionPage> {
   int? selectedAvatarIndex;
 
   final List<String> avatarImages = [
@@ -212,13 +215,29 @@ class _AvatarSelectionPageState extends State<AvatarSelectionPage> {
                       borderRadius: BorderRadius.circular(60.0),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PickYourFavSportsPage(),
-                      ),
-                    );
+                  onPressed: () async {
+                    try {
+                      // Save selected avatar to user profile
+                      if (selectedAvatarIndex != null) {
+                        await ref
+                            .read(authViewModelProvider.notifier)
+                            .updateUserAvatar(
+                              profilePictureUrl:
+                                  avatarImages[selectedAvatarIndex!],
+                            );
+                      }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PickYourFavSportsPage(),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                    }
                   },
                   child: const Text(
                     'Continue',

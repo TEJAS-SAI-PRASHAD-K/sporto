@@ -1,16 +1,15 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:objectbox/objectbox.dart';
 
 part 'sport.g.dart';
 
 /// Sport categories and information
-@Entity()
+
 @JsonSerializable()
 class Sport {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String name;
   String? description;
@@ -18,7 +17,7 @@ class Sport {
   String? imageUrl;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+  
   SportCategory? category;
 
   // Stable database field for enum storage
@@ -45,9 +44,9 @@ class Sport {
   List<String> rules;
   bool isActive;
   int popularityScore;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   Sport({
@@ -150,13 +149,13 @@ enum SportCategory {
 }
 
 /// Sport skill levels with descriptions
-@Entity()
+
 @JsonSerializable()
 class SportSkillLevel {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String sportId;
   String level; // beginner, amateur, intermediate, advanced, professional
@@ -164,9 +163,9 @@ class SportSkillLevel {
   String? description;
   int? order;
   List<String> characteristics;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   SportSkillLevel({

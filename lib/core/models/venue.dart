@@ -1,16 +1,15 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:objectbox/objectbox.dart';
 
 part 'venue.g.dart';
 
 /// Venue model for booking sports facilities
-@Entity()
+
 @JsonSerializable()
 class Venue {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String ownerId; // References User.id
   String name;
@@ -37,7 +36,7 @@ class Venue {
   List<String> nonOperatingDays;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+  
   VenueType? type;
 
   // Stable database field for enum storage
@@ -62,9 +61,9 @@ class Venue {
   bool requiresApproval;
   double? cancellationHours; // hours before booking can be cancelled
   List<String> tags;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   Venue({
@@ -178,13 +177,13 @@ enum VenueType {
 }
 
 /// Court/Field within a venue
-@Entity()
+
 @JsonSerializable()
 class Court {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String venueId;
   String name;
@@ -192,7 +191,7 @@ class Court {
   String sportId;
 
   // Store enum as stable int for ObjectBox compatibility
-  @Transient()
+  
   CourtType? type;
 
   // Stable database field for enum storage
@@ -216,9 +215,9 @@ class Court {
   double? hourlyRate;
   String? currency;
   List<String> images;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   Court({
@@ -294,13 +293,13 @@ enum CourtType {
 }
 
 /// Venue booking model
-@Entity()
+
 @JsonSerializable()
 class VenueBooking {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String venueId;
   String? courtId;
@@ -308,10 +307,10 @@ class VenueBooking {
   String sportId;
 
   // Store enums as stable int for ObjectBox compatibility
-  @Transient()
+  
   BookingStatus? status;
 
-  @Transient()
+  
   BookingType? type;
 
   // Stable database fields for enum storage
@@ -339,9 +338,9 @@ class VenueBooking {
     }
   }
 
-  @Property(type: PropertyType.date)
+  
   DateTime startTime;
-  @Property(type: PropertyType.date)
+  
   DateTime endTime;
   double totalAmount;
   String? currency;
@@ -353,27 +352,27 @@ class VenueBooking {
   List<String> equipmentRequested;
   String? paymentId;
   bool isPaid;
-  @Property(type: PropertyType.date)
+  
   DateTime? paidAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? confirmedAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? cancelledAt;
   String? cancellationReason;
   double? cancellationFee;
   double? refundAmount;
   String? venueResponse;
-  @Property(type: PropertyType.date)
+  
   DateTime? checkedInAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? checkedOutAt;
   double? userRating;
   String? userFeedback;
   double? venueRating;
   String? venueFeedback;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   VenueBooking({
@@ -545,13 +544,13 @@ enum BookingType {
 }
 
 /// Venue reviews and ratings
-@Entity()
+
 @JsonSerializable()
 class VenueReview {
-  @Id()
+  
   int localId;
 
-  @Unique()
+  
   String id;
   String venueId;
   String reviewerId;
@@ -564,11 +563,11 @@ class VenueReview {
   bool isPublic;
   bool isReported;
   String? venueResponse;
-  @Property(type: PropertyType.date)
+  
   DateTime? respondedAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? createdAt;
-  @Property(type: PropertyType.date)
+  
   DateTime? updatedAt;
 
   VenueReview({

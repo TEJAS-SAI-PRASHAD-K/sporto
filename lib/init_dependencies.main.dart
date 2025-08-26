@@ -24,10 +24,11 @@ Future<void> _initSupabase() async {
   serviceLocator.registerSingleton<SupabaseClient>(Supabase.instance.client);
 }
 
-/// Initialize ObjectBox database
+/// Initialize SQLite database
 Future<void> _initDatabase() async {
-  final objectBox = await ObjectBox.init();
-  serviceLocator.registerSingleton<ObjectBox>(objectBox);
+  final databaseHelper = DatabaseHelper.instance;
+  await databaseHelper.database; // Initialize the database
+  serviceLocator.registerSingleton<DatabaseHelper>(databaseHelper);
 }
 
 /// Initialize core services
@@ -59,6 +60,6 @@ Future<void> _initProviders() async {
 
 /// Clean up resources
 Future<void> disposeDependencies() async {
-  serviceLocator<ObjectBox>().close();
+  serviceLocator<DatabaseHelper>().close();
   await serviceLocator.reset();
 }

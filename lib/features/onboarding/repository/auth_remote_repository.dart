@@ -41,13 +41,16 @@ class AuthRemoteRepository {
     }
   }
 
-  Future<Either<Failure, void>> resendPhoneOtp({
+  Future<Either<Failure, ResendResponse>> resendPhoneOtp({
     required String mobileNumber,
   }) async {
     try {
       debugPrint(mobileNumber);
-      await supabase.auth.resend(phone: mobileNumber, type: OtpType.sms);
-      return Right(null);
+      final res = await supabase.auth.resend(
+        phone: mobileNumber,
+        type: OtpType.sms,
+      );
+      return Right(res);
     } on SocketException {
       return Left(Failure("No internet connection"));
     } catch (e) {
@@ -95,11 +98,13 @@ class AuthRemoteRepository {
     }
   }
 
-  Future<Either<Failure, void>> resendEmailOtp({required String email}) async {
+  Future<Either<Failure, ResendResponse>> resendEmailOtp({
+    required String email,
+  }) async {
     try {
       debugPrint(email);
-      await supabase.auth.resend(email: email, type: OtpType.email);
-      return Right(null);
+      final res = await supabase.auth.resend(email: email, type: OtpType.email);
+      return Right(res);
     } on SocketException {
       return Left(Failure("No internet connection"));
     } catch (e) {

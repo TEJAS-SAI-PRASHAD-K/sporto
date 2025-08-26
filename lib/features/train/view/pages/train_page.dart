@@ -190,7 +190,7 @@ class _TrainPageState extends State<TrainPage> {
 
                   // Trainers grid
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
                     sliver: SliverGrid(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -216,37 +216,28 @@ class _TrainPageState extends State<TrainPage> {
 
                   // FAQs Button
                   SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 12,
-                      ),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => HelpAndSupportPage(),
-                              ),
-                            );
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: theme.colorScheme.onSurface,
-                            textStyle: theme.textTheme.bodyLarge,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(9),
-                              side: BorderSide(
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => HelpAndSupportPage(),
                           ),
-                          child: const Text('FAQs'),
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: theme.colorScheme.onInverseSurface,
+                        backgroundColor: theme.colorScheme.primary,
+                        textStyle: theme.textTheme.bodyLarge,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(9),
+                          side: BorderSide(color: theme.colorScheme.primary),
                         ),
                       ),
+                      child: const Text('FAQs'),
                     ),
                   ),
+                  SliverToBoxAdapter(child: SizedBox(height: 12)),
                 ],
               ),
             ),

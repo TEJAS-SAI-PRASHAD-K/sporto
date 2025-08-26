@@ -9,6 +9,9 @@ class CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final chipBackground = theme.colorScheme.surfaceContainerHighest;
+    final chipTextColor = theme.textTheme.bodyMedium?.color;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -16,7 +19,7 @@ class CategoryChip extends StatelessWidget {
         width: 92,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: category.background,
+          color: chipBackground,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -31,7 +34,10 @@ class CategoryChip extends StatelessWidget {
             Text(
               category.name,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: chipTextColor,
+                fontWeight: FontWeight.bold,
+              ),
               maxLines: 2,
             ),
           ],

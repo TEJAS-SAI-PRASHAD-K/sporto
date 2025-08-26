@@ -17,8 +17,9 @@ class TrainerDetailsPage extends StatelessWidget {
             actions: [
               IconButton(
                 icon: const Icon(Icons.share),
-                onPressed: () =>
-                    Share.share('Check out ${trainer.name} on Playo'),
+                onPressed: () async {
+                  await Share.share('Check out ${trainer.name} on Playo');
+                },
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(

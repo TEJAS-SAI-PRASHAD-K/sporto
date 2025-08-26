@@ -51,19 +51,19 @@ class TrainViewModel extends ChangeNotifier {
       id: 'nutrition',
       name: 'Nutrition',
       imageAsset: 'assets/images/default.png',
-      background: const Color(0xFFE7F6D8),
+      background: ServiceCategory.generateColorForCategory('Nutrition'),
     ),
     ServiceCategory(
       id: 'yoga',
       name: 'Yoga',
       imageAsset: 'assets/images/boy_1.png',
-      background: const Color(0xFFE9F8D8),
+      background: ServiceCategory.generateColorForCategory('Yoga'),
     ),
     ServiceCategory(
       id: 'fitness',
       name: 'Fitness Trainer',
       imageAsset: 'assets/images/boy_5.png',
-      background: const Color(0xFFE4F5D8),
+      background: ServiceCategory.generateColorForCategory('Fitness Trainer'),
     ),
   ];
 
@@ -135,8 +135,20 @@ class TrainViewModel extends ChangeNotifier {
     ),
   ];
 
+  String? _selectedFilter;
+
   List<ServiceCategory> get categories => List.unmodifiable(_categories);
   List<Trainer> get trainers => List.unmodifiable(_trainers);
+  String get selectedFilter => _selectedFilter ?? '';
+
+  void selectFilter(String filter) {
+    if (_selectedFilter == filter) {
+      _selectedFilter = null;
+    } else {
+      _selectedFilter = filter;
+    }
+    notifyListeners();
+  }
 
   List<Trainer> filteredByCategory(String? categoryId) {
     // Static demo: return all. In a real app, filter by category.

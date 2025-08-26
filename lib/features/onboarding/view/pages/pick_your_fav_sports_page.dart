@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/core/widgets/bottom_navigation_bar.dart';
+import 'package:playo/features/onboarding/viewmodel/auth_view_model.dart';
 
-class PickYourFavSportsPage extends StatefulWidget {
+class PickYourFavSportsPage extends ConsumerStatefulWidget {
   const PickYourFavSportsPage({super.key});
 
   @override
-  State<PickYourFavSportsPage> createState() => _PickYourFavSportsPageState();
+  ConsumerState<PickYourFavSportsPage> createState() =>
+      _PickYourFavSportsPageState();
 }
 
 class Sport {
@@ -15,7 +18,7 @@ class Sport {
   Sport({required this.name, required this.image});
 }
 
-class _PickYourFavSportsPageState extends State<PickYourFavSportsPage> {
+class _PickYourFavSportsPageState extends ConsumerState<PickYourFavSportsPage> {
   List<String> selectedSports = [];
 
   final List<Sport> allSports = [
@@ -211,12 +214,25 @@ class _PickYourFavSportsPageState extends State<PickYourFavSportsPage> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (builder) => BottomNavBar()),
-                        (Route<dynamic> route) => false,
-                      );
+                    onPressed: () async {
+                      try {
+                        // Save selected sports to user profile
+                        await ref
+                            .read(authViewModelProvider.notifier)
+                            .updateUserSports(preferredSports: selectedSports);
+
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (builder) => const BottomNavBar(),
+                          ),
+                          (Route<dynamic> route) => false,
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,

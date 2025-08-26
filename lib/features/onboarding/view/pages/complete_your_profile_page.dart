@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/features/onboarding/view/pages/avatar_selection_page.dart';
+import 'package:playo/features/onboarding/viewmodel/auth_view_model.dart';
 
-class CompleteYourProfile extends StatefulWidget {
+class CompleteYourProfile extends ConsumerStatefulWidget {
   const CompleteYourProfile({super.key});
 
   @override
-  State<CompleteYourProfile> createState() => _CompleteYourProfileState();
+  ConsumerState<CompleteYourProfile> createState() =>
+      _CompleteYourProfileState();
 }
 
-class _CompleteYourProfileState extends State<CompleteYourProfile> {
+class _CompleteYourProfileState extends ConsumerState<CompleteYourProfile> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -105,12 +108,12 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
                           borderRadius: BorderRadius.circular(9),
                         ),
                       ),
-                      // validator: (value) {
-                      //   if (value == null || value.trim().isEmpty) {
-                      //     return 'First name is required';
-                      //   }
-                      //   return null;
-                      // },
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'First name is required';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 20),
 
@@ -140,14 +143,30 @@ class _CompleteYourProfileState extends State<CompleteYourProfile> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AvatarSelectionPage(),
-                            ),
-                          );
-                          // }
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              // Update user profile with name
+                              await ref
+                                  .read(authViewModelProvider.notifier)
+                                  .updateUserNames(
+                                    firstName: _firstNameController.text.trim(),
+                                    lastName: _lastNameController.text.trim(),
+                                  );
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const AvatarSelectionPage(),
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error: $e')),
+                              );
+                            }
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(

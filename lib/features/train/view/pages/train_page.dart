@@ -216,25 +216,34 @@ class _TrainPageState extends State<TrainPage> {
 
                   // FAQs Button
                   SliverToBoxAdapter(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => HelpAndSupportPage(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => HelpAndSupportPage(),
+                              ),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: theme.colorScheme.onInverseSurface,
+                            backgroundColor: theme.colorScheme.primary,
+                            textStyle: theme.textTheme.bodyLarge,
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(9),
+                              side: BorderSide(
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
                           ),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: theme.colorScheme.onInverseSurface,
-                        backgroundColor: theme.colorScheme.primary,
-                        textStyle: theme.textTheme.bodyLarge,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(9),
-                          side: BorderSide(color: theme.colorScheme.primary),
+                          child: const Text('FAQs'),
                         ),
                       ),
-                      child: const Text('FAQs'),
                     ),
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: 12)),

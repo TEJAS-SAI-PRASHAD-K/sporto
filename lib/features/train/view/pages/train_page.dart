@@ -238,7 +238,7 @@ class _TrainPageState extends State<TrainPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(9),
                               side: BorderSide(
-                                color: theme.colorScheme.onSurface,
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                           ),

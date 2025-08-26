@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:playo/core/providers/current_user_provider.dart';
 import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
 
 /// Shows a sign out confirmation dialog
@@ -24,21 +26,31 @@ Future<void> showSignOutDialog(BuildContext context) async {
               Navigator.of(context).pop();
             },
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close dialog first
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const OnboardingPage()),
-                (Route<dynamic> route) => false,
+          Consumer(
+            builder: (context, ref, child) {
+              final currentUserNotifier = ref.watch(
+                currentUserNotifierProvider.notifier,
+              );
+              return TextButton(
+                onPressed: () async {
+                  await currentUserNotifier.logout();
+                  Navigator.of(context).pop(); // Close dialog first
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const OnboardingPage(),
+                    ),
+                    (Route<dynamic> route) => false,
+                  );
+                },
+                child: Text(
+                  'Sign Out',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
               );
             },
-            child: Text(
-              'Sign Out',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: Theme.of(context).colorScheme.error,
-              ),
-            ),
           ),
         ],
       );

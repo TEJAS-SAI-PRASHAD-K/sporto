@@ -1,30 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/core/common/pages/alerts_page.dart';
 import 'package:playo/core/common/pages/conversations/conversations_page.dart';
+import 'package:playo/core/models/user.dart';
+import 'package:playo/core/providers/current_user_provider.dart';
+import 'package:playo/core/services/geo_location_service.dart';
 
-class MainAppBar extends StatefulWidget implements PreferredSizeWidget {
+class MainAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
   const MainAppBar({super.key});
 
   @override
-  State<MainAppBar> createState() => _MainAppBarState();
+  ConsumerState<MainAppBar> createState() => _MainAppBarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class _MainAppBarState extends State<MainAppBar> {
-  String currentLocation =
-      "Current Location"; // You can update this with actual location
+class _MainAppBarState extends ConsumerState<MainAppBar> {
+  String currentLocation = "Current Location";
+  bool _isLocationLoaded = false;
+
+  Future<void> getLocationFromDb(User user) async {
+    if (user.latitude != null && user.longitude != null && !_isLocationLoaded) {
+      try {
+        final loc = await GeoLocationService.getPlacemarkFromCoordinates(
+          user.latitude!,
+          user.longitude!,
+        );
+        if (mounted) {
+          setState(() {
+            currentLocation = "${loc.first.subLocality}, ${loc.first.locality}";
+            _isLocationLoaded = true;
+          });
+        }
+      } catch (e) {
+        debugPrint('Error getting location: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(currentUserNotifierProvider);
+
+    // Load location when user data is available
+    if (user != null && !_isLocationLoaded) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        getLocationFromDb(user);
+      });
+    }
+
     return AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
       title: GestureDetector(
         onTap: () {
           // Handle location selection
-          _showLocationPicker(context);
+          _showLocationPicker(context, user!);
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +119,7 @@ class _MainAppBarState extends State<MainAppBar> {
     );
   }
 
-  void _showLocationPicker(BuildContext context) {
+  void _showLocationPicker(BuildContext context, User user) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -106,7 +139,7 @@ class _MainAppBarState extends State<MainAppBar> {
                 decoration: BoxDecoration(
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.3),
+                  ).colorScheme.onSurface.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -120,6 +153,26 @@ class _MainAppBarState extends State<MainAppBar> {
               const SizedBox(height: 16),
 
               // Current Location Option
+              TextField(
+                decoration: InputDecoration(
+                  hintText: "Search by Sport",
+                  suffixIcon: Icon(
+                    Iconsax.search_normal_1_copy,
+                    color: Theme.of(context).colorScheme.outline,
+                    size: 18,
+                  ),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainer,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
               ListTile(
                 leading: Icon(
                   Icons.my_location,
@@ -131,14 +184,30 @@ class _MainAppBarState extends State<MainAppBar> {
                   Icons.gps_fixed,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                onTap: () {
+                onTap: () async {
+                  final pos = await GeoLocationService.determinePosition();
+                  final loc =
+                      await GeoLocationService.getPlacemarkFromCoordinates(
+                        pos.latitude,
+                        pos.longitude,
+                      );
+                  ref
+                      .read(currentUserNotifierProvider.notifier)
+                      .createOrUpdateUser(
+                        email: user.email,
+                        fullName: user.fullName,
+                        city: loc.first.locality,
+                        userState: loc.first.administrativeArea,
+                        country: loc.first.country,
+                        latitude: pos.latitude,
+                        longitude: pos.longitude,
+                      );
                   setState(() {
-                    currentLocation = "Current Location";
+                    currentLocation =
+                        "${loc.first.subLocality}, ${loc.first.locality}";
+                    debugPrint(currentLocation);
                   });
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Using current location')),
-                  );
                 },
               ),
 
@@ -166,23 +235,6 @@ class _MainAppBarState extends State<MainAppBar> {
                     currentLocation = "Mumbai, Maharashtra";
                   });
                   Navigator.pop(context);
-                },
-              ),
-
-              const Divider(),
-
-              // Search for location
-              ListTile(
-                leading: const Icon(Icons.search),
-                title: const Text('Search for a location'),
-                onTap: () {
-                  Navigator.pop(context);
-                  // Here you can implement location search functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Location search will be implemented'),
-                    ),
-                  );
                 },
               ),
 

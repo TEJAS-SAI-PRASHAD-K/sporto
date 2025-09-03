@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:playo/core/common/widgets/main_app_bar.dart';
+import 'package:playo/features/home/view/pages/weekly_fit_goal_page.dart';
 import '../widgets/create_game_card.dart';
 import '../widgets/home_tile.dart';
 import '../widgets/corporate_banner.dart';
@@ -41,7 +42,14 @@ class _HomePageState extends State<HomePage> {
                 ),
                 subtitle: const Text('Keep yourself fit!'),
                 trailing: const Icon(Icons.chevron_right_rounded, size: 32),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WeeklyFitGoalPage(),
+                    ),
+                  );
+                },
               ),
             ),
             const CreateGameCard(),

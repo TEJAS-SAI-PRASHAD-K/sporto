@@ -7,7 +7,6 @@ part of 'venue.dart';
 // **************************************************************************
 
 Venue _$VenueFromJson(Map<String, dynamic> json) => Venue(
-  localId: (json['localId'] as num?)?.toInt() ?? 0,
   id: json['id'] as String,
   ownerId: json['ownerId'] as String,
   name: json['name'] as String,
@@ -21,7 +20,6 @@ Venue _$VenueFromJson(Map<String, dynamic> json) => Venue(
   longitude: (json['longitude'] as num).toDouble(),
   phone: json['phone'] as String?,
   email: json['email'] as String?,
-  website: json['website'] as String?,
   images:
       (json['images'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
@@ -31,14 +29,6 @@ Venue _$VenueFromJson(Map<String, dynamic> json) => Venue(
       const [],
   amenities:
       (json['amenities'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
-  facilities:
-      (json['facilities'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
-  equipment:
-      (json['equipment'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
   rules:
       (json['rules'] as List<dynamic>?)?.map((e) => e as String).toList() ??
@@ -55,13 +45,7 @@ Venue _$VenueFromJson(Map<String, dynamic> json) => Venue(
   totalReviews: (json['totalReviews'] as num?)?.toInt() ?? 0,
   totalBookings: (json['totalBookings'] as num?)?.toInt() ?? 0,
   isActive: json['isActive'] as bool? ?? true,
-  isVerified: json['isVerified'] as bool? ?? false,
-  allowsOnlineBooking: json['allowsOnlineBooking'] as bool? ?? true,
-  requiresApproval: json['requiresApproval'] as bool? ?? false,
   cancellationHours: (json['cancellationHours'] as num?)?.toDouble(),
-  tags:
-      (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
@@ -71,7 +55,6 @@ Venue _$VenueFromJson(Map<String, dynamic> json) => Venue(
 )..dbType = (json['dbType'] as num?)?.toInt();
 
 Map<String, dynamic> _$VenueToJson(Venue instance) => <String, dynamic>{
-  'localId': instance.localId,
   'id': instance.id,
   'ownerId': instance.ownerId,
   'name': instance.name,
@@ -85,13 +68,10 @@ Map<String, dynamic> _$VenueToJson(Venue instance) => <String, dynamic>{
   'longitude': instance.longitude,
   'phone': instance.phone,
   'email': instance.email,
-  'website': instance.website,
   'images': instance.images,
   'primaryImage': instance.primaryImage,
   'sportIds': instance.sportIds,
   'amenities': instance.amenities,
-  'facilities': instance.facilities,
-  'equipment': instance.equipment,
   'rules': instance.rules,
   'openingHours': instance.openingHours,
   'closingHours': instance.closingHours,
@@ -102,11 +82,7 @@ Map<String, dynamic> _$VenueToJson(Venue instance) => <String, dynamic>{
   'totalReviews': instance.totalReviews,
   'totalBookings': instance.totalBookings,
   'isActive': instance.isActive,
-  'isVerified': instance.isVerified,
-  'allowsOnlineBooking': instance.allowsOnlineBooking,
-  'requiresApproval': instance.requiresApproval,
   'cancellationHours': instance.cancellationHours,
-  'tags': instance.tags,
   'createdAt': instance.createdAt?.toIso8601String(),
   'updatedAt': instance.updatedAt?.toIso8601String(),
 };
@@ -123,7 +99,6 @@ const _$VenueTypeEnumMap = {
 };
 
 Court _$CourtFromJson(Map<String, dynamic> json) => Court(
-  localId: (json['localId'] as num?)?.toInt() ?? 0,
   id: json['id'] as String,
   venueId: json['venueId'] as String,
   name: json['name'] as String,
@@ -139,7 +114,6 @@ Court _$CourtFromJson(Map<String, dynamic> json) => Court(
   equipment:
       (json['equipment'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
-  isActive: json['isActive'] as bool? ?? true,
   isBookable: json['isBookable'] as bool? ?? true,
   hourlyRate: (json['hourlyRate'] as num?)?.toDouble(),
   currency: json['currency'] as String?,
@@ -155,7 +129,6 @@ Court _$CourtFromJson(Map<String, dynamic> json) => Court(
 )..dbType = (json['dbType'] as num?)?.toInt();
 
 Map<String, dynamic> _$CourtToJson(Court instance) => <String, dynamic>{
-  'localId': instance.localId,
   'id': instance.id,
   'venueId': instance.venueId,
   'name': instance.name,
@@ -166,7 +139,6 @@ Map<String, dynamic> _$CourtToJson(Court instance) => <String, dynamic>{
   'surface': instance.surface,
   'features': instance.features,
   'equipment': instance.equipment,
-  'isActive': instance.isActive,
   'isBookable': instance.isBookable,
   'hourlyRate': instance.hourlyRate,
   'currency': instance.currency,

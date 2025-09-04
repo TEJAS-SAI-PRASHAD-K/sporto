@@ -7,9 +7,6 @@ part 'venue.g.dart';
 @JsonSerializable()
 class Venue {
   
-  int localId;
-
-  
   String id;
   String ownerId; // References User.id
   String name;
@@ -23,13 +20,10 @@ class Venue {
   double longitude;
   String? phone;
   String? email;
-  String? website;
   List<String> images;
   String? primaryImage;
   List<String> sportIds;
   List<String> amenities;
-  List<String> facilities;
-  List<String> equipment;
   List<String> rules;
   String? openingHours; // JSON string of operating hours
   String? closingHours;
@@ -56,18 +50,13 @@ class Venue {
   int totalReviews;
   int totalBookings;
   bool isActive;
-  bool isVerified;
-  bool allowsOnlineBooking;
-  bool requiresApproval;
   double? cancellationHours; // hours before booking can be cancelled
-  List<String> tags;
   
   DateTime? createdAt;
   
   DateTime? updatedAt;
 
   Venue({
-    this.localId = 0,
     required this.id,
     required this.ownerId,
     required this.name,
@@ -81,13 +70,10 @@ class Venue {
     required this.longitude,
     this.phone,
     this.email,
-    this.website,
     this.images = const [],
     this.primaryImage,
     this.sportIds = const [],
     this.amenities = const [],
-    this.facilities = const [],
-    this.equipment = const [],
     this.rules = const [],
     this.openingHours,
     this.closingHours,
@@ -97,11 +83,7 @@ class Venue {
     this.totalReviews = 0,
     this.totalBookings = 0,
     this.isActive = true,
-    this.isVerified = false,
-    this.allowsOnlineBooking = true,
-    this.requiresApproval = false,
     this.cancellationHours,
-    this.tags = const [],
     this.createdAt,
     this.updatedAt,
   }) {
@@ -180,10 +162,7 @@ enum VenueType {
 
 @JsonSerializable()
 class Court {
-  
-  int localId;
 
-  
   String id;
   String venueId;
   String name;
@@ -210,7 +189,6 @@ class Court {
   String? surface; // grass, concrete, clay, synthetic
   List<String> features;
   List<String> equipment;
-  bool isActive;
   bool isBookable;
   double? hourlyRate;
   String? currency;
@@ -221,7 +199,6 @@ class Court {
   DateTime? updatedAt;
 
   Court({
-    this.localId = 0,
     required this.id,
     required this.venueId,
     required this.name,
@@ -231,7 +208,6 @@ class Court {
     this.surface,
     this.features = const [],
     this.equipment = const [],
-    this.isActive = true,
     this.isBookable = true,
     this.hourlyRate,
     this.currency,

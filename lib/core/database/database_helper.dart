@@ -7,7 +7,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static const String _databaseName = 'playo_local.db';
-  static const int _databaseVersion = 1;
+  static const int _databaseVersion = 2;
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -38,15 +38,61 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Handle database schema upgrades here
+    // Apply additive migrations to keep local cache in sync with models
     if (oldVersion < newVersion) {
-      await _createTables(db);
+      await _migrateSchema(db);
+      await _createTables(db); // ensure tables exist for fresh installs
     }
+  }
+
+  Future<bool> _columnExists(Database db, String table, String column) async {
+    final res = await db.rawQuery(
+      "PRAGMA table_info($table)",
+    );
+    for (final row in res) {
+      if ((row['name'] as String?)?.toLowerCase() == column.toLowerCase()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<void> _addColumnIfMissing(
+    Database db,
+    String table,
+    String columnName,
+    String columnTypeAndDefault,
+  ) async {
+    final exists = await _columnExists(db, table, columnName);
+    if (!exists) {
+      try {
+        await db.execute(
+          'ALTER TABLE ' + table + ' ADD COLUMN ' + columnName + ' ' + columnTypeAndDefault,
+        );
+      } catch (_) {
+        // Ignore if ALTER fails for any reason; better to be lenient for cache
+      }
+    }
+  }
+
+  Future<void> _migrateSchema(Database db) async {
+    // Users: add new-model columns if missing
+    await _addColumnIfMissing(db, 'users', 'location_area', 'TEXT');
+    await _addColumnIfMissing(db, 'users', 'karma_score', 'INTEGER DEFAULT 0');
+    await _addColumnIfMissing(db, 'users', 'games_played_count', 'INTEGER DEFAULT 0');
+    await _addColumnIfMissing(db, 'users', 'playpals_user_ids', 'TEXT');
+    await _addColumnIfMissing(db, 'users', 'booked_sessions_ids', 'TEXT');
+    await _addColumnIfMissing(db, 'users', 'blocked_user_ids', 'TEXT');
+
+    // User preferences: add new columns alongside existing ones
+    await _addColumnIfMissing(db, 'user_preferences', 'app_theme', 'TEXT DEFAULT \'' + 'dark' + '\'');
+    await _addColumnIfMissing(db, 'user_preferences', 'preferred_language', 'TEXT DEFAULT \'' + 'en' + '\'');
+    await _addColumnIfMissing(db, 'user_preferences', 'search_radius_km', 'REAL');
   }
 
   Future<void> _createTables(Database db) async {
     // Users table
-    await db.execute('''
+  await db.execute('''
       CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         email TEXT NOT NULL,
@@ -54,50 +100,61 @@ class DatabaseHelper {
         full_name TEXT NOT NULL,
         first_name TEXT,
         last_name TEXT,
-        profile_picture_url TEXT,
-        role TEXT DEFAULT 'player',
-        auth_provider TEXT DEFAULT 'email',
-        subscription_status TEXT DEFAULT 'free',
+    profile_picture_url TEXT,
+    role TEXT DEFAULT 'user',
+    auth_provider TEXT, -- legacy
+    subscription_status TEXT, -- legacy
         bio TEXT,
-        date_of_birth TEXT,
+    date_of_birth TEXT, -- legacy
         gender TEXT,
+    location_area TEXT,
         city TEXT,
         state TEXT,
         country TEXT,
         latitude REAL,
         longitude REAL,
-        preferred_sports TEXT, -- JSON array as string
-        subscription_expires_at TEXT,
+    preferred_sports TEXT, -- JSON array as string (maps to favorite_sports)
+    playpals_user_ids TEXT, -- JSON array as string
+    booked_sessions_ids TEXT, -- JSON array as string
+    blocked_user_ids TEXT, -- JSON array as string
+    karma_score INTEGER DEFAULT 0,
+    games_played_count INTEGER DEFAULT 0,
+    subscription_expires_at TEXT, -- legacy
         is_active INTEGER DEFAULT 1,
         is_email_verified INTEGER DEFAULT 0,
         is_phone_verified INTEGER DEFAULT 0,
         is_profile_completed INTEGER DEFAULT 0,
-        fcm_token TEXT,
-        last_active_at TEXT,
-        is_online INTEGER DEFAULT 0,
+    fcm_token TEXT, -- legacy
+    last_active_at TEXT, -- legacy
+    is_online INTEGER DEFAULT 0, -- legacy
         created_at TEXT,
         updated_at TEXT
       )
     ''');
 
     // User preferences table
-    await db.execute('''
+  await db.execute('''
       CREATE TABLE IF NOT EXISTS user_preferences (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        notifications_enabled INTEGER DEFAULT 1,
-        game_invites_enabled INTEGER DEFAULT 1,
-        promotional_emails_enabled INTEGER DEFAULT 1,
-        location_sharing_enabled INTEGER DEFAULT 1,
-        theme_mode TEXT DEFAULT 'system',
-        language TEXT DEFAULT 'en',
-        distance_unit TEXT DEFAULT 'km',
-        time_format TEXT DEFAULT '24h',
-        search_radius REAL DEFAULT 10.0,
-        default_skill_level TEXT DEFAULT 'intermediate',
-        created_at TEXT,
-        updated_at TEXT,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    notifications_enabled INTEGER DEFAULT 1,
+    game_invites_enabled INTEGER DEFAULT 1,
+    promotional_emails_enabled INTEGER DEFAULT 1,
+    location_sharing_enabled INTEGER DEFAULT 1,
+    -- New-model aligned fields (kept alongside legacy for compatibility)
+    app_theme TEXT DEFAULT 'dark',
+    preferred_language TEXT DEFAULT 'en',
+    distance_unit TEXT DEFAULT 'km',
+    time_format TEXT DEFAULT '24h',
+    search_radius_km REAL,
+    -- Legacy fields kept for migration/read-compat
+    theme_mode TEXT,
+    language TEXT,
+    search_radius REAL,
+    default_skill_level TEXT,
+    created_at TEXT,
+    updated_at TEXT,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
       )
     ''');
 

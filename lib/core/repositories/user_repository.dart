@@ -28,10 +28,10 @@ class UserRepository {
       final response = await supabase
           .from('users')
           .select()
-          .eq('id', userId)
+          .eq('user_id', userId)
           .single();
 
-      final user = app_user.User.fromDatabaseJson(response);
+      final user = app_user.User.fromJson(response);
       return Right(user);
     } on SocketException {
       return Left(Failure("No internet connection"));
@@ -52,27 +52,12 @@ class UserRepository {
     app_user.User user,
   ) async {
     try {
-      // Check if user exists
-      final existingUserResult = await getUserById(user.id);
-
-      late Map<String, dynamic> response;
-
-      if (existingUserResult.isRight()) {
-        // User exists, update
-        response = await supabase
-            .from('users')
-            .update(user.toJson())
-            .eq('id', user.id)
-            .select()
-            .single();
-      } else {
-        // User doesn't exist, create
-        response = await supabase
-            .from('users')
-            .insert(user.toJson())
-            .select()
-            .single();
-      }
+      // Upsert avoids a pre-select and works with both insert/update when RLS allows both
+      final response = await supabase
+          .from('users')
+          .upsert(user.toJson(), onConflict: 'user_id')
+          .select()
+          .single();
 
       final savedUser = app_user.User.fromJson(response);
       return Right(savedUser);
@@ -92,7 +77,7 @@ class UserRepository {
       final response = await supabase
           .from('users')
           .update(user.toJson())
-          .eq('id', user.id)
+          .eq('user_id', user.userId)
           .select()
           .single();
 
@@ -111,7 +96,7 @@ class UserRepository {
 
   Future<Either<Failure, void>> deleteUser(String userId) async {
     try {
-      await supabase.from('users').delete().eq('id', userId);
+      await supabase.from('users').delete().eq('user_id', userId);
 
       return Right(null);
     } on SocketException {
@@ -132,7 +117,7 @@ class UserRepository {
       final response = await supabase
           .from('users')
           .select()
-          .eq('role', role.name);
+          .eq('user_role', role.name);
 
       final users = (response as List)
           .map((userData) => app_user.User.fromJson(userData))
@@ -163,7 +148,7 @@ class UserRepository {
 
       if (query != null && query.isNotEmpty) {
         queryBuilder = queryBuilder.or(
-          'full_name.ilike.%$query%,first_name.ilike.%$query%,last_name.ilike.%$query%',
+          'first_name.ilike.%$query%,last_name.ilike.%$query%',
         );
       }
 
@@ -176,7 +161,7 @@ class UserRepository {
       }
 
       if (sportIds != null && sportIds.isNotEmpty) {
-        queryBuilder = queryBuilder.overlaps('preferred_sports', sportIds);
+        queryBuilder = queryBuilder.overlaps('favorite_sports', sportIds);
       }
 
       // Apply limit and range
@@ -207,10 +192,11 @@ class UserRepository {
       await supabase
           .from('users')
           .update({
-            'last_active_at': DateTime.now().toIso8601String(),
-            'is_online': true,
+            // TODO: add last_active_at/is_online columns if needed in schema
+            // Keeping method for compatibility; no-op update to avoid errors if columns don't exist
+            'updated_at': DateTime.now().toIso8601String(),
           })
-          .eq('id', userId);
+          .eq('user_id', userId);
 
       return Right(null);
     } on SocketException {
@@ -229,13 +215,11 @@ class UserRepository {
     required bool isOnline,
   }) async {
     try {
-      final updateData = <String, dynamic>{'is_online': isOnline};
-
-      if (!isOnline) {
-        updateData['last_active_at'] = DateTime.now().toIso8601String();
-      }
-
-      await supabase.from('users').update(updateData).eq('id', userId);
+      // TODO: add is_online/last_active_at if needed; update updated_at for now
+      final updateData = <String, dynamic>{
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      await supabase.from('users').update(updateData).eq('user_id', userId);
 
       return Right(null);
     } on SocketException {

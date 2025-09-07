@@ -7,6 +7,7 @@ import 'package:playo/features/onboarding/providers/auth_state_provider.dart';
 import 'package:playo/features/onboarding/view/pages/complete_your_profile_page.dart';
 import 'package:playo/features/onboarding/view/widgets/otp_input_row.dart';
 import 'package:playo/features/onboarding/viewmodel/auth_view_model.dart';
+import 'package:playo/core/providers/current_user_provider.dart';
 
 const double _pagePadding = 16.0;
 const double _buttonHeight = 48.0;
@@ -86,13 +87,24 @@ class _PhoneOtpPageContentState extends ConsumerState<PhoneOtpPageContent> {
           next?.when(
             data: (_) {
               Navigator.of(context).pop(); // Close the modal
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (builder) => const CompleteYourProfile(),
-                ),
-                (Route<dynamic> route) => false,
-              );
+              // Decide next route based on whether profile is partially filled
+              final currentUser = ref.read(currentUserNotifierProvider);
+              final needsProfile =
+                  currentUser == null ||
+                  (currentUser.firstName.isEmpty ||
+                      (currentUser.favoriteSports == null ||
+                          currentUser.favoriteSports!.isEmpty));
+              if (needsProfile) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (builder) => const CompleteYourProfile(),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+              } else {
+                Navigator.of(context).pop();
+              }
             },
             error: (error, st) {
               showSnackBar(context, error.toString(), SnackBarType.error);

@@ -194,13 +194,15 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
                   ref
                       .read(currentUserNotifierProvider.notifier)
                       .createOrUpdateUser(
-                        email: user.email,
-                        fullName: user.fullName,
+                        emailAddress: user.emailAddress,
+                        firstName: user.firstName,
                         city: loc.first.locality,
                         userState: loc.first.administrativeArea,
                         country: loc.first.country,
                         latitude: pos.latitude,
                         longitude: pos.longitude,
+                        
+                        
                       );
                   setState(() {
                     currentLocation =

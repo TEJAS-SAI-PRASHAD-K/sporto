@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:playo/features/onboarding/repository/auth_remote_repository.dart';
 import 'package:playo/core/providers/current_user_provider.dart';
-import 'package:playo/core/models/user.dart';
 
 part 'auth_view_model.g.dart';
 
@@ -96,17 +95,12 @@ class AuthViewModel extends _$AuthViewModel {
         final isEmail = emailOrPhone.contains('@');
 
         await _currentUserNotifier.createOrUpdateUser(
-          email: isEmail ? emailOrPhone : (user.email ?? ''),
-          fullName:
-              user.userMetadata?['full_name'] ??
+          emailAddress: isEmail ? emailOrPhone : (user.email ?? ''),
+          firstName:
+              user.userMetadata?['firstName'] ??
               user.userMetadata?['name'] ??
-              'User', // Default name
-          phone: !isEmail ? emailOrPhone : user.phone,
-          authProvider: isEmail
-              ? AuthProvider.email
-              : AuthProvider.email, // Update when you add phone provider
-          role: UserRole.player,
-          subscriptionStatus: SubscriptionStatus.free,
+              'User',
+          mobileNumber: !isEmail ? emailOrPhone : user.phone,
         );
       }
     } catch (e) {
@@ -123,7 +117,6 @@ class AuthViewModel extends _$AuthViewModel {
       await _currentUserNotifier.updateUserProfile(
         firstName: firstName,
         lastName: lastName,
-        fullName: '$firstName $lastName',
       );
     } catch (e) {
       rethrow;
@@ -133,7 +126,7 @@ class AuthViewModel extends _$AuthViewModel {
   Future<void> updateUserAvatar({required String profilePictureUrl}) async {
     try {
       await _currentUserNotifier.updateUserProfile(
-        profilePictureUrl: profilePictureUrl,
+        avatarUrl: profilePictureUrl,
       );
     } catch (e) {
       rethrow;
@@ -143,7 +136,7 @@ class AuthViewModel extends _$AuthViewModel {
   Future<void> updateUserSports({required List<String> preferredSports}) async {
     try {
       await _currentUserNotifier.updateUserProfile(
-        preferredSports: preferredSports,
+        favoriteSports: preferredSports,
       );
     } catch (e) {
       rethrow;
@@ -153,7 +146,6 @@ class AuthViewModel extends _$AuthViewModel {
   Future<void> completeProfile({
     required String firstName,
     required String lastName,
-    required DateTime dateOfBirth,
     required String gender,
     required List<String> preferredSports,
     String? bio,
@@ -165,14 +157,12 @@ class AuthViewModel extends _$AuthViewModel {
       await _currentUserNotifier.updateUserProfile(
         firstName: firstName,
         lastName: lastName,
-        fullName: '$firstName $lastName',
         bio: bio,
-        dateOfBirth: dateOfBirth,
         gender: gender,
         city: city,
         userState: state,
         country: country,
-        preferredSports: preferredSports,
+        favoriteSports: preferredSports,
       );
     } catch (e) {
       // Handle error appropriately

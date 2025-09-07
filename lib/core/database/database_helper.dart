@@ -7,7 +7,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static const String _databaseName = 'playo_local.db';
-  static const int _databaseVersion = 2;
+  static const int _databaseVersion = 1; // Initial version
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -29,7 +29,8 @@ class DatabaseHelper {
       path,
       version: _databaseVersion,
       onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
+      // If an older dev db exists with a higher version, drop & recreate
+      onDowngrade: onDatabaseDowngradeDelete,
     );
   }
 
@@ -37,62 +38,11 @@ class DatabaseHelper {
     await _createTables(db);
   }
 
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Apply additive migrations to keep local cache in sync with models
-    if (oldVersion < newVersion) {
-      await _migrateSchema(db);
-      await _createTables(db); // ensure tables exist for fresh installs
-    }
-  }
-
-  Future<bool> _columnExists(Database db, String table, String column) async {
-    final res = await db.rawQuery(
-      "PRAGMA table_info($table)",
-    );
-    for (final row in res) {
-      if ((row['name'] as String?)?.toLowerCase() == column.toLowerCase()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  Future<void> _addColumnIfMissing(
-    Database db,
-    String table,
-    String columnName,
-    String columnTypeAndDefault,
-  ) async {
-    final exists = await _columnExists(db, table, columnName);
-    if (!exists) {
-      try {
-        await db.execute(
-          'ALTER TABLE ' + table + ' ADD COLUMN ' + columnName + ' ' + columnTypeAndDefault,
-        );
-      } catch (_) {
-        // Ignore if ALTER fails for any reason; better to be lenient for cache
-      }
-    }
-  }
-
-  Future<void> _migrateSchema(Database db) async {
-    // Users: add new-model columns if missing
-    await _addColumnIfMissing(db, 'users', 'location_area', 'TEXT');
-    await _addColumnIfMissing(db, 'users', 'karma_score', 'INTEGER DEFAULT 0');
-    await _addColumnIfMissing(db, 'users', 'games_played_count', 'INTEGER DEFAULT 0');
-    await _addColumnIfMissing(db, 'users', 'playpals_user_ids', 'TEXT');
-    await _addColumnIfMissing(db, 'users', 'booked_sessions_ids', 'TEXT');
-    await _addColumnIfMissing(db, 'users', 'blocked_user_ids', 'TEXT');
-
-    // User preferences: add new columns alongside existing ones
-    await _addColumnIfMissing(db, 'user_preferences', 'app_theme', 'TEXT DEFAULT \'' + 'dark' + '\'');
-    await _addColumnIfMissing(db, 'user_preferences', 'preferred_language', 'TEXT DEFAULT \'' + 'en' + '\'');
-    await _addColumnIfMissing(db, 'user_preferences', 'search_radius_km', 'REAL');
-  }
+  // No onUpgrade/migrations needed for initial version
 
   Future<void> _createTables(Database db) async {
     // Users table
-  await db.execute('''
+    await db.execute('''
       CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         email TEXT NOT NULL,
@@ -133,7 +83,7 @@ class DatabaseHelper {
     ''');
 
     // User preferences table
-  await db.execute('''
+    await db.execute('''
       CREATE TABLE IF NOT EXISTS user_preferences (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
@@ -158,94 +108,6 @@ class DatabaseHelper {
       )
     ''');
 
-    // User sport profiles table
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS user_sport_profiles (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        sport_name TEXT NOT NULL,
-        skill_level TEXT NOT NULL,
-        years_of_experience INTEGER,
-        position TEXT,
-        achievements TEXT, -- JSON array as string
-        bio TEXT,
-        rating REAL,
-        total_games_played INTEGER DEFAULT 0,
-        total_wins INTEGER DEFAULT 0,
-        total_losses INTEGER DEFAULT 0,
-        preferred_game_type TEXT,
-        certifications TEXT, -- JSON array as string
-        equipment_owned TEXT,
-        is_public INTEGER DEFAULT 1,
-        created_at TEXT,
-        updated_at TEXT,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-        UNIQUE (user_id, sport_name)
-      )
-    ''');
-
-    // User connections table
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS user_connections (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        connected_user_id TEXT NOT NULL,
-        status TEXT DEFAULT 'pending',
-        requested_at TEXT,
-        accepted_at TEXT,
-        blocked_at TEXT,
-        notes TEXT,
-        created_at TEXT,
-        updated_at TEXT,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (connected_user_id) REFERENCES users (id) ON DELETE CASCADE,
-        UNIQUE (user_id, connected_user_id)
-      )
-    ''');
-
-    // Games table (for offline storage)
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS games (
-        id TEXT PRIMARY KEY,
-        organizer_id TEXT NOT NULL,
-        sport_id TEXT NOT NULL,
-        title TEXT NOT NULL,
-        description TEXT,
-        game_type TEXT NOT NULL,
-        skill_level TEXT NOT NULL,
-        status TEXT DEFAULT 'draft',
-        start_time TEXT NOT NULL,
-        end_time TEXT NOT NULL,
-        venue_id TEXT,
-        venue_name TEXT,
-        venue_address TEXT,
-        latitude REAL,
-        longitude REAL,
-        capacity INTEGER NOT NULL,
-        current_players INTEGER DEFAULT 0,
-        max_players INTEGER NOT NULL,
-        entry_fee REAL,
-        price_per_player REAL,
-        currency TEXT DEFAULT 'INR',
-        rules TEXT, -- JSON array as string
-        equipment_provided TEXT, -- JSON array as string
-        equipment_required TEXT, -- JSON array as string
-        is_public INTEGER DEFAULT 1,
-        is_private INTEGER DEFAULT 0,
-        allow_waitlist INTEGER DEFAULT 0,
-        requires_approval INTEGER DEFAULT 0,
-        contact_info TEXT,
-        tags TEXT, -- JSON array as string
-        notes TEXT,
-        rating INTEGER,
-        view_count INTEGER DEFAULT 0,
-        scheduled_date TEXT NOT NULL,
-        created_at TEXT,
-        updated_at TEXT,
-        FOREIGN KEY (organizer_id) REFERENCES users (id)
-      )
-    ''');
-
     // Create indexes for better performance
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)',
@@ -255,21 +117,6 @@ class DatabaseHelper {
     );
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_user_preferences_user_id ON user_preferences(user_id)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_user_sport_profiles_user_id ON user_sport_profiles(user_id)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_user_connections_user_id ON user_connections(user_id)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_games_organizer_id ON games(organizer_id)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_games_start_time ON games(start_time)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_games_status ON games(status)',
     );
 
     debugPrint('SQLite database tables created successfully');
@@ -381,22 +228,5 @@ class DatabaseHelper {
     return await update('user_preferences', preferences);
   }
 
-  // Games methods
-  Future<List<Map<String, dynamic>>> getGamesByUserId(String userId) async {
-    return await query(
-      'games',
-      where: 'organizer_id = ?',
-      whereArgs: [userId],
-      orderBy: 'start_time DESC',
-    );
-  }
-
-  Future<List<Map<String, dynamic>>> getUpcomingGames() async {
-    return await query(
-      'games',
-      where: 'start_time > ? AND status != ?',
-      whereArgs: [DateTime.now().toIso8601String(), 'cancelled'],
-      orderBy: 'start_time ASC',
-    );
-  }
+  // Removed legacy game cache methods
 }

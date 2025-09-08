@@ -1,6 +1,13 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'sport.g.dart';
+
+Sport sportFromJson(String str) => Sport.fromJson(json.decode(str));
+
+String sportToJson(Sport data) => json.encode(data.toJson());
+
 
 @JsonSerializable()
 class Sport {

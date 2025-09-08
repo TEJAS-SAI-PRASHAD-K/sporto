@@ -28,7 +28,7 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
       title: GestureDetector(
         onTap: () {
           // Handle location selection
-          _showLocationPicker(context, user);
+          _showLocationPicker(context, user!);
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +38,7 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
               children: [
                 Flexible(
                   child: Text(
-                    user!.locationArea ?? "Current Location",
+                    user?.locationArea ?? "Current Location",
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.outline,
                       fontSize: 13,

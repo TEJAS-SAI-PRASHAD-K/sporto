@@ -56,9 +56,9 @@ class HomeTile extends StatelessWidget {
               Text(
                 description,
                 textAlign: TextAlign.start,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),

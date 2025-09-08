@@ -33,6 +33,7 @@ Future<void> _initDatabase() async {
 
 /// Initialize core services
 Future<void> _initServices() async {
+  serviceLocator.registerSingleton<http.Client>(Client());
   // Services will be registered here
   // serviceLocator.registerLazySingleton<AuthService>(() => AuthService());
   // serviceLocator.registerLazySingleton<UserService>(() => UserService());

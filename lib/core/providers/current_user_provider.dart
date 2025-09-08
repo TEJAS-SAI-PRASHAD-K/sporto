@@ -361,6 +361,28 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
     }
   }
 
+  /// Fetch any user profile by user ID (not just current user)
+  Future<User?> getUserProfile(String userId) async {
+    try {
+      final result = await _userRepository.getUserById(userId);
+      return result.fold(
+        (failure) {
+          debugPrint('Failed to load user profile: ${failure.message}');
+          return null;
+        },
+        (user) {
+          debugPrint(
+            'User profile loaded: ${_composeFullName(user.firstName, user.lastName)}',
+          );
+          return user;
+        },
+      );
+    } catch (e) {
+      debugPrint('Error loading user profile: $e');
+      return null;
+    }
+  }
+
   // Getters
   bool get isLoggedIn => _supabase.auth.currentUser != null && state != null;
   bool get isAuthenticated => _supabase.auth.currentUser != null;

@@ -1,571 +1,373 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'dart:convert';
 
 part 'venue.g.dart';
 
-/// Venue model for booking sports facilities
+Venue venueFromJson(String str) => Venue.fromJson(json.decode(str));
+
+String venueToJson(Venue data) => json.encode(data.toJson());
 
 @JsonSerializable()
 class Venue {
-  
-  String id;
-  String ownerId; // References User.id
-  String name;
-  String? description;
-  String address;
-  String? city;
-  String? state;
-  String? country;
-  String? zipCode;
-  double latitude;
-  double longitude;
-  String? phone;
-  String? email;
-  List<String> images;
-  String? primaryImage;
-  List<String> sportIds;
-  List<String> amenities;
-  List<String> rules;
-  String? openingHours; // JSON string of operating hours
-  String? closingHours;
-  List<String> nonOperatingDays;
+  @JsonKey(name: "data")
+  final List<Datum> data;
+  @JsonKey(name: "meta")
+  final Meta meta;
 
-  // Store enum as stable int for ObjectBox compatibility
-  
-  VenueType? type;
+  Venue({required this.data, required this.meta});
 
-  // Stable database field for enum storage
-  int? get dbType {
-    return type?.stableId;
-  }
-
-  set dbType(int? value) {
-    if (value == null) {
-      type = null;
-    } else {
-      type = VenueType.fromStableId(value);
-    }
-  }
-
-  double rating;
-  int totalReviews;
-  int totalBookings;
-  bool isActive;
-  double? cancellationHours; // hours before booking can be cancelled
-  
-  DateTime? createdAt;
-  
-  DateTime? updatedAt;
-
-  Venue({
-    required this.id,
-    required this.ownerId,
-    required this.name,
-    this.description,
-    required this.address,
-    this.city,
-    this.state,
-    this.country,
-    this.zipCode,
-    required this.latitude,
-    required this.longitude,
-    this.phone,
-    this.email,
-    this.images = const [],
-    this.primaryImage,
-    this.sportIds = const [],
-    this.amenities = const [],
-    this.rules = const [],
-    this.openingHours,
-    this.closingHours,
-    this.nonOperatingDays = const [],
-    VenueType? type,
-    this.rating = 0.0,
-    this.totalReviews = 0,
-    this.totalBookings = 0,
-    this.isActive = true,
-    this.cancellationHours,
-    this.createdAt,
-    this.updatedAt,
-  }) {
-    this.type = type;
-  }
+  Venue copyWith({List<Datum>? data, Meta? meta}) =>
+      Venue(data: data ?? this.data, meta: meta ?? this.meta);
 
   factory Venue.fromJson(Map<String, dynamic> json) => _$VenueFromJson(json);
+
   Map<String, dynamic> toJson() => _$VenueToJson(this);
 }
 
-enum VenueType {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('outdoor')
-  outdoor,
-  @JsonValue('indoor')
-  indoor,
-  @JsonValue('mixed')
-  mixed,
-  @JsonValue('club')
-  club,
-  @JsonValue('academy')
-  academy,
-  @JsonValue('public')
-  public,
-  @JsonValue('private')
-  private;
+@JsonSerializable()
+class Datum {
+  @JsonKey(name: "id")
+  final int id;
+  @JsonKey(name: "documentId")
+  final String documentId;
+  @JsonKey(name: "venue")
+  final VenueClass venue;
+  @JsonKey(name: "court")
+  final List<Court> court;
+  @JsonKey(name: "createdAt")
+  final DateTime createdAt;
+  @JsonKey(name: "updatedAt")
+  final DateTime updatedAt;
+  @JsonKey(name: "publishedAt")
+  final DateTime publishedAt;
 
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case VenueType.unknown:
-        return 0;
-      case VenueType.outdoor:
-        return 1;
-      case VenueType.indoor:
-        return 2;
-      case VenueType.mixed:
-        return 3;
-      case VenueType.club:
-        return 4;
-      case VenueType.academy:
-        return 5;
-      case VenueType.public:
-        return 6;
-      case VenueType.private:
-        return 7;
-    }
-  }
+  Datum({
+    required this.id,
+    required this.documentId,
+    required this.venue,
+    required this.court,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.publishedAt,
+  });
 
-  static VenueType fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return VenueType.unknown;
-      case 1:
-        return VenueType.outdoor;
-      case 2:
-        return VenueType.indoor;
-      case 3:
-        return VenueType.mixed;
-      case 4:
-        return VenueType.club;
-      case 5:
-        return VenueType.academy;
-      case 6:
-        return VenueType.public;
-      case 7:
-        return VenueType.private;
-      default:
-        return VenueType.unknown;
-    }
-  }
+  Datum copyWith({
+    int? id,
+    String? documentId,
+    VenueClass? venue,
+    List<Court>? court,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    DateTime? publishedAt,
+  }) => Datum(
+    id: id ?? this.id,
+    documentId: documentId ?? this.documentId,
+    venue: venue ?? this.venue,
+    court: court ?? this.court,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    publishedAt: publishedAt ?? this.publishedAt,
+  );
+
+  factory Datum.fromJson(Map<String, dynamic> json) => _$DatumFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DatumToJson(this);
 }
-
-/// Court/Field within a venue
 
 @JsonSerializable()
 class Court {
-
-  String id;
-  String venueId;
-  String name;
-  String? description;
-  String sportId;
-
-  // Store enum as stable int for ObjectBox compatibility
-  
-  CourtType? type;
-
-  // Stable database field for enum storage
-  int? get dbType {
-    return type?.stableId;
-  }
-
-  set dbType(int? value) {
-    if (value == null) {
-      type = null;
-    } else {
-      type = CourtType.fromStableId(value);
-    }
-  }
-
-  String? surface; // grass, concrete, clay, synthetic
-  List<String> features;
-  List<String> equipment;
-  bool isBookable;
-  double? hourlyRate;
-  String? currency;
-  List<String> images;
-  
-  DateTime? createdAt;
-  
-  DateTime? updatedAt;
+  @JsonKey(name: "id")
+  final String id;
+  @JsonKey(name: "venueId")
+  final String venueId;
+  @JsonKey(name: "name")
+  final String name;
+  @JsonKey(name: "description")
+  final String description;
+  @JsonKey(name: "sportId")
+  final String sportId;
+  @JsonKey(name: "type")
+  final String type;
+  @JsonKey(name: "surface")
+  final String surface;
+  @JsonKey(name: "features")
+  final List<String> features;
+  @JsonKey(name: "equipment")
+  final List<String> equipment;
+  @JsonKey(name: "isBookable")
+  final bool isBookable;
+  @JsonKey(name: "hourlyRate")
+  final int hourlyRate;
+  @JsonKey(name: "currency")
+  final String currency;
+  @JsonKey(name: "images")
+  final List<String> images;
+  @JsonKey(name: "createdAt")
+  final DateTime createdAt;
+  @JsonKey(name: "updatedAt")
+  final DateTime updatedAt;
 
   Court({
     required this.id,
     required this.venueId,
     required this.name,
-    this.description,
+    required this.description,
     required this.sportId,
-    CourtType type = CourtType.standard,
-    this.surface,
-    this.features = const [],
-    this.equipment = const [],
-    this.isBookable = true,
-    this.hourlyRate,
-    this.currency,
-    this.images = const [],
-    this.createdAt,
-    this.updatedAt,
-  }) {
-    this.type = type;
-  }
+    required this.type,
+    required this.surface,
+    required this.features,
+    required this.equipment,
+    required this.isBookable,
+    required this.hourlyRate,
+    required this.currency,
+    required this.images,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  Court copyWith({
+    String? id,
+    String? venueId,
+    String? name,
+    String? description,
+    String? sportId,
+    String? type,
+    String? surface,
+    List<String>? features,
+    List<String>? equipment,
+    bool? isBookable,
+    int? hourlyRate,
+    String? currency,
+    List<String>? images,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => Court(
+    id: id ?? this.id,
+    venueId: venueId ?? this.venueId,
+    name: name ?? this.name,
+    description: description ?? this.description,
+    sportId: sportId ?? this.sportId,
+    type: type ?? this.type,
+    surface: surface ?? this.surface,
+    features: features ?? this.features,
+    equipment: equipment ?? this.equipment,
+    isBookable: isBookable ?? this.isBookable,
+    hourlyRate: hourlyRate ?? this.hourlyRate,
+    currency: currency ?? this.currency,
+    images: images ?? this.images,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 
   factory Court.fromJson(Map<String, dynamic> json) => _$CourtFromJson(json);
+
   Map<String, dynamic> toJson() => _$CourtToJson(this);
 }
 
-enum CourtType {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('standard')
-  standard,
-  @JsonValue('premium')
-  premium,
-  @JsonValue('tournament')
-  tournament,
-  @JsonValue('training')
-  training;
-
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case CourtType.unknown:
-        return 0;
-      case CourtType.standard:
-        return 1;
-      case CourtType.premium:
-        return 2;
-      case CourtType.tournament:
-        return 3;
-      case CourtType.training:
-        return 4;
-    }
-  }
-
-  static CourtType fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return CourtType.unknown;
-      case 1:
-        return CourtType.standard;
-      case 2:
-        return CourtType.premium;
-      case 3:
-        return CourtType.tournament;
-      case 4:
-        return CourtType.training;
-      default:
-        return CourtType.unknown;
-    }
-  }
-}
-
-/// Venue booking model
-
 @JsonSerializable()
-class VenueBooking {
-  
-  int localId;
+class VenueClass {
+  @JsonKey(name: "id")
+  final String id;
+  @JsonKey(name: "ownerId")
+  final String ownerId;
+  @JsonKey(name: "name")
+  final String name;
+  @JsonKey(name: "description")
+  final String description;
+  @JsonKey(name: "address")
+  final String address;
+  @JsonKey(name: "city")
+  final String city;
+  @JsonKey(name: "state")
+  final String state;
+  @JsonKey(name: "country")
+  final String country;
+  @JsonKey(name: "zipCode")
+  final String zipCode;
+  @JsonKey(name: "latitude")
+  final double latitude;
+  @JsonKey(name: "longitude")
+  final double longitude;
+  @JsonKey(name: "phone")
+  final String phone;
+  @JsonKey(name: "email")
+  final String email;
+  @JsonKey(name: "images")
+  final List<String> images;
+  @JsonKey(name: "primaryImage")
+  final String primaryImage;
+  @JsonKey(name: "sportIds")
+  final List<String> sportIds;
+  @JsonKey(name: "amenities")
+  final List<String> amenities;
+  @JsonKey(name: "rules")
+  final List<String> rules;
+  @JsonKey(name: "openingHours")
+  final String openingHours;
+  @JsonKey(name: "closingHours")
+  final String closingHours;
+  @JsonKey(name: "nonOperatingDays")
+  final List<String> nonOperatingDays;
+  @JsonKey(name: "type")
+  final String type;
+  @JsonKey(name: "rating")
+  final double rating;
+  @JsonKey(name: "totalReviews")
+  final int totalReviews;
+  @JsonKey(name: "totalBookings")
+  final int totalBookings;
+  @JsonKey(name: "isActive")
+  final bool isActive;
+  @JsonKey(name: "cancellationHours")
+  final int cancellationHours;
+  @JsonKey(name: "createdAt")
+  final DateTime createdAt;
+  @JsonKey(name: "updatedAt")
+  final DateTime updatedAt;
 
-  
-  String id;
-  String venueId;
-  String? courtId;
-  String userId;
-  String sportId;
-
-  // Store enums as stable int for ObjectBox compatibility
-  
-  BookingStatus? status;
-
-  
-  BookingType? type;
-
-  // Stable database fields for enum storage
-  int? get dbStatus {
-    return status?.stableId;
-  }
-
-  set dbStatus(int? value) {
-    if (value == null) {
-      status = null;
-    } else {
-      status = BookingStatus.fromStableId(value);
-    }
-  }
-
-  int? get dbType {
-    return type?.stableId;
-  }
-
-  set dbType(int? value) {
-    if (value == null) {
-      type = null;
-    } else {
-      type = BookingType.fromStableId(value);
-    }
-  }
-
-  
-  DateTime startTime;
-  
-  DateTime endTime;
-  double totalAmount;
-  String? currency;
-  String? purpose; // training, match, event
-  String? notes;
-  String? specialRequests;
-  List<String> participantIds;
-  int? expectedParticipants;
-  List<String> equipmentRequested;
-  String? paymentId;
-  bool isPaid;
-  
-  DateTime? paidAt;
-  
-  DateTime? confirmedAt;
-  
-  DateTime? cancelledAt;
-  String? cancellationReason;
-  double? cancellationFee;
-  double? refundAmount;
-  String? venueResponse;
-  
-  DateTime? checkedInAt;
-  
-  DateTime? checkedOutAt;
-  double? userRating;
-  String? userFeedback;
-  double? venueRating;
-  String? venueFeedback;
-  
-  DateTime? createdAt;
-  
-  DateTime? updatedAt;
-
-  VenueBooking({
-    this.localId = 0,
+  VenueClass({
     required this.id,
-    required this.venueId,
-    this.courtId,
-    required this.userId,
-    required this.sportId,
-    BookingStatus? bookingStatus,
-    required this.startTime,
-    required this.endTime,
-    required this.totalAmount,
-    this.currency,
-    this.purpose,
-    this.notes,
-    this.specialRequests,
-    this.participantIds = const [],
-    this.expectedParticipants,
-    this.equipmentRequested = const [],
-    BookingType? bookingType,
-    this.paymentId,
-    this.isPaid = false,
-    this.paidAt,
-    this.confirmedAt,
-    this.cancelledAt,
-    this.cancellationReason,
-    this.cancellationFee,
-    this.refundAmount,
-    this.venueResponse,
-    this.checkedInAt,
-    this.checkedOutAt,
-    this.userRating,
-    this.userFeedback,
-    this.venueRating,
-    this.venueFeedback,
-    this.createdAt,
-    this.updatedAt,
-  }) {
-    this.status = bookingStatus;
-    this.type = bookingType;
-  }
-
-  factory VenueBooking.fromJson(Map<String, dynamic> json) =>
-      _$VenueBookingFromJson(json);
-  Map<String, dynamic> toJson() => _$VenueBookingToJson(this);
-}
-
-enum BookingStatus {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('pending')
-  pending,
-  @JsonValue('confirmed')
-  confirmed,
-  @JsonValue('paid')
-  paid,
-  @JsonValue('checked_in')
-  checkedIn,
-  @JsonValue('completed')
-  completed,
-  @JsonValue('cancelled')
-  cancelled,
-  @JsonValue('refunded')
-  refunded,
-  @JsonValue('no_show')
-  noShow;
-
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case BookingStatus.unknown:
-        return 0;
-      case BookingStatus.pending:
-        return 1;
-      case BookingStatus.confirmed:
-        return 2;
-      case BookingStatus.paid:
-        return 3;
-      case BookingStatus.checkedIn:
-        return 4;
-      case BookingStatus.completed:
-        return 5;
-      case BookingStatus.cancelled:
-        return 6;
-      case BookingStatus.refunded:
-        return 7;
-      case BookingStatus.noShow:
-        return 8;
-    }
-  }
-
-  static BookingStatus fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return BookingStatus.unknown;
-      case 1:
-        return BookingStatus.pending;
-      case 2:
-        return BookingStatus.confirmed;
-      case 3:
-        return BookingStatus.paid;
-      case 4:
-        return BookingStatus.checkedIn;
-      case 5:
-        return BookingStatus.completed;
-      case 6:
-        return BookingStatus.cancelled;
-      case 7:
-        return BookingStatus.refunded;
-      case 8:
-        return BookingStatus.noShow;
-      default:
-        return BookingStatus.unknown;
-    }
-  }
-}
-
-enum BookingType {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('hourly')
-  hourly,
-  @JsonValue('daily')
-  daily,
-  @JsonValue('event')
-  event,
-  @JsonValue('tournament')
-  tournament,
-  @JsonValue('membership')
-  membership;
-
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case BookingType.unknown:
-        return 0;
-      case BookingType.hourly:
-        return 1;
-      case BookingType.daily:
-        return 2;
-      case BookingType.event:
-        return 3;
-      case BookingType.tournament:
-        return 4;
-      case BookingType.membership:
-        return 5;
-    }
-  }
-
-  static BookingType fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return BookingType.unknown;
-      case 1:
-        return BookingType.hourly;
-      case 2:
-        return BookingType.daily;
-      case 3:
-        return BookingType.event;
-      case 4:
-        return BookingType.tournament;
-      case 5:
-        return BookingType.membership;
-      default:
-        return BookingType.unknown;
-    }
-  }
-}
-
-/// Venue reviews and ratings
-
-@JsonSerializable()
-class VenueReview {
-  
-  int localId;
-
-  
-  String id;
-  String venueId;
-  String reviewerId;
-  String? bookingId;
-  double rating;
-  String? comment;
-  List<String> tags; // clean, well-maintained, good-location
-  List<String> images;
-  bool isAnonymous;
-  bool isPublic;
-  bool isReported;
-  String? venueResponse;
-  
-  DateTime? respondedAt;
-  
-  DateTime? createdAt;
-  
-  DateTime? updatedAt;
-
-  VenueReview({
-    this.localId = 0,
-    required this.id,
-    required this.venueId,
-    required this.reviewerId,
-    this.bookingId,
+    required this.ownerId,
+    required this.name,
+    required this.description,
+    required this.address,
+    required this.city,
+    required this.state,
+    required this.country,
+    required this.zipCode,
+    required this.latitude,
+    required this.longitude,
+    required this.phone,
+    required this.email,
+    required this.images,
+    required this.primaryImage,
+    required this.sportIds,
+    required this.amenities,
+    required this.rules,
+    required this.openingHours,
+    required this.closingHours,
+    required this.nonOperatingDays,
+    required this.type,
     required this.rating,
-    this.comment,
-    this.tags = const [],
-    this.images = const [],
-    this.isAnonymous = false,
-    this.isPublic = true,
-    this.isReported = false,
-    this.venueResponse,
-    this.respondedAt,
-    this.createdAt,
-    this.updatedAt,
+    required this.totalReviews,
+    required this.totalBookings,
+    required this.isActive,
+    required this.cancellationHours,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
-  factory VenueReview.fromJson(Map<String, dynamic> json) =>
-      _$VenueReviewFromJson(json);
-  Map<String, dynamic> toJson() => _$VenueReviewToJson(this);
+  VenueClass copyWith({
+    String? id,
+    String? ownerId,
+    String? name,
+    String? description,
+    String? address,
+    String? city,
+    String? state,
+    String? country,
+    String? zipCode,
+    double? latitude,
+    double? longitude,
+    String? phone,
+    String? email,
+    List<String>? images,
+    String? primaryImage,
+    List<String>? sportIds,
+    List<String>? amenities,
+    List<String>? rules,
+    String? openingHours,
+    String? closingHours,
+    List<String>? nonOperatingDays,
+    String? type,
+    double? rating,
+    int? totalReviews,
+    int? totalBookings,
+    bool? isActive,
+    int? cancellationHours,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => VenueClass(
+    id: id ?? this.id,
+    ownerId: ownerId ?? this.ownerId,
+    name: name ?? this.name,
+    description: description ?? this.description,
+    address: address ?? this.address,
+    city: city ?? this.city,
+    state: state ?? this.state,
+    country: country ?? this.country,
+    zipCode: zipCode ?? this.zipCode,
+    latitude: latitude ?? this.latitude,
+    longitude: longitude ?? this.longitude,
+    phone: phone ?? this.phone,
+    email: email ?? this.email,
+    images: images ?? this.images,
+    primaryImage: primaryImage ?? this.primaryImage,
+    sportIds: sportIds ?? this.sportIds,
+    amenities: amenities ?? this.amenities,
+    rules: rules ?? this.rules,
+    openingHours: openingHours ?? this.openingHours,
+    closingHours: closingHours ?? this.closingHours,
+    nonOperatingDays: nonOperatingDays ?? this.nonOperatingDays,
+    type: type ?? this.type,
+    rating: rating ?? this.rating,
+    totalReviews: totalReviews ?? this.totalReviews,
+    totalBookings: totalBookings ?? this.totalBookings,
+    isActive: isActive ?? this.isActive,
+    cancellationHours: cancellationHours ?? this.cancellationHours,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+
+  factory VenueClass.fromJson(Map<String, dynamic> json) =>
+      _$VenueClassFromJson(json);
+
+  Map<String, dynamic> toJson() => _$VenueClassToJson(this);
+}
+
+@JsonSerializable()
+class Meta {
+  @JsonKey(name: "pagination")
+  final Pagination pagination;
+
+  Meta({required this.pagination});
+
+  Meta copyWith({Pagination? pagination}) =>
+      Meta(pagination: pagination ?? this.pagination);
+
+  factory Meta.fromJson(Map<String, dynamic> json) => _$MetaFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MetaToJson(this);
+}
+
+@JsonSerializable()
+class Pagination {
+  @JsonKey(name: "page")
+  final int page;
+  @JsonKey(name: "pageSize")
+  final int pageSize;
+  @JsonKey(name: "pageCount")
+  final int pageCount;
+  @JsonKey(name: "total")
+  final int total;
+
+  Pagination({
+    required this.page,
+    required this.pageSize,
+    required this.pageCount,
+    required this.total,
+  });
+
+  Pagination copyWith({int? page, int? pageSize, int? pageCount, int? total}) =>
+      Pagination(
+        page: page ?? this.page,
+        pageSize: pageSize ?? this.pageSize,
+        pageCount: pageCount ?? this.pageCount,
+        total: total ?? this.total,
+      );
+
+  factory Pagination.fromJson(Map<String, dynamic> json) =>
+      _$PaginationFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PaginationToJson(this);
 }

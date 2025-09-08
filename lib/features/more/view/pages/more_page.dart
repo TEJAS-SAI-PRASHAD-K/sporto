@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:playo/core/models/user.dart';
+import 'package:playo/core/providers/current_user_provider.dart';
 import 'package:playo/features/more/view/pages/help_and_support_page.dart';
 import 'package:playo/features/more/view/pages/my_bookings_page.dart';
 import 'package:playo/features/more/view/pages/offers_page.dart';
@@ -10,16 +13,17 @@ import 'package:playo/features/more/view/pages/refer_and_earn_page.dart';
 import 'package:playo/features/more/view/widgets/more_list_tile.dart';
 import 'package:playo/features/more/view/widgets/signout_dialogue_box.dart';
 
-class MorePage extends StatefulWidget {
+class MorePage extends ConsumerStatefulWidget {
   const MorePage({super.key});
 
   @override
-  State<MorePage> createState() => _MorePageState();
+  ConsumerState<MorePage> createState() => _MorePageState();
 }
 
-class _MorePageState extends State<MorePage> {
+class _MorePageState extends ConsumerState<MorePage> {
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(currentUserNotifierProvider);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -31,7 +35,8 @@ class _MorePageState extends State<MorePage> {
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(9)),
               child: CircleAvatar(
                 radius: 20,
-                foregroundImage: AssetImage("assets/images/boy_10.png"),
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                child: _buildAvatarImage(user),
               ),
             ),
             const SizedBox(width: 18),
@@ -41,7 +46,7 @@ class _MorePageState extends State<MorePage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Profile Name',
+                  user?.firstName ?? 'Profile Name',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
                 Text('View your profile', style: TextStyle(fontSize: 12)),
@@ -219,6 +224,66 @@ class _MorePageState extends State<MorePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarImage(User? user) {
+    // If no user or no avatarUrl, show default
+    if (user?.avatarUrl == null || user!.avatarUrl!.isEmpty) {
+      return ClipOval(
+        child: Image.asset(
+          "assets/images/boy_10.png",
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    final avatarUrl = user.avatarUrl!;
+
+    // Check if it's a network URL (starts with http/https)
+    if (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) {
+      return ClipOval(
+        child: Image.network(
+          avatarUrl,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return ClipOval(
+              child: Image.asset(
+                "assets/images/boy_10.png",
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    // Otherwise, treat it as an asset path (from onboarding selection)
+    return ClipOval(
+      child: Image.asset(
+        avatarUrl.startsWith('assets/')
+            ? avatarUrl
+            : "assets/images/$avatarUrl",
+        width: 40,
+        height: 40,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return ClipOval(
+            child: Image.asset(
+              "assets/images/boy_10.png",
+              width: 40,
+              height: 40,
+              fit: BoxFit.cover,
+            ),
+          );
+        },
       ),
     );
   }

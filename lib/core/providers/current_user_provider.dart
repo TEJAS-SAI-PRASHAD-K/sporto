@@ -42,8 +42,8 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
         await _loadUserData(session!.user.id);
       } else if (event == AuthChangeEvent.signedOut) {
         // User signed out, clear state and cache
-        if (state?.id != null) {
-          _removeUserFromCache(state!.id);
+        if (state?.userId != null) {
+          _removeUserFromCache(state!.userId);
         }
         state = null;
       }
@@ -59,7 +59,9 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
       final cachedUser = await loadUserFromCache(userId);
       if (cachedUser != null) {
         state = cachedUser;
-        debugPrint('User loaded from cache: ${cachedUser.fullName}');
+        debugPrint(
+          'User loaded from cache: ${_composeFullName(cachedUser.firstName, cachedUser.lastName)}',
+        );
       }
 
       // Then load fresh data from remote
@@ -71,26 +73,47 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
     try {
       final userMap = await _databaseHelper.getUserById(userId);
       if (userMap != null) {
-        // Convert stored JSON strings back to proper types
-        final userJson = Map<String, dynamic>.from(userMap);
+        // Map legacy local DB fields to new User model
+        final preferredSportsRaw = userMap['preferred_sports'];
+        final favoriteSports = preferredSportsRaw is String
+            ? List<String>.from(jsonDecode(preferredSportsRaw))
+            : (preferredSportsRaw is List
+                  ? preferredSportsRaw.cast<String>()
+                  : null);
 
-        // Handle preferred_sports JSON array
-        if (userJson['preferred_sports'] is String) {
-          userJson['preferred_sports'] = jsonDecode(
-            userJson['preferred_sports'],
-          );
-        }
-
-        // Handle boolean conversions (SQLite stores as int)
-        userJson['is_active'] = userJson['is_active'] == 1;
-        userJson['is_email_verified'] = userJson['is_email_verified'] == 1;
-        userJson['is_phone_verified'] = userJson['is_phone_verified'] == 1;
-        userJson['is_profile_completed'] =
-            userJson['is_profile_completed'] == 1;
-        userJson['is_online'] = userJson['is_online'] == 1;
-
-        final user = User.fromJson(userJson);
-        debugPrint('User loaded from cache: ${user.fullName}');
+        final roleStr = (userMap['role'] as String?)?.toLowerCase();
+        final user = User(
+          userId: userMap['id'] as String,
+          firstName:
+              (userMap['first_name'] as String?) ??
+              _deriveFirstName(
+                userMap['full_name'] as String?,
+                userMap['email'] as String?,
+              ),
+          lastName: userMap['last_name'] as String?,
+          emailAddress: userMap['email'] as String,
+          mobileNumber: userMap['phone'] as String?,
+          avatarUrl: userMap['profile_picture_url'] as String?,
+          locationArea: userMap['city'] as String?,
+          latitude: (userMap['latitude'] as num?)?.toDouble(),
+          longitude: (userMap['longitude'] as num?)?.toDouble(),
+          favoriteSports: favoriteSports,
+          karmaScore: 0,
+          gamesPlayedCount: 0,
+          gender: userMap['gender'] as String?,
+          bio: userMap['bio'] as String?,
+          city: userMap['city'] as String?,
+          state: userMap['state'] as String?,
+          country: userMap['country'] as String?,
+          createdAt: _tryParseDateTime(userMap['created_at'] as String?),
+          updatedAt: _tryParseDateTime(userMap['updated_at'] as String?),
+          isEmailVerified: (userMap['is_email_verified'] ?? 0) == 1,
+          isMobileVerified: (userMap['is_phone_verified'] ?? 0) == 1,
+          userRole: _parseUserRole(roleStr),
+        );
+        debugPrint(
+          'User loaded from cache: ${_composeFullName(user.firstName, user.lastName)}',
+        );
         return user;
       }
     } catch (e) {
@@ -101,25 +124,45 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
 
   Future<void> _saveUserToCache(User user) async {
     try {
-      final userJson = user.toJson();
+      // Map new model to legacy local DB schema
+      final map = <String, dynamic>{
+        'id': user.userId,
+        'email': user.emailAddress,
+        'phone': user.mobileNumber,
+        'full_name': _composeFullName(user.firstName, user.lastName),
+        'first_name': user.firstName,
+        'last_name': user.lastName,
+        'profile_picture_url': user.avatarUrl,
+        'role': user.userRole.name,
+        'bio': user.bio,
+        'gender': user.gender,
+        'city': user.city,
+        'state': user.state,
+        'country': user.country,
+        'latitude': user.latitude,
+        'longitude': user.longitude,
+        'preferred_sports': jsonEncode(user.favoriteSports ?? const []),
+        'is_active': 1,
+        'is_email_verified': user.isEmailVerified ? 1 : 0,
+        'is_phone_verified': user.isMobileVerified ? 1 : 0,
+        'is_profile_completed':
+            _isProfileComplete(
+              firstName: user.firstName,
+              lastName: user.lastName,
+              gender: user.gender,
+              preferredSports: user.favoriteSports,
+            )
+            ? 1
+            : 0,
+        'is_online': 0,
+        'created_at': user.createdAt?.toIso8601String(),
+        'updated_at': user.updatedAt?.toIso8601String(),
+      };
 
-      // Convert arrays to JSON strings for SQLite storage
-      userJson['preferred_sports'] = jsonEncode(user.preferredSports);
-
-      // Convert booleans to integers for SQLite
-      userJson['is_active'] = user.isActive ? 1 : 0;
-      userJson['is_email_verified'] = user.isEmailVerified ? 1 : 0;
-      userJson['is_phone_verified'] = user.isPhoneVerified ? 1 : 0;
-      userJson['is_profile_completed'] = user.isProfileCompleted ? 1 : 0;
-      userJson['is_online'] = user.isOnline ? 1 : 0;
-
-      // Convert enums to strings
-      userJson['role'] = user.role?.name;
-      userJson['auth_provider'] = user.authProvider?.name;
-      userJson['subscription_status'] = user.subscriptionStatus?.name;
-
-      await _databaseHelper.insertUser(userJson);
-      debugPrint('User saved to cache: ${user.fullName}');
+      await _databaseHelper.insertUser(map);
+      debugPrint(
+        'User saved to cache: ${_composeFullName(user.firstName, user.lastName)}',
+      );
     } catch (e) {
       debugPrint('Error saving user to cache: $e');
     }
@@ -144,7 +187,9 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
         (user) {
           state = user;
           _saveUserToCache(user); // Cache the user data locally
-          debugPrint('User data loaded: ${user.fullName}');
+          debugPrint(
+            'User data loaded: ${_composeFullName(user.firstName, user.lastName)}',
+          );
         },
       );
     } catch (e) {
@@ -153,24 +198,21 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
   }
 
   Future<void> createOrUpdateUser({
-    required String email,
-    required String fullName,
-    String? phone,
-    String? firstName,
+    required String emailAddress,
+    required String firstName,
     String? lastName,
-    String? profilePictureUrl,
-    UserRole? role,
-    AuthProvider? authProvider,
+    String? mobileNumber,
+    String? avatarUrl,
+    UserRole? userRole,
     String? bio,
-    DateTime? dateOfBirth,
     String? gender,
     String? city,
     String? userState,
     String? country,
+    String? locationArea,
     double? latitude,
     double? longitude,
-    List<String>? preferredSports,
-    SubscriptionStatus? subscriptionStatus,
+    List<String>? favoriteSports,
   }) async {
     try {
       // Get current auth user
@@ -181,32 +223,24 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
 
       // Create user with auth user ID
       final userToSave = User(
-        id: authUser.id,
-        email: email,
-        fullName: fullName,
-        phone: phone,
+        userId: authUser.id,
         firstName: firstName,
         lastName: lastName,
-        profilePictureUrl: profilePictureUrl,
-        role: role ?? UserRole.player,
-        authProvider: authProvider ?? AuthProvider.email,
-        bio: bio,
-        dateOfBirth: dateOfBirth,
+        emailAddress: emailAddress,
+        mobileNumber: mobileNumber,
+        avatarUrl: avatarUrl,
         gender: gender,
+        bio: bio,
         city: city,
         state: userState,
         country: country,
         latitude: latitude,
         longitude: longitude,
-        preferredSports: preferredSports ?? [],
-        subscriptionStatus: subscriptionStatus ?? SubscriptionStatus.free,
-        isProfileCompleted: _isProfileComplete(
-          firstName: firstName,
-          lastName: lastName,
-          dateOfBirth: dateOfBirth,
-          gender: gender,
-          preferredSports: preferredSports,
-        ),
+        locationArea: locationArea,
+        favoriteSports: favoriteSports ?? const [],
+        userRole: userRole ?? UserRole.user,
+        isEmailVerified: false,
+        isMobileVerified: false,
       );
 
       final result = await _userRepository.createOrUpdateUser(userToSave);
@@ -218,7 +252,9 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
         },
         (savedUser) {
           state = savedUser;
-          debugPrint('User data saved successfully: ${savedUser.fullName}');
+          debugPrint(
+            'User data saved successfully: ${_composeFullName(savedUser.firstName, savedUser.lastName)}',
+          );
         },
       );
     } catch (e) {
@@ -230,18 +266,16 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
   Future<void> updateUserProfile({
     String? firstName,
     String? lastName,
-    String? fullName,
-    String? profilePictureUrl,
+    String? avatarUrl,
     String? bio,
-    DateTime? dateOfBirth,
     String? gender,
     String? city,
     String? userState,
     String? country,
     double? latitude,
     double? longitude,
-    List<String>? preferredSports,
-    String? phone,
+    List<String>? favoriteSports,
+    String? mobileNumber,
   }) async {
     try {
       if (state == null) {
@@ -251,40 +285,23 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
       final currentUser = state!;
 
       final updatedUser = User(
-        id: currentUser.id,
-        email: currentUser.email,
-        phone: phone ?? currentUser.phone,
-        fullName: fullName ?? currentUser.fullName,
+        userId: currentUser.userId,
+        emailAddress: currentUser.emailAddress,
+        mobileNumber: mobileNumber ?? currentUser.mobileNumber,
         firstName: firstName ?? currentUser.firstName,
         lastName: lastName ?? currentUser.lastName,
-        profilePictureUrl: profilePictureUrl ?? currentUser.profilePictureUrl,
-        role: currentUser.role ?? UserRole.player,
-        authProvider: currentUser.authProvider ?? AuthProvider.email,
+        avatarUrl: avatarUrl ?? currentUser.avatarUrl,
+        userRole: currentUser.userRole,
         bio: bio ?? currentUser.bio,
-        dateOfBirth: dateOfBirth ?? currentUser.dateOfBirth,
         gender: gender ?? currentUser.gender,
         city: city ?? currentUser.city,
         state: userState ?? currentUser.state,
         country: country ?? currentUser.country,
         latitude: latitude ?? currentUser.latitude,
         longitude: longitude ?? currentUser.longitude,
-        preferredSports: preferredSports ?? currentUser.preferredSports,
-        subscriptionStatus:
-            currentUser.subscriptionStatus ?? SubscriptionStatus.free,
-        subscriptionExpiresAt: currentUser.subscriptionExpiresAt,
-        isActive: currentUser.isActive,
+        favoriteSports: favoriteSports ?? currentUser.favoriteSports,
         isEmailVerified: currentUser.isEmailVerified,
-        isPhoneVerified: currentUser.isPhoneVerified,
-        isProfileCompleted: _isProfileComplete(
-          firstName: firstName ?? currentUser.firstName,
-          lastName: lastName ?? currentUser.lastName,
-          dateOfBirth: dateOfBirth ?? currentUser.dateOfBirth,
-          gender: gender ?? currentUser.gender,
-          preferredSports: preferredSports ?? currentUser.preferredSports,
-        ),
-        fcmToken: currentUser.fcmToken,
-        lastActiveAt: currentUser.lastActiveAt,
-        isOnline: currentUser.isOnline,
+        isMobileVerified: currentUser.isMobileVerified,
         createdAt: currentUser.createdAt,
         updatedAt: DateTime.now(),
       );
@@ -299,7 +316,9 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
         (user) {
           state = user;
           _saveUserToCache(user); // Cache the updated user data
-          debugPrint('User updated successfully: ${user.fullName}');
+          debugPrint(
+            'User updated successfully: ${_composeFullName(user.firstName, user.lastName)}',
+          );
         },
       );
     } catch (e) {
@@ -311,13 +330,11 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
   bool _isProfileComplete({
     String? firstName,
     String? lastName,
-    DateTime? dateOfBirth,
     String? gender,
     List<String>? preferredSports,
   }) {
     return firstName?.isNotEmpty == true &&
         lastName?.isNotEmpty == true &&
-        dateOfBirth != null &&
         gender?.isNotEmpty == true &&
         (preferredSports?.isNotEmpty == true);
   }
@@ -325,8 +342,8 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
   Future<void> logout() async {
     try {
       // Clear local cache before signing out
-      if (state?.id != null) {
-        _removeUserFromCache(state!.id);
+      if (state?.userId != null) {
+        _removeUserFromCache(state!.userId);
       }
 
       await _supabase.auth.signOut();
@@ -339,16 +356,81 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
   }
 
   Future<void> refreshUser() async {
-    if (state?.id != null) {
-      await _loadUserData(state!.id);
+    if (state?.userId != null) {
+      await _loadUserData(state!.userId);
+    }
+  }
+
+  /// Fetch any user profile by user ID (not just current user)
+  Future<User?> getUserProfile(String userId) async {
+    try {
+      final result = await _userRepository.getUserById(userId);
+      return result.fold(
+        (failure) {
+          debugPrint('Failed to load user profile: ${failure.message}');
+          return null;
+        },
+        (user) {
+          debugPrint(
+            'User profile loaded: ${_composeFullName(user.firstName, user.lastName)}',
+          );
+          return user;
+        },
+      );
+    } catch (e) {
+      debugPrint('Error loading user profile: $e');
+      return null;
     }
   }
 
   // Getters
   bool get isLoggedIn => _supabase.auth.currentUser != null && state != null;
   bool get isAuthenticated => _supabase.auth.currentUser != null;
-  bool get isProfileCompleted => state?.isProfileCompleted == true;
+  bool get isProfileCompleted => _isProfileComplete(
+    firstName: state?.firstName,
+    lastName: state?.lastName,
+    gender: state?.gender,
+    preferredSports: state?.favoriteSports,
+  );
   String? get userId => _supabase.auth.currentUser?.id;
   String? get userEmail => _supabase.auth.currentUser?.email;
   String? get userPhone => _supabase.auth.currentUser?.phone;
+
+  // Helpers
+  String _composeFullName(String firstName, String? lastName) =>
+      lastName == null || lastName.isEmpty ? firstName : '$firstName $lastName';
+
+  String _deriveFirstName(String? fullName, String? email) {
+    if (fullName != null && fullName.trim().isNotEmpty) {
+      return fullName.trim().split(' ').first;
+    }
+    if (email != null && email.contains('@')) {
+      return email.split('@').first;
+    }
+    return 'User';
+  }
+
+  DateTime? _tryParseDateTime(String? value) {
+    if (value == null || value.isEmpty) return null;
+    try {
+      return DateTime.parse(value);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  UserRole _parseUserRole(String? role) {
+    switch (role) {
+      case 'trainer':
+        return UserRole.trainer;
+      case 'admin':
+        return UserRole.admin;
+      case 'venue_partner':
+        return UserRole.venuePartner;
+      case 'user':
+      case 'player': // legacy value
+      default:
+        return UserRole.user;
+    }
+  }
 }

@@ -7,7 +7,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static const String _databaseName = 'playo_local.db';
-  static const int _databaseVersion = 1;
+  static const int _databaseVersion = 1; // Initial version
 
   // Singleton pattern
   DatabaseHelper._privateConstructor();
@@ -29,7 +29,8 @@ class DatabaseHelper {
       path,
       version: _databaseVersion,
       onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
+      // If an older dev db exists with a higher version, drop & recreate
+      onDowngrade: onDatabaseDowngradeDelete,
     );
   }
 
@@ -37,12 +38,7 @@ class DatabaseHelper {
     await _createTables(db);
   }
 
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Handle database schema upgrades here
-    if (oldVersion < newVersion) {
-      await _createTables(db);
-    }
-  }
+  // No onUpgrade/migrations needed for initial version
 
   Future<void> _createTables(Database db) async {
     // Users table
@@ -54,27 +50,33 @@ class DatabaseHelper {
         full_name TEXT NOT NULL,
         first_name TEXT,
         last_name TEXT,
-        profile_picture_url TEXT,
-        role TEXT DEFAULT 'player',
-        auth_provider TEXT DEFAULT 'email',
-        subscription_status TEXT DEFAULT 'free',
+    profile_picture_url TEXT,
+    role TEXT DEFAULT 'user',
+    auth_provider TEXT, -- legacy
+    subscription_status TEXT, -- legacy
         bio TEXT,
-        date_of_birth TEXT,
+    date_of_birth TEXT, -- legacy
         gender TEXT,
+    location_area TEXT,
         city TEXT,
         state TEXT,
         country TEXT,
         latitude REAL,
         longitude REAL,
-        preferred_sports TEXT, -- JSON array as string
-        subscription_expires_at TEXT,
+    preferred_sports TEXT, -- JSON array as string (maps to favorite_sports)
+    playpals_user_ids TEXT, -- JSON array as string
+    booked_sessions_ids TEXT, -- JSON array as string
+    blocked_user_ids TEXT, -- JSON array as string
+    karma_score INTEGER DEFAULT 0,
+    games_played_count INTEGER DEFAULT 0,
+    subscription_expires_at TEXT, -- legacy
         is_active INTEGER DEFAULT 1,
         is_email_verified INTEGER DEFAULT 0,
         is_phone_verified INTEGER DEFAULT 0,
         is_profile_completed INTEGER DEFAULT 0,
-        fcm_token TEXT,
-        last_active_at TEXT,
-        is_online INTEGER DEFAULT 0,
+    fcm_token TEXT, -- legacy
+    last_active_at TEXT, -- legacy
+    is_online INTEGER DEFAULT 0, -- legacy
         created_at TEXT,
         updated_at TEXT
       )
@@ -83,109 +85,26 @@ class DatabaseHelper {
     // User preferences table
     await db.execute('''
       CREATE TABLE IF NOT EXISTS user_preferences (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        notifications_enabled INTEGER DEFAULT 1,
-        game_invites_enabled INTEGER DEFAULT 1,
-        promotional_emails_enabled INTEGER DEFAULT 1,
-        location_sharing_enabled INTEGER DEFAULT 1,
-        theme_mode TEXT DEFAULT 'system',
-        language TEXT DEFAULT 'en',
-        distance_unit TEXT DEFAULT 'km',
-        time_format TEXT DEFAULT '24h',
-        search_radius REAL DEFAULT 10.0,
-        default_skill_level TEXT DEFAULT 'intermediate',
-        created_at TEXT,
-        updated_at TEXT,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-      )
-    ''');
-
-    // User sport profiles table
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS user_sport_profiles (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        sport_name TEXT NOT NULL,
-        skill_level TEXT NOT NULL,
-        years_of_experience INTEGER,
-        position TEXT,
-        achievements TEXT, -- JSON array as string
-        bio TEXT,
-        rating REAL,
-        total_games_played INTEGER DEFAULT 0,
-        total_wins INTEGER DEFAULT 0,
-        total_losses INTEGER DEFAULT 0,
-        preferred_game_type TEXT,
-        certifications TEXT, -- JSON array as string
-        equipment_owned TEXT,
-        is_public INTEGER DEFAULT 1,
-        created_at TEXT,
-        updated_at TEXT,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-        UNIQUE (user_id, sport_name)
-      )
-    ''');
-
-    // User connections table
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS user_connections (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        connected_user_id TEXT NOT NULL,
-        status TEXT DEFAULT 'pending',
-        requested_at TEXT,
-        accepted_at TEXT,
-        blocked_at TEXT,
-        notes TEXT,
-        created_at TEXT,
-        updated_at TEXT,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (connected_user_id) REFERENCES users (id) ON DELETE CASCADE,
-        UNIQUE (user_id, connected_user_id)
-      )
-    ''');
-
-    // Games table (for offline storage)
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS games (
-        id TEXT PRIMARY KEY,
-        organizer_id TEXT NOT NULL,
-        sport_id TEXT NOT NULL,
-        title TEXT NOT NULL,
-        description TEXT,
-        game_type TEXT NOT NULL,
-        skill_level TEXT NOT NULL,
-        status TEXT DEFAULT 'draft',
-        start_time TEXT NOT NULL,
-        end_time TEXT NOT NULL,
-        venue_id TEXT,
-        venue_name TEXT,
-        venue_address TEXT,
-        latitude REAL,
-        longitude REAL,
-        capacity INTEGER NOT NULL,
-        current_players INTEGER DEFAULT 0,
-        max_players INTEGER NOT NULL,
-        entry_fee REAL,
-        price_per_player REAL,
-        currency TEXT DEFAULT 'INR',
-        rules TEXT, -- JSON array as string
-        equipment_provided TEXT, -- JSON array as string
-        equipment_required TEXT, -- JSON array as string
-        is_public INTEGER DEFAULT 1,
-        is_private INTEGER DEFAULT 0,
-        allow_waitlist INTEGER DEFAULT 0,
-        requires_approval INTEGER DEFAULT 0,
-        contact_info TEXT,
-        tags TEXT, -- JSON array as string
-        notes TEXT,
-        rating INTEGER,
-        view_count INTEGER DEFAULT 0,
-        scheduled_date TEXT NOT NULL,
-        created_at TEXT,
-        updated_at TEXT,
-        FOREIGN KEY (organizer_id) REFERENCES users (id)
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    notifications_enabled INTEGER DEFAULT 1,
+    game_invites_enabled INTEGER DEFAULT 1,
+    promotional_emails_enabled INTEGER DEFAULT 1,
+    location_sharing_enabled INTEGER DEFAULT 1,
+    -- New-model aligned fields (kept alongside legacy for compatibility)
+    app_theme TEXT DEFAULT 'dark',
+    preferred_language TEXT DEFAULT 'en',
+    distance_unit TEXT DEFAULT 'km',
+    time_format TEXT DEFAULT '24h',
+    search_radius_km REAL,
+    -- Legacy fields kept for migration/read-compat
+    theme_mode TEXT,
+    language TEXT,
+    search_radius REAL,
+    default_skill_level TEXT,
+    created_at TEXT,
+    updated_at TEXT,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
       )
     ''');
 
@@ -198,21 +117,6 @@ class DatabaseHelper {
     );
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_user_preferences_user_id ON user_preferences(user_id)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_user_sport_profiles_user_id ON user_sport_profiles(user_id)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_user_connections_user_id ON user_connections(user_id)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_games_organizer_id ON games(organizer_id)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_games_start_time ON games(start_time)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_games_status ON games(status)',
     );
 
     debugPrint('SQLite database tables created successfully');
@@ -324,22 +228,5 @@ class DatabaseHelper {
     return await update('user_preferences', preferences);
   }
 
-  // Games methods
-  Future<List<Map<String, dynamic>>> getGamesByUserId(String userId) async {
-    return await query(
-      'games',
-      where: 'organizer_id = ?',
-      whereArgs: [userId],
-      orderBy: 'start_time DESC',
-    );
-  }
-
-  Future<List<Map<String, dynamic>>> getUpcomingGames() async {
-    return await query(
-      'games',
-      where: 'start_time > ? AND status != ?',
-      whereArgs: [DateTime.now().toIso8601String(), 'cancelled'],
-      orderBy: 'start_time ASC',
-    );
-  }
+  // Removed legacy game cache methods
 }

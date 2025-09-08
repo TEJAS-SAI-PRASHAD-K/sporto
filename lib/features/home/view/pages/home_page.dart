@@ -3,7 +3,6 @@ import 'package:playo/core/common/widgets/main_app_bar.dart';
 import 'package:playo/features/home/view/pages/weekly_fit_goal_page.dart';
 import '../widgets/create_game_card.dart';
 import '../widgets/home_tile.dart';
-import '../widgets/corporate_banner.dart';
 import '../widgets/quick_action_tile.dart';
 import '../widgets/spotlight_tile.dart';
 import '../widgets/social_links_row.dart';
@@ -85,7 +84,6 @@ class _HomePageState extends State<HomePage> {
                 isWide: true,
               ),
             ),
-            const CorporateBanner(),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 12.0,

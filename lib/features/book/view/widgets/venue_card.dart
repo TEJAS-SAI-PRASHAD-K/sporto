@@ -61,7 +61,7 @@ class _VenueCardState extends State<VenueCard> {
                         ),
                         color: Theme.of(context).colorScheme.surfaceContainer,
                         image: DecorationImage(
-                          image: AssetImage(widget.imageAsset),
+                          image: NetworkImage(widget.imageAsset),
                           fit: BoxFit.cover,
                         ),
                       ),

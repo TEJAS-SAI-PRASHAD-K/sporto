@@ -6,6 +6,7 @@ import 'package:playo/core/theme/app_theme.dart';
 import 'package:playo/features/more/view/pages/settings/blocked_users_page.dart';
 import 'package:playo/features/more/view/pages/settings/notification_preferences_page.dart';
 import 'package:playo/features/more/view/pages/settings/set_password_page.dart';
+import 'package:playo/features/onboarding/view/pages/pick_your_fav_sports_page.dart';
 
 class PreferenceAndPrivacyPage extends ConsumerStatefulWidget {
   const PreferenceAndPrivacyPage({super.key});
@@ -47,7 +48,14 @@ class _PreferenceAndPrivacyPageState
             leading: Icon(Iconsax.activity_copy),
             title: Text("Sports"),
             trailing: Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PickYourFavSportsPage(isLoggedIn: true),
+                ),
+              );
+            },
           ),
           ListTile(
             tileColor: Theme.of(context).colorScheme.surfaceContainer,

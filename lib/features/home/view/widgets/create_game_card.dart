@@ -46,7 +46,10 @@ class CreateGameCard extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       "No games in your calendar",
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 5),
                   ],

@@ -1,3 +1,4 @@
 class ServerConstants {
-  static const strapiBaseUrl = "http://localhost:1337/api";
+  static const strapiBaseUrl =
+      "https://supreme-passion-d12b744662.strapiapp.com/api";
 }

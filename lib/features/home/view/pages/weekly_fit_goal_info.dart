@@ -36,7 +36,7 @@ class WeeklyFitGoalInfoPage extends StatelessWidget {
                 radius: 22,
                 backgroundColor: Theme.of(
                   context,
-                ).colorScheme.primary.withOpacity(0.1),
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 child: Icon(
                   Iconsax.watch,
                   color: Theme.of(context).colorScheme.primary,
@@ -56,7 +56,7 @@ class WeeklyFitGoalInfoPage extends StatelessWidget {
                 radius: 22,
                 backgroundColor: Theme.of(
                   context,
-                ).colorScheme.primary.withOpacity(0.1),
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 child: Icon(
                   Iconsax.activity,
                   color: Theme.of(context).colorScheme.primary,
@@ -76,7 +76,7 @@ class WeeklyFitGoalInfoPage extends StatelessWidget {
                 radius: 22,
                 backgroundColor: Theme.of(
                   context,
-                ).colorScheme.primary.withOpacity(0.1),
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 child: Icon(
                   Iconsax.heart,
                   color: Theme.of(context).colorScheme.primary,
@@ -96,7 +96,7 @@ class WeeklyFitGoalInfoPage extends StatelessWidget {
                 radius: 22,
                 backgroundColor: Theme.of(
                   context,
-                ).colorScheme.primary.withOpacity(0.1),
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 child: Icon(
                   Iconsax.share,
                   color: Theme.of(context).colorScheme.primary,

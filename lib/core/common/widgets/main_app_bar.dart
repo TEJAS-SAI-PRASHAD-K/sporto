@@ -18,38 +18,9 @@ class MainAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
 }
 
 class _MainAppBarState extends ConsumerState<MainAppBar> {
-  String currentLocation = "Current Location";
-  bool _isLocationLoaded = false;
-
-  Future<void> getLocationFromDb(User user) async {
-    if (user.latitude != null && user.longitude != null && !_isLocationLoaded) {
-      try {
-        final loc = await GeoLocationService.getPlacemarkFromCoordinates(
-          user.latitude!,
-          user.longitude!,
-        );
-        if (mounted) {
-          setState(() {
-            currentLocation = "${loc.first.subLocality}, ${loc.first.locality}";
-            _isLocationLoaded = true;
-          });
-        }
-      } catch (e) {
-        debugPrint('Error getting location: $e');
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserNotifierProvider);
-
-    // Load location when user data is available
-    if (user != null && !_isLocationLoaded) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        getLocationFromDb(user);
-      });
-    }
 
     return AppBar(
       automaticallyImplyLeading: false,
@@ -67,7 +38,7 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
               children: [
                 Flexible(
                   child: Text(
-                    currentLocation,
+                    user?.locationArea ?? "Current Location",
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.outline,
                       fontSize: 13,
@@ -191,22 +162,21 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
                         pos.latitude,
                         pos.longitude,
                       );
+
                   ref
                       .read(currentUserNotifierProvider.notifier)
                       .createOrUpdateUser(
-                        email: user.email,
-                        fullName: user.fullName,
+                        emailAddress: user.emailAddress,
+                        firstName: user.firstName,
                         city: loc.first.locality,
                         userState: loc.first.administrativeArea,
                         country: loc.first.country,
                         latitude: pos.latitude,
                         longitude: pos.longitude,
+                        locationArea:
+                            "${loc.first.subLocality}, ${loc.first.locality}",
                       );
-                  setState(() {
-                    currentLocation =
-                        "${loc.first.subLocality}, ${loc.first.locality}";
-                    debugPrint(currentLocation);
-                  });
+
                   Navigator.pop(context);
                 },
               ),
@@ -220,7 +190,7 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
                 subtitle: const Text('Recent location'),
                 onTap: () {
                   setState(() {
-                    currentLocation = "Bengaluru, Karnataka";
+                    // currentLocation = "Bengaluru, Karnataka";
                   });
                   Navigator.pop(context);
                 },
@@ -232,7 +202,7 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
                 subtitle: const Text('Recent location'),
                 onTap: () {
                   setState(() {
-                    currentLocation = "Mumbai, Maharashtra";
+                    // currentLocation = "Mumbai, Maharashtra";
                   });
                   Navigator.pop(context);
                 },

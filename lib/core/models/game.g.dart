@@ -7,229 +7,144 @@ part of 'game.dart';
 // **************************************************************************
 
 Game _$GameFromJson(Map<String, dynamic> json) => Game(
-  id: json['id'] as String,
-  organizerId: json['organizerId'] as String,
-  sportId: json['sportId'] as String,
-  title: json['title'] as String,
-  description: json['description'] as String?,
-  gameType: json['gameType'] as String,
-  skillLevel: json['skillLevel'] as String,
-  status:
-      $enumDecodeNullable(_$GameStatusEnumMap, json['status']) ??
-      GameStatus.draft,
-  startTime: DateTime.parse(json['startTime'] as String),
-  endTime: DateTime.parse(json['endTime'] as String),
-  venueId: json['venueId'] as String?,
-  venueName: json['venueName'] as String?,
-  venueAddress: json['venueAddress'] as String?,
-  latitude: (json['latitude'] as num?)?.toDouble(),
-  longitude: (json['longitude'] as num?)?.toDouble(),
-  capacity: (json['capacity'] as num).toInt(),
-  currentPlayers: (json['currentPlayers'] as num?)?.toInt() ?? 0,
-  playerIds:
-      (json['playerIds'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
-  waitlistIds:
-      (json['waitlistIds'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
-  entryFee: (json['entryFee'] as num?)?.toDouble(),
-  currency: json['currency'] as String?,
-  rules:
-      (json['rules'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
-  equipmentProvided:
-      (json['equipmentProvided'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
-  equipmentRequired:
-      (json['equipmentRequired'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
-  isPublic: json['isPublic'] as bool? ?? true,
-  allowWaitlist: json['allowWaitlist'] as bool? ?? false,
-  requiresApproval: json['requiresApproval'] as bool? ?? false,
-  contactInfo: json['contactInfo'] as String?,
-  tags:
-      (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
+  gameId: json['game_id'] as String,
+  organiserUserId: json['organiser_user_id'] as String,
+  sportId: json['sport_id'] as String,
+  areaOfGame: json['area_of_game'] as String?,
+  gameDate: json['game_date'] == null
+      ? null
+      : DateTime.parse(json['game_date'] as String),
+  gameTime: json['game_time'] as String?,
+  gameAccessType: json['game_access_type'] as String?,
+  currentPlayersCount: (json['current_players_count'] as num?)?.toInt(),
+  venueName: json['venue_name'] as String?,
+  venueId: json['venue_id'] as String?,
+  venueAddress: json['venue_address'] as String?,
+  venueLatitude: (json['venue_latitude'] as num?)?.toDouble(),
+  venueLongitude: (json['venue_longitude'] as num?)?.toDouble(),
+  playerIds: (json['player_ids'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  waitlistUserIds: (json['waitlist_user_ids'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  gameRules: json['game_rules'] as String?,
+  equipmentRequired: json['equipment_required'] as String?,
+  equipmentProvided: json['equipment_provided'] as String?,
+  requiresApproval: json['requires_approval'] as bool? ?? false,
+  contactInformation: json['contact_information'] as String?,
   notes: json['notes'] as String?,
-  rating: (json['rating'] as num?)?.toInt(),
-  viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
-  createdAt: json['createdAt'] == null
+  viewCount: (json['view_count'] as num?)?.toInt() ?? 0,
+  createdAt: json['created_at'] == null
       ? null
-      : DateTime.parse(json['createdAt'] as String),
-  updatedAt: json['updatedAt'] == null
+      : DateTime.parse(json['created_at'] as String),
+  updatedAt: json['updated_at'] == null
       ? null
-      : DateTime.parse(json['updatedAt'] as String),
-)..dbStatus = (json['dbStatus'] as num?)?.toInt();
+      : DateTime.parse(json['updated_at'] as String),
+  venuePartnerId: json['venue_partner_id'] as String?,
+);
 
 Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
-  'id': instance.id,
-  'organizerId': instance.organizerId,
-  'sportId': instance.sportId,
-  'title': instance.title,
-  'description': instance.description,
-  'gameType': instance.gameType,
-  'skillLevel': instance.skillLevel,
-  'status': _$GameStatusEnumMap[instance.status],
-  'dbStatus': instance.dbStatus,
-  'startTime': instance.startTime.toIso8601String(),
-  'endTime': instance.endTime.toIso8601String(),
-  'venueId': instance.venueId,
-  'venueName': instance.venueName,
-  'venueAddress': instance.venueAddress,
-  'latitude': instance.latitude,
-  'longitude': instance.longitude,
-  'capacity': instance.capacity,
-  'currentPlayers': instance.currentPlayers,
-  'playerIds': instance.playerIds,
-  'waitlistIds': instance.waitlistIds,
-  'entryFee': instance.entryFee,
-  'currency': instance.currency,
-  'rules': instance.rules,
-  'equipmentProvided': instance.equipmentProvided,
-  'equipmentRequired': instance.equipmentRequired,
-  'isPublic': instance.isPublic,
-  'allowWaitlist': instance.allowWaitlist,
-  'requiresApproval': instance.requiresApproval,
-  'contactInfo': instance.contactInfo,
-  'tags': instance.tags,
+  'game_id': instance.gameId,
+  'organiser_user_id': instance.organiserUserId,
+  'sport_id': instance.sportId,
+  'area_of_game': instance.areaOfGame,
+  'game_date': instance.gameDate?.toIso8601String(),
+  'game_time': instance.gameTime,
+  'game_access_type': instance.gameAccessType,
+  'current_players_count': instance.currentPlayersCount,
+  'venue_name': instance.venueName,
+  'venue_id': instance.venueId,
+  'venue_address': instance.venueAddress,
+  'venue_latitude': instance.venueLatitude,
+  'venue_longitude': instance.venueLongitude,
+  'player_ids': instance.playerIds,
+  'waitlist_user_ids': instance.waitlistUserIds,
+  'game_rules': instance.gameRules,
+  'equipment_required': instance.equipmentRequired,
+  'equipment_provided': instance.equipmentProvided,
+  'requires_approval': instance.requiresApproval,
+  'contact_information': instance.contactInformation,
   'notes': instance.notes,
-  'rating': instance.rating,
-  'viewCount': instance.viewCount,
-  'createdAt': instance.createdAt?.toIso8601String(),
-  'updatedAt': instance.updatedAt?.toIso8601String(),
-};
-
-const _$GameStatusEnumMap = {
-  GameStatus.unknown: 'unknown',
-  GameStatus.draft: 'draft',
-  GameStatus.published: 'published',
-  GameStatus.full: 'full',
-  GameStatus.inProgress: 'in_progress',
-  GameStatus.completed: 'completed',
-  GameStatus.cancelled: 'cancelled',
-};
-
-GameParticipation _$GameParticipationFromJson(Map<String, dynamic> json) =>
-    GameParticipation(
-      localId: (json['localId'] as num?)?.toInt() ?? 0,
-      id: json['id'] as String,
-      gameId: json['gameId'] as String,
-      userId: json['userId'] as String,
-      status:
-          $enumDecodeNullable(_$ParticipationStatusEnumMap, json['status']) ??
-          ParticipationStatus.requested,
-      joinedAt: DateTime.parse(json['joinedAt'] as String),
-      position: json['position'] as String?,
-      partnerUserId: json['partnerUserId'] as String?,
-      notes: json['notes'] as String?,
-      ratingGiven: (json['ratingGiven'] as num?)?.toDouble(),
-      feedback: json['feedback'] as String?,
-      isOrganizer: json['isOrganizer'] as bool? ?? false,
-      isPaid: json['isPaid'] as bool? ?? false,
-      paidAt: json['paidAt'] == null
-          ? null
-          : DateTime.parse(json['paidAt'] as String),
-      leftAt: json['leftAt'] == null
-          ? null
-          : DateTime.parse(json['leftAt'] as String),
-      createdAt: json['createdAt'] == null
-          ? null
-          : DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
-    )..dbStatus = (json['dbStatus'] as num?)?.toInt();
-
-Map<String, dynamic> _$GameParticipationToJson(GameParticipation instance) =>
-    <String, dynamic>{
-      'localId': instance.localId,
-      'id': instance.id,
-      'gameId': instance.gameId,
-      'userId': instance.userId,
-      'status': _$ParticipationStatusEnumMap[instance.status],
-      'dbStatus': instance.dbStatus,
-      'joinedAt': instance.joinedAt.toIso8601String(),
-      'position': instance.position,
-      'partnerUserId': instance.partnerUserId,
-      'notes': instance.notes,
-      'ratingGiven': instance.ratingGiven,
-      'feedback': instance.feedback,
-      'isOrganizer': instance.isOrganizer,
-      'isPaid': instance.isPaid,
-      'paidAt': instance.paidAt?.toIso8601String(),
-      'leftAt': instance.leftAt?.toIso8601String(),
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
-    };
-
-const _$ParticipationStatusEnumMap = {
-  ParticipationStatus.unknown: 'unknown',
-  ParticipationStatus.requested: 'requested',
-  ParticipationStatus.confirmed: 'confirmed',
-  ParticipationStatus.waitlisted: 'waitlisted',
-  ParticipationStatus.declined: 'declined',
-  ParticipationStatus.cancelled: 'cancelled',
-  ParticipationStatus.attended: 'attended',
-  ParticipationStatus.noShow: 'no_show',
+  'view_count': instance.viewCount,
+  'created_at': instance.createdAt?.toIso8601String(),
+  'updated_at': instance.updatedAt?.toIso8601String(),
+  'venue_partner_id': instance.venuePartnerId,
 };
 
 GameInvite _$GameInviteFromJson(Map<String, dynamic> json) => GameInvite(
-  localId: (json['localId'] as num?)?.toInt() ?? 0,
-  id: json['id'] as String,
-  gameId: json['gameId'] as String,
-  inviterId: json['inviterId'] as String,
-  inviteeId: json['inviteeId'] as String,
-  status:
-      $enumDecodeNullable(_$InviteStatusEnumMap, json['status']) ??
-      InviteStatus.pending,
-  message: json['message'] as String?,
-  sentAt: json['sentAt'] == null
+  inviteId: json['invite_id'] as String,
+  gameId: json['game_id'] as String,
+  inviterUserId: json['inviter_user_id'] as String,
+  inviteeUserId: json['invitee_user_id'] as String,
+  inviteStatus: json['invite_status'] as String?,
+  sentAt: json['sent_at'] == null
       ? null
-      : DateTime.parse(json['sentAt'] as String),
-  respondedAt: json['respondedAt'] == null
+      : DateTime.parse(json['sent_at'] as String),
+  respondedAt: json['responded_at'] == null
       ? null
-      : DateTime.parse(json['respondedAt'] as String),
-  expiresAt: json['expiresAt'] == null
+      : DateTime.parse(json['responded_at'] as String),
+  expiresAt: json['expires_at'] == null
       ? null
-      : DateTime.parse(json['expiresAt'] as String),
-  response: json['response'] as String?,
-  createdAt: json['createdAt'] == null
+      : DateTime.parse(json['expires_at'] as String),
+  createdAt: json['created_at'] == null
       ? null
-      : DateTime.parse(json['createdAt'] as String),
-  updatedAt: json['updatedAt'] == null
+      : DateTime.parse(json['created_at'] as String),
+  updatedAt: json['updated_at'] == null
       ? null
-      : DateTime.parse(json['updatedAt'] as String),
-)..dbStatus = (json['dbStatus'] as num?)?.toInt();
+      : DateTime.parse(json['updated_at'] as String),
+);
 
 Map<String, dynamic> _$GameInviteToJson(GameInvite instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
-      'id': instance.id,
-      'gameId': instance.gameId,
-      'inviterId': instance.inviterId,
-      'inviteeId': instance.inviteeId,
-      'status': _$InviteStatusEnumMap[instance.status],
-      'dbStatus': instance.dbStatus,
-      'message': instance.message,
-      'sentAt': instance.sentAt?.toIso8601String(),
-      'respondedAt': instance.respondedAt?.toIso8601String(),
-      'expiresAt': instance.expiresAt?.toIso8601String(),
-      'response': instance.response,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'invite_id': instance.inviteId,
+      'game_id': instance.gameId,
+      'inviter_user_id': instance.inviterUserId,
+      'invitee_user_id': instance.inviteeUserId,
+      'invite_status': instance.inviteStatus,
+      'sent_at': instance.sentAt?.toIso8601String(),
+      'responded_at': instance.respondedAt?.toIso8601String(),
+      'expires_at': instance.expiresAt?.toIso8601String(),
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
     };
 
-const _$InviteStatusEnumMap = {
-  InviteStatus.unknown: 'unknown',
-  InviteStatus.pending: 'pending',
-  InviteStatus.accepted: 'accepted',
-  InviteStatus.declined: 'declined',
-  InviteStatus.expired: 'expired',
-  InviteStatus.cancelled: 'cancelled',
-};
+GameParticipation _$GameParticipationFromJson(Map<String, dynamic> json) =>
+    GameParticipation(
+      participationId: json['participation_id'] as String,
+      gameId: json['game_id'] as String,
+      userId: json['user_id'] as String,
+      participationStatus: json['participation_status'] as String?,
+      joinedAt: json['joined_at'] == null
+          ? null
+          : DateTime.parse(json['joined_at'] as String),
+      isOrganiser: json['is_organiser'] as bool? ?? false,
+      hasPaid: json['has_paid'] as bool? ?? false,
+      paidAt: json['paid_at'] == null
+          ? null
+          : DateTime.parse(json['paid_at'] as String),
+      leftAt: json['left_at'] == null
+          ? null
+          : DateTime.parse(json['left_at'] as String),
+      createdAt: json['created_at'] == null
+          ? null
+          : DateTime.parse(json['created_at'] as String),
+      updatedAt: json['updated_at'] == null
+          ? null
+          : DateTime.parse(json['updated_at'] as String),
+    );
+
+Map<String, dynamic> _$GameParticipationToJson(GameParticipation instance) =>
+    <String, dynamic>{
+      'participation_id': instance.participationId,
+      'game_id': instance.gameId,
+      'user_id': instance.userId,
+      'participation_status': instance.participationStatus,
+      'joined_at': instance.joinedAt?.toIso8601String(),
+      'is_organiser': instance.isOrganiser,
+      'has_paid': instance.hasPaid,
+      'paid_at': instance.paidAt?.toIso8601String(),
+      'left_at': instance.leftAt?.toIso8601String(),
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
+    };

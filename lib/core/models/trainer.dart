@@ -2,220 +2,132 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'trainer.g.dart';
 
-/// Trainer profile model
-
 @JsonSerializable()
 class Trainer {
-  
-  int localId;
+  @JsonKey(name: 'trainer_id')
+  String trainerId;
 
-  
-  String id;
-  String userId; // References User.id
-  String businessName;
-  String? tagline;
+  @JsonKey(name: 'first_name')
+  String firstName;
+
+  @JsonKey(name: 'last_name')
+  String? lastName;
+
   String? bio;
-  List<String> sportIds;
-  List<String> specializations;
-  List<String> certifications;
-  List<String> qualifications;
-  int? yearsOfExperience;
 
-  // Store enum as stable int for ObjectBox compatibility
-  
-  TrainerType? type;
+  @JsonKey(name: 'sport_id')
+  String? sportId;
 
-  // Stable database field for enum storage
-  int? get dbType {
-    return type?.stableId;
-  }
+  @JsonKey(name: 'service_area')
+  String? serviceArea;
 
-  set dbType(int? value) {
-    if (value == null) {
-      type = null;
-    } else {
-      type = TrainerType.fromStableId(value);
-    }
-  }
+  @JsonKey(name: 'audience_type')
+  String? audienceType;
 
-  List<String> serviceAreas; // cities/locations served
-  List<String> audienceTypes; // kids, adults, seniors
-  String? gymAffiliation;
-  String? website;
-  String? instagramHandle;
-  String? youtubeChannel;
-  List<String> languagesSpoken;
+  String? address;
+
+  @JsonKey(name: 'hourly_rate')
   double? hourlyRate;
-  String? currency;
-  bool isAvailable;
-  bool isVerified;
-  double rating;
+
+  double? ratings;
+
+  @JsonKey(name: 'total_reviews')
   int totalReviews;
-  int totalStudents;
-  int completedSessions;
-  String? profileVideoUrl;
-  List<String> portfolioImages;
-  List<String> achievements;
-  List<String> tags;
-  
+
+  @JsonKey(name: 'avatar_url')
+  String? avatarUrl;
+
+  @JsonKey(name: 'email_address')
+  String emailAddress;
+
+  @JsonKey(name: 'mobile_number')
+  String? mobileNumber;
+
+  @JsonKey(name: 'created_at')
   DateTime? createdAt;
-  
+
+  @JsonKey(name: 'updated_at')
   DateTime? updatedAt;
 
+  @JsonKey(name: 'is_available')
+  bool isAvailable;
+
   Trainer({
-    this.localId = 0,
-    required this.id,
-    required this.userId,
-    required this.businessName,
-    this.tagline,
+    required this.trainerId,
+    required this.firstName,
+    this.lastName,
     this.bio,
-    this.sportIds = const [],
-    this.specializations = const [],
-    this.certifications = const [],
-    this.qualifications = const [],
-    this.yearsOfExperience,
-    TrainerType? type,
-    this.serviceAreas = const [],
-    this.audienceTypes = const [],
-    this.gymAffiliation,
-    this.website,
-    this.instagramHandle,
-    this.youtubeChannel,
-    this.languagesSpoken = const [],
+    this.sportId,
+    this.serviceArea,
+    this.audienceType,
+    this.address,
     this.hourlyRate,
-    this.currency,
-    this.isAvailable = true,
-    this.isVerified = false,
-    this.rating = 0.0,
+    this.ratings,
     this.totalReviews = 0,
-    this.totalStudents = 0,
-    this.completedSessions = 0,
-    this.profileVideoUrl,
-    this.portfolioImages = const [],
-    this.achievements = const [],
-    this.tags = const [],
+    this.avatarUrl,
+    required this.emailAddress,
+    this.mobileNumber,
     this.createdAt,
     this.updatedAt,
-  }) {
-    this.type = type;
-  }
+    this.isAvailable = true,
+  });
 
   factory Trainer.fromJson(Map<String, dynamic> json) =>
       _$TrainerFromJson(json);
   Map<String, dynamic> toJson() => _$TrainerToJson(this);
 }
 
-enum TrainerType {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('individual')
-  individual,
-  @JsonValue('academy')
-  academy,
-  @JsonValue('group')
-  group;
-
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case TrainerType.unknown:
-        return 0;
-      case TrainerType.individual:
-        return 1;
-      case TrainerType.academy:
-        return 2;
-      case TrainerType.group:
-        return 3;
-    }
-  }
-
-  static TrainerType fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return TrainerType.unknown;
-      case 1:
-        return TrainerType.individual;
-      case 2:
-        return TrainerType.academy;
-      case 3:
-        return TrainerType.group;
-      default:
-        return TrainerType.unknown;
-    }
-  }
-}
-
-/// Training service offered by trainers
-
 @JsonSerializable()
 class TrainingService {
-  
-  int localId;
+  @JsonKey(name: 'service_id')
+  String serviceId;
 
-  
-  String id;
+  @JsonKey(name: 'trainer_id')
   String trainerId;
+
+  @JsonKey(name: 'sport_id')
   String sportId;
-  String name;
-  String? description;
 
-  // Store enum as stable int for ObjectBox compatibility
-  
-  ServiceType? type;
+  @JsonKey(name: 'service_name')
+  String? serviceName;
 
-  // Stable database field for enum storage
-  int? get dbType {
-    return type?.stableId;
-  }
+  @JsonKey(name: 'service_description')
+  String? serviceDescription;
 
-  set dbType(int? value) {
-    if (value == null) {
-      type = null;
-    } else {
-      type = ServiceType.fromStableId(value);
-    }
-  }
+  @JsonKey(name: 'service_type')
+  ServiceType? serviceType;
 
-  int duration; // in minutes
-  double price;
-  String? currency;
-  int? maxParticipants;
-  List<String> skillLevels;
-  List<String> ageGroups;
-  List<String> equipmentProvided;
-  List<String> equipmentRequired;
-  String? location;
-  bool isActive;
-  bool isOnline;
-  
+  double? price;
+
+  @JsonKey(name: 'age_group')
+  String? ageGroup;
+
+  @JsonKey(name: 'maximum_participants')
+  int? maximumParticipants;
+
+  @JsonKey(name: 'is_service_active')
+  bool isServiceActive;
+
+  @JsonKey(name: 'created_at')
   DateTime? createdAt;
-  
+
+  @JsonKey(name: 'updated_at')
   DateTime? updatedAt;
 
   TrainingService({
-    this.localId = 0,
-    required this.id,
+    required this.serviceId,
     required this.trainerId,
     required this.sportId,
-    required this.name,
-    this.description,
-    ServiceType? serviceType,
-    required this.duration,
-    required this.price,
-    this.currency,
-    this.maxParticipants,
-    this.skillLevels = const [],
-    this.ageGroups = const [],
-    this.equipmentProvided = const [],
-    this.equipmentRequired = const [],
-    this.location,
-    this.isActive = true,
-    this.isOnline = false,
+    this.serviceName,
+    this.serviceDescription,
+    this.serviceType,
+    this.price,
+    this.ageGroup,
+    this.maximumParticipants,
+    this.isServiceActive = true,
     this.createdAt,
     this.updatedAt,
-  }) {
-    this.type = serviceType;
-  }
+  });
 
   factory TrainingService.fromJson(Map<String, dynamic> json) =>
       _$TrainingServiceFromJson(json);
@@ -223,262 +135,42 @@ class TrainingService {
 }
 
 enum ServiceType {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('one_on_one')
+  @JsonValue('one-on-one')
   oneOnOne,
   @JsonValue('group')
   group,
-  @JsonValue('workshop')
-  workshop,
-  @JsonValue('camp')
-  camp,
-  @JsonValue('online')
-  online;
-
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case ServiceType.unknown:
-        return 0;
-      case ServiceType.oneOnOne:
-        return 1;
-      case ServiceType.group:
-        return 2;
-      case ServiceType.workshop:
-        return 3;
-      case ServiceType.camp:
-        return 4;
-      case ServiceType.online:
-        return 5;
-    }
-  }
-
-  static ServiceType fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return ServiceType.unknown;
-      case 1:
-        return ServiceType.oneOnOne;
-      case 2:
-        return ServiceType.group;
-      case 3:
-        return ServiceType.workshop;
-      case 4:
-        return ServiceType.camp;
-      case 5:
-        return ServiceType.online;
-      default:
-        return ServiceType.unknown;
-    }
-  }
 }
-
-/// Training session bookings
 
 @JsonSerializable()
 class TrainingSession {
-  
-  int localId;
+  @JsonKey(name: 'session_id')
+  String sessionId;
 
-  
-  String id;
+  @JsonKey(name: 'service_id')
   String serviceId;
+
+  @JsonKey(name: 'trainer_id')
   String trainerId;
-  String studentId;
 
-  // Store enum as stable int for ObjectBox compatibility
-  
-  SessionStatus? status;
+  @JsonKey(name: 'student_user_id')
+  String studentUserId;
 
-  // Stable database field for enum storage
-  int? get dbStatus {
-    return status?.stableId;
-  }
-
-  set dbStatus(int? value) {
-    if (value == null) {
-      status = null;
-    } else {
-      status = SessionStatus.fromStableId(value);
-    }
-  }
-
-  
-  DateTime scheduledAt;
-  
-  DateTime endsAt;
-  String? location;
-  String? notes;
-  String? trainerNotes;
-  String? studentNotes;
-  List<String> participantIds; // for group sessions
-  double? amount;
-  String? currency;
-  bool isPaid;
-  
-  DateTime? paidAt;
-  String? paymentId;
-  double? studentRating;
-  String? studentFeedback;
-  double? trainerRating;
-  String? trainerFeedback;
-  
-  DateTime? completedAt;
-  
-  DateTime? cancelledAt;
-  String? cancellationReason;
-  
+  @JsonKey(name: 'created_at')
   DateTime? createdAt;
-  
+
+  @JsonKey(name: 'updated_at')
   DateTime? updatedAt;
 
   TrainingSession({
-    this.localId = 0,
-    required this.id,
+    required this.sessionId,
     required this.serviceId,
     required this.trainerId,
-    required this.studentId,
-    SessionStatus? sessionStatus,
-    required this.scheduledAt,
-    required this.endsAt,
-    this.location,
-    this.notes,
-    this.trainerNotes,
-    this.studentNotes,
-    this.participantIds = const [],
-    this.amount,
-    this.currency,
-    this.isPaid = false,
-    this.paidAt,
-    this.paymentId,
-    this.studentRating,
-    this.studentFeedback,
-    this.trainerRating,
-    this.trainerFeedback,
-    this.completedAt,
-    this.cancelledAt,
-    this.cancellationReason,
-    this.createdAt,
-    this.updatedAt,
-  }) {
-    this.status = sessionStatus;
-  }
-
-  factory TrainingSession.fromJson(Map<String, dynamic> json) =>
-      _$TrainingSessionFromJson(json);
-  Map<String, dynamic> toJson() => _$TrainingSessionToJson(this);
-}
-
-enum SessionStatus {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('scheduled')
-  scheduled,
-  @JsonValue('confirmed')
-  confirmed,
-  @JsonValue('in_progress')
-  inProgress,
-  @JsonValue('completed')
-  completed,
-  @JsonValue('cancelled')
-  cancelled,
-  @JsonValue('no_show')
-  noShow,
-  @JsonValue('rescheduled')
-  rescheduled;
-
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case SessionStatus.unknown:
-        return 0;
-      case SessionStatus.scheduled:
-        return 1;
-      case SessionStatus.confirmed:
-        return 2;
-      case SessionStatus.inProgress:
-        return 3;
-      case SessionStatus.completed:
-        return 4;
-      case SessionStatus.cancelled:
-        return 5;
-      case SessionStatus.noShow:
-        return 6;
-      case SessionStatus.rescheduled:
-        return 7;
-    }
-  }
-
-  static SessionStatus fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return SessionStatus.unknown;
-      case 1:
-        return SessionStatus.scheduled;
-      case 2:
-        return SessionStatus.confirmed;
-      case 3:
-        return SessionStatus.inProgress;
-      case 4:
-        return SessionStatus.completed;
-      case 5:
-        return SessionStatus.cancelled;
-      case 6:
-        return SessionStatus.noShow;
-      case 7:
-        return SessionStatus.rescheduled;
-      default:
-        return SessionStatus.unknown;
-    }
-  }
-}
-
-/// Trainer reviews and ratings
-
-@JsonSerializable()
-class TrainerReview {
-  
-  int localId;
-
-  
-  String id;
-  String trainerId;
-  String reviewerId;
-  String? sessionId;
-  double rating;
-  String? comment;
-  List<String> tags; // helpful, punctual, knowledgeable
-  bool isAnonymous;
-  bool isPublic;
-  bool isReported;
-  String? trainerResponse;
-  
-  DateTime? respondedAt;
-  
-  DateTime? createdAt;
-  
-  DateTime? updatedAt;
-
-  TrainerReview({
-    this.localId = 0,
-    required this.id,
-    required this.trainerId,
-    required this.reviewerId,
-    this.sessionId,
-    required this.rating,
-    this.comment,
-    this.tags = const [],
-    this.isAnonymous = false,
-    this.isPublic = true,
-    this.isReported = false,
-    this.trainerResponse,
-    this.respondedAt,
+    required this.studentUserId,
     this.createdAt,
     this.updatedAt,
   });
 
-  factory TrainerReview.fromJson(Map<String, dynamic> json) =>
-      _$TrainerReviewFromJson(json);
-  Map<String, dynamic> toJson() => _$TrainerReviewToJson(this);
+  factory TrainingSession.fromJson(Map<String, dynamic> json) =>
+      _$TrainingSessionFromJson(json);
+  Map<String, dynamic> toJson() => _$TrainingSessionToJson(this);
 }

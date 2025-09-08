@@ -7,118 +7,71 @@ part of 'sport.dart';
 // **************************************************************************
 
 Sport _$SportFromJson(Map<String, dynamic> json) => Sport(
-  localId: (json['localId'] as num?)?.toInt() ?? 0,
-  id: json['id'] as String,
-  name: json['name'] as String,
-  description: json['description'] as String?,
-  iconUrl: json['iconUrl'] as String?,
-  imageUrl: json['imageUrl'] as String?,
-  category:
-      $enumDecodeNullable(_$SportCategoryEnumMap, json['category']) ??
-      SportCategory.individual,
-  aliases:
-      (json['aliases'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
-  skillLevels:
-      (json['skillLevels'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
-  gameTypes:
-      (json['gameTypes'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
-  positions:
-      (json['positions'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
-  minPlayers: (json['minPlayers'] as num?)?.toInt(),
-  maxPlayers: (json['maxPlayers'] as num?)?.toInt(),
-  typicalDurationMinutes: (json['typicalDurationMinutes'] as num?)?.toInt(),
-  equipmentRequired:
-      (json['equipmentRequired'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
-  rules:
-      (json['rules'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
-  isActive: json['isActive'] as bool? ?? true,
-  popularityScore: (json['popularityScore'] as num?)?.toInt() ?? 0,
-  createdAt: json['createdAt'] == null
+  sportId: json['sport_id'] as String,
+  sportName: json['sport_name'] as String,
+  iconUrl: json['icon_url'] as String?,
+  imageUrl: json['image_url'] as String?,
+  sportCategory: json['sport_category'] as String?,
+  aliases: json['aliases'] as String?,
+  gameType: json['game_type'] as String?,
+  minimumPlayers: (json['minimum_players'] as num?)?.toInt(),
+  maximumPlayers: (json['maximum_players'] as num?)?.toInt(),
+  gameDurationMinutes: (json['game_duration_minutes'] as num?)?.toInt(),
+  rulesAndRegulations: json['rules_and_regulations'] as String?,
+  isSportActive: json['is_sport_active'] as bool? ?? true,
+  createdAt: json['created_at'] == null
       ? null
-      : DateTime.parse(json['createdAt'] as String),
-  updatedAt: json['updatedAt'] == null
+      : DateTime.parse(json['created_at'] as String),
+  updatedAt: json['updated_at'] == null
       ? null
-      : DateTime.parse(json['updatedAt'] as String),
-)..dbCategory = (json['dbCategory'] as num?)?.toInt();
+      : DateTime.parse(json['updated_at'] as String),
+  equipmentRequired: (json['equipment_required'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+);
 
 Map<String, dynamic> _$SportToJson(Sport instance) => <String, dynamic>{
-  'localId': instance.localId,
-  'id': instance.id,
-  'name': instance.name,
-  'description': instance.description,
-  'iconUrl': instance.iconUrl,
-  'imageUrl': instance.imageUrl,
-  'category': _$SportCategoryEnumMap[instance.category],
-  'dbCategory': instance.dbCategory,
+  'sport_id': instance.sportId,
+  'sport_name': instance.sportName,
+  'icon_url': instance.iconUrl,
+  'image_url': instance.imageUrl,
+  'sport_category': instance.sportCategory,
   'aliases': instance.aliases,
-  'skillLevels': instance.skillLevels,
-  'gameTypes': instance.gameTypes,
-  'positions': instance.positions,
-  'minPlayers': instance.minPlayers,
-  'maxPlayers': instance.maxPlayers,
-  'typicalDurationMinutes': instance.typicalDurationMinutes,
-  'equipmentRequired': instance.equipmentRequired,
-  'rules': instance.rules,
-  'isActive': instance.isActive,
-  'popularityScore': instance.popularityScore,
-  'createdAt': instance.createdAt?.toIso8601String(),
-  'updatedAt': instance.updatedAt?.toIso8601String(),
+  'game_type': instance.gameType,
+  'minimum_players': instance.minimumPlayers,
+  'maximum_players': instance.maximumPlayers,
+  'game_duration_minutes': instance.gameDurationMinutes,
+  'rules_and_regulations': instance.rulesAndRegulations,
+  'is_sport_active': instance.isSportActive,
+  'created_at': instance.createdAt?.toIso8601String(),
+  'updated_at': instance.updatedAt?.toIso8601String(),
+  'equipment_required': instance.equipmentRequired,
 };
 
-const _$SportCategoryEnumMap = {
-  SportCategory.unknown: 'unknown',
-  SportCategory.racket: 'racket',
-  SportCategory.ball: 'ball',
-  SportCategory.water: 'water',
-  SportCategory.individual: 'individual',
-  SportCategory.team: 'team',
-  SportCategory.combat: 'combat',
-  SportCategory.adventure: 'adventure',
-  SportCategory.fitness: 'fitness',
-};
-
-SportSkillLevel _$SportSkillLevelFromJson(Map<String, dynamic> json) =>
-    SportSkillLevel(
-      localId: (json['localId'] as num?)?.toInt() ?? 0,
-      id: json['id'] as String,
-      sportId: json['sportId'] as String,
-      level: json['level'] as String,
-      displayName: json['displayName'] as String,
-      description: json['description'] as String?,
-      order: (json['order'] as num?)?.toInt(),
-      characteristics:
-          (json['characteristics'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
-      createdAt: json['createdAt'] == null
+SportsSkillLevel _$SportsSkillLevelFromJson(Map<String, dynamic> json) =>
+    SportsSkillLevel(
+      skillLevelId: json['skill_level_id'] as String,
+      sportId: json['sport_id'] as String,
+      levelNumber: (json['level_number'] as num).toInt(),
+      displayName: json['display_name'] as String,
+      levelOrder: (json['level_order'] as num?)?.toInt(),
+      characteristics: json['characteristics'] as String?,
+      createdAt: json['created_at'] == null
           ? null
-          : DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
+          : DateTime.parse(json['created_at'] as String),
+      updatedAt: json['updated_at'] == null
           ? null
-          : DateTime.parse(json['updatedAt'] as String),
+          : DateTime.parse(json['updated_at'] as String),
     );
 
-Map<String, dynamic> _$SportSkillLevelToJson(SportSkillLevel instance) =>
+Map<String, dynamic> _$SportsSkillLevelToJson(SportsSkillLevel instance) =>
     <String, dynamic>{
-      'localId': instance.localId,
-      'id': instance.id,
-      'sportId': instance.sportId,
-      'level': instance.level,
-      'displayName': instance.displayName,
-      'description': instance.description,
-      'order': instance.order,
+      'skill_level_id': instance.skillLevelId,
+      'sport_id': instance.sportId,
+      'level_number': instance.levelNumber,
+      'display_name': instance.displayName,
+      'level_order': instance.levelOrder,
       'characteristics': instance.characteristics,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
     };

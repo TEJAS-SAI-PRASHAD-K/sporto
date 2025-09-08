@@ -2,186 +2,111 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'sport.g.dart';
 
-/// Sport categories and information
-
 @JsonSerializable()
 class Sport {
-  
-  int localId;
+  @JsonKey(name: 'sport_id')
+  String sportId;
 
-  
-  String id;
-  String name;
-  String? description;
+  @JsonKey(name: 'sport_name')
+  String sportName;
+
+  @JsonKey(name: 'icon_url')
   String? iconUrl;
+
+  @JsonKey(name: 'image_url')
   String? imageUrl;
 
-  // Store enum as stable int for ObjectBox compatibility
-  
-  SportCategory? category;
+  @JsonKey(name: 'sport_category')
+  String? sportCategory;
 
-  // Stable database field for enum storage
-  int? get dbCategory {
-    return category?.stableId;
-  }
+  String? aliases; // as text in DB
 
-  set dbCategory(int? value) {
-    if (value == null) {
-      category = null;
-    } else {
-      category = SportCategory.fromStableId(value);
-    }
-  }
+  @JsonKey(name: 'game_type')
+  String? gameType; // Singles, Doubles, Team
 
-  List<String> aliases; // alternative names
-  List<String> skillLevels;
-  List<String> gameTypes; // singles, doubles, team
-  List<String> positions; // for team sports
-  int? minPlayers;
-  int? maxPlayers;
-  int? typicalDurationMinutes;
-  List<String> equipmentRequired;
-  List<String> rules;
-  bool isActive;
-  int popularityScore;
-  
+  @JsonKey(name: 'minimum_players')
+  int? minimumPlayers;
+
+  @JsonKey(name: 'maximum_players')
+  int? maximumPlayers;
+
+  @JsonKey(name: 'game_duration_minutes')
+  int? gameDurationMinutes;
+
+  @JsonKey(name: 'rules_and_regulations')
+  String? rulesAndRegulations;
+
+  @JsonKey(name: 'is_sport_active')
+  bool isSportActive;
+
+  @JsonKey(name: 'created_at')
   DateTime? createdAt;
-  
+
+  @JsonKey(name: 'updated_at')
   DateTime? updatedAt;
 
+  @JsonKey(name: 'equipment_required')
+  List<String>? equipmentRequired;
+
   Sport({
-    this.localId = 0,
-    required this.id,
-    required this.name,
-    this.description,
+    required this.sportId,
+    required this.sportName,
     this.iconUrl,
     this.imageUrl,
-    SportCategory category = SportCategory.individual,
-    this.aliases = const [],
-    this.skillLevels = const [],
-    this.gameTypes = const [],
-    this.positions = const [],
-    this.minPlayers,
-    this.maxPlayers,
-    this.typicalDurationMinutes,
-    this.equipmentRequired = const [],
-    this.rules = const [],
-    this.isActive = true,
-    this.popularityScore = 0,
+    this.sportCategory,
+    this.aliases,
+    this.gameType,
+    this.minimumPlayers,
+    this.maximumPlayers,
+    this.gameDurationMinutes,
+    this.rulesAndRegulations,
+    this.isSportActive = true,
     this.createdAt,
     this.updatedAt,
-  }) {
-    this.category = category;
-  }
+    this.equipmentRequired,
+  });
 
   factory Sport.fromJson(Map<String, dynamic> json) => _$SportFromJson(json);
   Map<String, dynamic> toJson() => _$SportToJson(this);
 }
 
-enum SportCategory {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('racket')
-  racket,
-  @JsonValue('ball')
-  ball,
-  @JsonValue('water')
-  water,
-  @JsonValue('individual')
-  individual,
-  @JsonValue('team')
-  team,
-  @JsonValue('combat')
-  combat,
-  @JsonValue('adventure')
-  adventure,
-  @JsonValue('fitness')
-  fitness;
-
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case SportCategory.unknown:
-        return 0;
-      case SportCategory.racket:
-        return 1;
-      case SportCategory.ball:
-        return 2;
-      case SportCategory.water:
-        return 3;
-      case SportCategory.individual:
-        return 4;
-      case SportCategory.team:
-        return 5;
-      case SportCategory.combat:
-        return 6;
-      case SportCategory.adventure:
-        return 7;
-      case SportCategory.fitness:
-        return 8;
-    }
-  }
-
-  static SportCategory fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return SportCategory.unknown;
-      case 1:
-        return SportCategory.racket;
-      case 2:
-        return SportCategory.ball;
-      case 3:
-        return SportCategory.water;
-      case 4:
-        return SportCategory.individual;
-      case 5:
-        return SportCategory.team;
-      case 6:
-        return SportCategory.combat;
-      case 7:
-        return SportCategory.adventure;
-      case 8:
-        return SportCategory.fitness;
-      default:
-        return SportCategory.unknown;
-    }
-  }
-}
-
-/// Sport skill levels with descriptions
-
 @JsonSerializable()
-class SportSkillLevel {
-  
-  int localId;
+class SportsSkillLevel {
+  @JsonKey(name: 'skill_level_id')
+  String skillLevelId;
 
-  
-  String id;
+  @JsonKey(name: 'sport_id')
   String sportId;
-  String level; // beginner, amateur, intermediate, advanced, professional
+
+  @JsonKey(name: 'level_number')
+  int levelNumber;
+
+  @JsonKey(name: 'display_name')
   String displayName;
-  String? description;
-  int? order;
-  List<String> characteristics;
-  
+
+  @JsonKey(name: 'level_order')
+  int? levelOrder;
+
+  String? characteristics; // text in DB
+
+  @JsonKey(name: 'created_at')
   DateTime? createdAt;
-  
+
+  @JsonKey(name: 'updated_at')
   DateTime? updatedAt;
 
-  SportSkillLevel({
-    this.localId = 0,
-    required this.id,
+  SportsSkillLevel({
+    required this.skillLevelId,
     required this.sportId,
-    required this.level,
+    required this.levelNumber,
     required this.displayName,
-    this.description,
-    this.order,
-    this.characteristics = const [],
+    this.levelOrder,
+    this.characteristics,
     this.createdAt,
     this.updatedAt,
   });
 
-  factory SportSkillLevel.fromJson(Map<String, dynamic> json) =>
-      _$SportSkillLevelFromJson(json);
-  Map<String, dynamic> toJson() => _$SportSkillLevelToJson(this);
+  factory SportsSkillLevel.fromJson(Map<String, dynamic> json) =>
+      _$SportsSkillLevelFromJson(json);
+  Map<String, dynamic> toJson() => _$SportsSkillLevelToJson(this);
 }

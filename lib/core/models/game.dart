@@ -2,412 +2,214 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'game.g.dart';
 
-/// Game model for play feature
 @JsonSerializable()
 class Game {
-  String id;
-  String organizerId;
+  @JsonKey(name: 'game_id')
+  String gameId;
+
+  @JsonKey(name: 'organiser_user_id')
+  String organiserUserId;
+
+  @JsonKey(name: 'sport_id')
   String sportId;
-  String title;
-  String? description;
-  String gameType; // singles, doubles, team, tournament
-  String skillLevel;
 
-  // Store enum as stable int for ObjectBox compatibility
+  @JsonKey(name: 'area_of_game')
+  String? areaOfGame;
 
-  GameStatus? status;
+  @JsonKey(name: 'game_date')
+  DateTime? gameDate; // Date only
 
-  // Stable database field for enum storage
-  int? get dbStatus {
-    return status?.stableId;
-  }
+  @JsonKey(name: 'game_time')
+  String? gameTime; // store as HH:mm:ss
 
-  set dbStatus(int? value) {
-    if (value == null) {
-      status = null;
-    } else {
-      status = GameStatus.fromStableId(value);
-    }
-  }
+  @JsonKey(name: 'game_access_type')
+  String? gameAccessType; // Public, Invite Only
 
-  DateTime startTime;
+  @JsonKey(name: 'current_players_count')
+  int? currentPlayersCount;
 
-  DateTime endTime;
-  String? venueId;
+  @JsonKey(name: 'venue_name')
   String? venueName;
+
+  @JsonKey(name: 'venue_id')
+  String? venueId;
+
+  @JsonKey(name: 'venue_address')
   String? venueAddress;
-  double? latitude;
-  double? longitude;
-  int capacity;
-  int currentPlayers;
-  List<String> playerIds;
-  List<String> waitlistIds;
-  double? entryFee;
-  String? currency;
-  List<String> rules;
-  List<String> equipmentProvided;
-  List<String> equipmentRequired;
-  bool isPublic;
-  bool allowWaitlist;
+
+  @JsonKey(name: 'venue_latitude')
+  double? venueLatitude;
+
+  @JsonKey(name: 'venue_longitude')
+  double? venueLongitude;
+
+  @JsonKey(name: 'player_ids')
+  List<String>? playerIds;
+
+  @JsonKey(name: 'waitlist_user_ids')
+  List<String>? waitlistUserIds;
+
+  @JsonKey(name: 'game_rules')
+  String? gameRules;
+
+  @JsonKey(name: 'equipment_required')
+  String? equipmentRequired;
+
+  @JsonKey(name: 'equipment_provided')
+  String? equipmentProvided;
+
+  @JsonKey(name: 'requires_approval')
   bool requiresApproval;
-  String? contactInfo;
-  List<String> tags;
+
+  @JsonKey(name: 'contact_information')
+  String? contactInformation;
+
   String? notes;
-  int? rating;
+
+  @JsonKey(name: 'view_count')
   int viewCount;
 
+  @JsonKey(name: 'created_at')
   DateTime? createdAt;
 
+  @JsonKey(name: 'updated_at')
   DateTime? updatedAt;
 
+  @JsonKey(name: 'venue_partner_id')
+  String? venuePartnerId;
+
   Game({
-    required this.id,
-    required this.organizerId,
+    required this.gameId,
+    required this.organiserUserId,
     required this.sportId,
-    required this.title,
-    this.description,
-    required this.gameType,
-    required this.skillLevel,
-    GameStatus status = GameStatus.draft,
-    required this.startTime,
-    required this.endTime,
-    this.venueId,
+    this.areaOfGame,
+    this.gameDate,
+    this.gameTime,
+    this.gameAccessType,
+    this.currentPlayersCount,
     this.venueName,
+    this.venueId,
     this.venueAddress,
-    this.latitude,
-    this.longitude,
-    required this.capacity,
-    this.currentPlayers = 0,
-    this.playerIds = const [],
-    this.waitlistIds = const [],
-    this.entryFee,
-    this.currency,
-    this.rules = const [],
-    this.equipmentProvided = const [],
-    this.equipmentRequired = const [],
-    this.isPublic = true,
-    this.allowWaitlist = false,
+    this.venueLatitude,
+    this.venueLongitude,
+    this.playerIds,
+    this.waitlistUserIds,
+    this.gameRules,
+    this.equipmentRequired,
+    this.equipmentProvided,
     this.requiresApproval = false,
-    this.contactInfo,
-    this.tags = const [],
+    this.contactInformation,
     this.notes,
-    this.rating,
     this.viewCount = 0,
     this.createdAt,
     this.updatedAt,
-  }) {
-    this.status = status;
-  }
+    this.venuePartnerId,
+  });
 
   factory Game.fromJson(Map<String, dynamic> json) => _$GameFromJson(json);
   Map<String, dynamic> toJson() => _$GameToJson(this);
 }
 
-enum GameStatus {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('draft')
-  draft,
-  @JsonValue('published')
-  published,
-  @JsonValue('full')
-  full,
-  @JsonValue('in_progress')
-  inProgress,
-  @JsonValue('completed')
-  completed,
-  @JsonValue('cancelled')
-  cancelled;
-
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case GameStatus.unknown:
-        return 0;
-      case GameStatus.draft:
-        return 1;
-      case GameStatus.published:
-        return 2;
-      case GameStatus.full:
-        return 3;
-      case GameStatus.inProgress:
-        return 4;
-      case GameStatus.completed:
-        return 5;
-      case GameStatus.cancelled:
-        return 6;
-    }
-  }
-
-  static GameStatus fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return GameStatus.unknown;
-      case 1:
-        return GameStatus.draft;
-      case 2:
-        return GameStatus.published;
-      case 3:
-        return GameStatus.full;
-      case 4:
-        return GameStatus.inProgress;
-      case 5:
-        return GameStatus.completed;
-      case 6:
-        return GameStatus.cancelled;
-      default:
-        return GameStatus.unknown;
-    }
-  }
-}
-
-/// Game participation/booking
-
-@JsonSerializable()
-class GameParticipation {
-  int localId;
-
-  String id;
-  String gameId;
-  String userId;
-
-  // Store enum as stable int for ObjectBox compatibility
-
-  ParticipationStatus? status;
-
-  // Stable database field for enum storage
-  int? get dbStatus {
-    return status?.stableId;
-  }
-
-  set dbStatus(int? value) {
-    if (value == null) {
-      status = null;
-    } else {
-      status = ParticipationStatus.fromStableId(value);
-    }
-  }
-
-  DateTime joinedAt;
-  String? position; // for team sports
-  String? partnerUserId; // for doubles
-  String? notes;
-  double? ratingGiven;
-  String? feedback;
-  bool isOrganizer;
-  bool isPaid;
-
-  DateTime? paidAt;
-
-  DateTime? leftAt;
-
-  DateTime? createdAt;
-
-  DateTime? updatedAt;
-
-  GameParticipation({
-    this.localId = 0,
-    required this.id,
-    required this.gameId,
-    required this.userId,
-    ParticipationStatus status = ParticipationStatus.requested,
-    required this.joinedAt,
-    this.position,
-    this.partnerUserId,
-    this.notes,
-    this.ratingGiven,
-    this.feedback,
-    this.isOrganizer = false,
-    this.isPaid = false,
-    this.paidAt,
-    this.leftAt,
-    this.createdAt,
-    this.updatedAt,
-  }) {
-    this.status = status;
-  }
-
-  factory GameParticipation.fromJson(Map<String, dynamic> json) =>
-      _$GameParticipationFromJson(json);
-  Map<String, dynamic> toJson() => _$GameParticipationToJson(this);
-}
-
-enum ParticipationStatus {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('requested')
-  requested,
-  @JsonValue('confirmed')
-  confirmed,
-  @JsonValue('waitlisted')
-  waitlisted,
-  @JsonValue('declined')
-  declined,
-  @JsonValue('cancelled')
-  cancelled,
-  @JsonValue('attended')
-  attended,
-  @JsonValue('no_show')
-  noShow;
-
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case ParticipationStatus.unknown:
-        return 0;
-      case ParticipationStatus.requested:
-        return 1;
-      case ParticipationStatus.confirmed:
-        return 2;
-      case ParticipationStatus.waitlisted:
-        return 3;
-      case ParticipationStatus.declined:
-        return 4;
-      case ParticipationStatus.cancelled:
-        return 5;
-      case ParticipationStatus.attended:
-        return 6;
-      case ParticipationStatus.noShow:
-        return 7;
-    }
-  }
-
-  static ParticipationStatus fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return ParticipationStatus.unknown;
-      case 1:
-        return ParticipationStatus.requested;
-      case 2:
-        return ParticipationStatus.confirmed;
-      case 3:
-        return ParticipationStatus.waitlisted;
-      case 4:
-        return ParticipationStatus.declined;
-      case 5:
-        return ParticipationStatus.cancelled;
-      case 6:
-        return ParticipationStatus.attended;
-      case 7:
-        return ParticipationStatus.noShow;
-      default:
-        return ParticipationStatus.unknown;
-    }
-  }
-}
-
-/// Game invite system
-
 @JsonSerializable()
 class GameInvite {
-  int localId;
+  @JsonKey(name: 'invite_id')
+  String inviteId;
 
-  String id;
+  @JsonKey(name: 'game_id')
   String gameId;
-  String inviterId;
-  String inviteeId;
 
-  // Store enum as stable int for ObjectBox compatibility
+  @JsonKey(name: 'inviter_user_id')
+  String inviterUserId;
 
-  InviteStatus? status;
+  @JsonKey(name: 'invitee_user_id')
+  String inviteeUserId;
 
-  // Stable database field for enum storage
-  int? get dbStatus {
-    return status?.stableId;
-  }
+  @JsonKey(name: 'invite_status')
+  String? inviteStatus; // Pending, Accepted, Rejected, Expired
 
-  set dbStatus(int? value) {
-    if (value == null) {
-      status = null;
-    } else {
-      status = InviteStatus.fromStableId(value);
-    }
-  }
-
-  String? message;
-
+  @JsonKey(name: 'sent_at')
   DateTime? sentAt;
 
+  @JsonKey(name: 'responded_at')
   DateTime? respondedAt;
 
+  @JsonKey(name: 'expires_at')
   DateTime? expiresAt;
-  String? response;
 
+  @JsonKey(name: 'created_at')
   DateTime? createdAt;
 
+  @JsonKey(name: 'updated_at')
   DateTime? updatedAt;
 
   GameInvite({
-    this.localId = 0,
-    required this.id,
+    required this.inviteId,
     required this.gameId,
-    required this.inviterId,
-    required this.inviteeId,
-    InviteStatus status = InviteStatus.pending,
-    this.message,
+    required this.inviterUserId,
+    required this.inviteeUserId,
+    this.inviteStatus,
     this.sentAt,
     this.respondedAt,
     this.expiresAt,
-    this.response,
     this.createdAt,
     this.updatedAt,
-  }) {
-    this.status = status;
-  }
+  });
 
   factory GameInvite.fromJson(Map<String, dynamic> json) =>
       _$GameInviteFromJson(json);
   Map<String, dynamic> toJson() => _$GameInviteToJson(this);
 }
 
-enum InviteStatus {
-  @JsonValue('unknown')
-  unknown, // Default for handling unknown values
-  @JsonValue('pending')
-  pending,
-  @JsonValue('accepted')
-  accepted,
-  @JsonValue('declined')
-  declined,
-  @JsonValue('expired')
-  expired,
-  @JsonValue('cancelled')
-  cancelled;
+@JsonSerializable()
+class GameParticipation {
+  @JsonKey(name: 'participation_id')
+  String participationId;
 
-  // Stable enum ID mapping for ObjectBox persistence
-  int get stableId {
-    switch (this) {
-      case InviteStatus.unknown:
-        return 0;
-      case InviteStatus.pending:
-        return 1;
-      case InviteStatus.accepted:
-        return 2;
-      case InviteStatus.declined:
-        return 3;
-      case InviteStatus.expired:
-        return 4;
-      case InviteStatus.cancelled:
-        return 5;
-    }
-  }
+  @JsonKey(name: 'game_id')
+  String gameId;
 
-  static InviteStatus fromStableId(int id) {
-    switch (id) {
-      case 0:
-        return InviteStatus.unknown;
-      case 1:
-        return InviteStatus.pending;
-      case 2:
-        return InviteStatus.accepted;
-      case 3:
-        return InviteStatus.declined;
-      case 4:
-        return InviteStatus.expired;
-      case 5:
-        return InviteStatus.cancelled;
-      default:
-        return InviteStatus.unknown;
-    }
-  }
+  @JsonKey(name: 'user_id')
+  String userId;
+
+  @JsonKey(name: 'participation_status')
+  String? participationStatus; // Joined, Waitlisted, Cancelled
+
+  @JsonKey(name: 'joined_at')
+  DateTime? joinedAt;
+
+  @JsonKey(name: 'is_organiser')
+  bool isOrganiser;
+
+  @JsonKey(name: 'has_paid')
+  bool hasPaid;
+
+  @JsonKey(name: 'paid_at')
+  DateTime? paidAt;
+
+  @JsonKey(name: 'left_at')
+  DateTime? leftAt;
+
+  @JsonKey(name: 'created_at')
+  DateTime? createdAt;
+
+  @JsonKey(name: 'updated_at')
+  DateTime? updatedAt;
+
+  GameParticipation({
+    required this.participationId,
+    required this.gameId,
+    required this.userId,
+    this.participationStatus,
+    this.joinedAt,
+    this.isOrganiser = false,
+    this.hasPaid = false,
+    this.paidAt,
+    this.leftAt,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory GameParticipation.fromJson(Map<String, dynamic> json) =>
+      _$GameParticipationFromJson(json);
+  Map<String, dynamic> toJson() => _$GameParticipationToJson(this);
 }

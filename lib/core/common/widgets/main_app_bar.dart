@@ -173,19 +173,28 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
                         pos.latitude,
                         pos.longitude,
                       );
+                  final place = loc.first;
+                  final area = (place.subLocality?.trim().isNotEmpty ?? false)
+                      ? place.subLocality
+                      : (place.street?.trim().isNotEmpty ?? false)
+                      ? place.street
+                      : (place.name?.trim().isNotEmpty ?? false)
+                      ? place.name
+                      : null;
+                  debugPrint("${area ?? 'Unknown'}, ${place.locality ?? ''}");
 
-                  ref
+                  await ref
                       .read(currentUserNotifierProvider.notifier)
                       .createOrUpdateUser(
                         emailAddress: user.emailAddress,
                         firstName: user.firstName,
-                        city: loc.first.locality,
-                        userState: loc.first.administrativeArea,
-                        country: loc.first.country,
+                        city: place.locality,
+                        userState: place.administrativeArea,
+                        country: place.country,
                         latitude: pos.latitude,
                         longitude: pos.longitude,
                         locationArea:
-                            "${loc.first.subLocality}, ${loc.first.locality}",
+                            "${area ?? 'N/A'}, ${place.locality ?? ''}",
                       );
 
                   Navigator.pop(context);

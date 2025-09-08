@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/more/view/pages/refer_and_earn_page.dart';
 
 class SpotlightTile extends StatelessWidget {
   final String title;
@@ -37,10 +36,7 @@ class SpotlightTile extends StatelessWidget {
           /// Image
           InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (builder) => ReferAndEarnPage()),
-              );
+              onTap();
             },
             child: Container(
               width: double.infinity,

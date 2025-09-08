@@ -19,13 +19,13 @@ class MyApp extends ConsumerWidget {
     final theme = ref.watch(themeModeNotifierProvider);
     final currentUserNotifier = ref.watch(currentUserNotifierProvider.notifier);
     final isAuthed = currentUserNotifier.isAuthenticated;
-    final isComplete = currentUserNotifier.isProfileCompleted;
+    // final isComplete = currentUserNotifier.isProfileCompleted;
 
     return MaterialApp(
       title: 'Sporto',
       theme: theme,
       debugShowCheckedModeBanner: false,
-      home: isAuthed && isComplete ? BottomNavBar() : OnboardingPage(),
+      home: isAuthed ? BottomNavBar() : OnboardingPage(),
     );
   }
 }

@@ -31,7 +31,11 @@ class QuickActionTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             child: Column(
               children: [
-                Icon(icon, color: Theme.of(context).primaryColor, size: 32),
+                Icon(
+                  icon,
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  size: 32,
+                ),
                 const SizedBox(height: 6),
                 Text(
                   title,
@@ -40,7 +44,10 @@ class QuickActionTile extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],

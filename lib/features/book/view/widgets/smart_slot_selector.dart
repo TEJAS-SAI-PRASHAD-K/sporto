@@ -103,24 +103,26 @@ class _SmartSlotSelectorState extends State<SmartSlotSelector> {
   void _generateAvailableDurations() {
     availableDurations.clear();
 
-    if (availableSlots.isEmpty) return;
+    // Always generate duration options, even if no slots are available
+    // This allows users to change duration to potentially find available slots
 
-    // Find the selected time slot index
-    final selectedIndex = availableSlots.indexWhere(
-      (slot) =>
-          slot.time.hour == widget.selectedTime.hour &&
-          slot.time.minute == widget.selectedTime.minute,
-    );
-
-    if (selectedIndex == -1) return;
-
-    // Calculate maximum possible duration from this slot
+    // Calculate maximum possible duration from selected time to venue closing
     final selectedSlotMinutes =
         widget.selectedTime.hour * 60 + widget.selectedTime.minute;
 
     // Find venue closing time
     final closingTime = _parseTimeString(widget.closingHours);
-    if (closingTime == null) return;
+    if (closingTime == null) {
+      // If we can't parse closing time, still provide basic duration options
+      for (
+        int duration = widget.minDuration;
+        duration <= widget.maxDuration;
+        duration += widget.durationStep
+      ) {
+        availableDurations.add(duration);
+      }
+      return;
+    }
 
     int closingMinutes = closingTime.hour * 60 + closingTime.minute;
     if (closingMinutes <= selectedSlotMinutes) {
@@ -129,13 +131,18 @@ class _SmartSlotSelectorState extends State<SmartSlotSelector> {
 
     final maxPossibleMinutes = closingMinutes - selectedSlotMinutes;
 
-    // Generate duration options
+    // Generate duration options based on venue hours, not arena availability
     for (
       int duration = widget.minDuration;
       duration <= widget.maxDuration && duration <= maxPossibleMinutes;
       duration += widget.durationStep
     ) {
       availableDurations.add(duration);
+    }
+
+    // Ensure we always have at least the minimum duration available
+    if (availableDurations.isEmpty) {
+      availableDurations.add(widget.minDuration);
     }
   }
 

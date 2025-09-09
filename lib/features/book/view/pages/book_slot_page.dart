@@ -444,8 +444,31 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
           if (!isToday && availableTimeSlots.isNotEmpty) {
             selectedTime = availableTimeSlots.first;
           } else if (isToday) {
-            // For today, set to next available 30-minute slot
-            _initializeCurrentTime();
+            // For today, only reset time if current selected time is in the past
+            final now = TimeOfDay.now();
+            final currentMinutes = now.hour * 60 + now.minute;
+            final selectedMinutes =
+                selectedTime.hour * 60 + selectedTime.minute;
+
+            // Only reset if selected time is in the past or not in available slots
+            if (selectedMinutes <= currentMinutes ||
+                !availableTimeSlots.any(
+                  (slot) =>
+                      slot.hour == selectedTime.hour &&
+                      slot.minute == selectedTime.minute,
+                )) {
+              _initializeCurrentTime();
+
+              // Ensure the new time is in available slots
+              if (availableTimeSlots.isNotEmpty &&
+                  !availableTimeSlots.any(
+                    (slot) =>
+                        slot.hour == selectedTime.hour &&
+                        slot.minute == selectedTime.minute,
+                  )) {
+                selectedTime = availableTimeSlots.first;
+              }
+            }
           }
 
           // Check availability for new date

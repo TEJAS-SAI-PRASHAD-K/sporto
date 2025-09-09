@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/core/models/venue.dart' as model;
-import 'package:playo/core/models/game.dart';
+import 'package:playo/core/models/venue_booking.dart';
 import 'package:playo/features/book/viewmodel/venue_view_model.dart';
 import 'package:playo/features/book/view/widgets/venue_sport_selector.dart';
 import 'package:playo/features/book/view/widgets/date_picker_widget.dart';
@@ -25,9 +25,13 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
   int selectedDateIndex = 0;
   late TimeOfDay selectedTime;
   int selectedDuration = 60;
-  Set<String> selectedCourts = {};
+  Map<String, int> selectedCourtsWithDuration =
+      {}; // courtId -> duration in minutes
   Set<String> unavailableCourts = {}; // Track unavailable courts
   String? selectedSportId; // Track selected sport for filtering
+
+  // Helper property to get selected court IDs for compatibility
+  Set<String> get selectedCourts => selectedCourtsWithDuration.keys.toSet();
 
   List<DateTime> availableDates = [];
   List<TimeOfDay> availableTimeSlots = [];
@@ -61,7 +65,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
     setState(() {
       selectedSportId = sportId;
       // Clear selected courts when changing sport filter
-      selectedCourts.clear();
+      selectedCourtsWithDuration.clear();
 
       // Recheck availability for the new filtered courts
       final venueState = ref.read(venueViewModelProvider).valueOrNull;
@@ -184,7 +188,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
       }
     }
 
-    // Auto-select sport if venue has only one sport and no sport is selected
+    // Auto-select first sport if no sport is selected
     if (selectedSportId == null) {
       final availableSports = venueData.court
           .where((court) => court.isBookable)
@@ -192,7 +196,8 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
           .toSet()
           .toList();
 
-      if (availableSports.length == 1) {
+      if (availableSports.isNotEmpty) {
+        // Always select the first available sport by default
         selectedSportId = availableSports.first;
       }
     }
@@ -406,6 +411,13 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
     setState(() {
       selectedDuration = newDuration;
 
+      // Update all selected courts with the new global duration
+      final currentSelectedCourts = selectedCourtsWithDuration.keys.toList();
+      selectedCourtsWithDuration.clear();
+      for (final courtId in currentSelectedCourts) {
+        selectedCourtsWithDuration[courtId] = newDuration;
+      }
+
       // Check availability for new duration and update unavailable courts
       final venueState = ref.read(venueViewModelProvider).valueOrNull;
       if (venueState != null) {
@@ -482,15 +494,219 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
     // Don't add courts that are unavailable
     if (unavailableCourts.contains(courtId)) return;
 
-    setState(() {
-      selectedCourts.add(courtId);
-    });
+    // Show Add Arena confirmation modal
+    _showAddArenaModal(courtId);
   }
 
   void _removeCourt(String courtId) {
     setState(() {
-      selectedCourts.remove(courtId);
+      selectedCourtsWithDuration.remove(courtId);
     });
+  }
+
+  void _showAddArenaModal(String courtId) {
+    final venueState = ref.read(venueViewModelProvider).valueOrNull;
+    if (venueState == null) return;
+
+    final venueData = venueState.data.firstWhere(
+      (datum) => datum.venue.id == widget.venueId,
+      orElse: () => venueState.data.first,
+    );
+
+    final court = venueData.court.firstWhere((c) => c.id == courtId);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.4,
+        minChildSize: 0.3,
+        maxChildSize: 0.5,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 8),
+                width: 32,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+
+              // Content
+              Expanded(child: _buildAddArenaContent(court)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddArenaContent(model.Court court) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    // Calculate price using global duration
+    final priceInDollars = court.hourlyRate / 86.0;
+    final totalPrice = (priceInDollars * selectedDuration) / 60.0;
+
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title
+          Text(
+            'Add Arena to Booking',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Arena Details
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                _buildArenaDetailRow(
+                  Icons.sports_tennis,
+                  'Arena',
+                  court.name,
+                  colorScheme,
+                ),
+                const SizedBox(height: 12),
+                _buildArenaDetailRow(
+                  Icons.access_time,
+                  'Time',
+                  _formatTime(selectedTime),
+                  colorScheme,
+                ),
+                const SizedBox(height: 12),
+                _buildArenaDetailRow(
+                  Icons.timer,
+                  'Duration',
+                  '${selectedDuration ~/ 60}h ${selectedDuration % 60 > 0 ? '${selectedDuration % 60}m' : ''}',
+                  colorScheme,
+                ),
+                const SizedBox(height: 12),
+                _buildArenaDetailRow(
+                  Icons.monetization_on_outlined,
+                  'Price',
+                  'USD ${totalPrice.toStringAsFixed(2)}',
+                  colorScheme,
+                ),
+              ],
+            ),
+          ),
+
+          const Spacer(),
+
+          // Action buttons
+          Row(
+            children: [
+              if (selectedCourts.contains(court.id))
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _removeCourt(court.id);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Remove'),
+                  ),
+                ),
+              if (selectedCourts.contains(court.id)) const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedCourtsWithDuration[court.id] = selectedDuration;
+                    });
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    selectedCourts.contains(court.id)
+                        ? 'Update Arena'
+                        : 'Add Arena',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArenaDetailRow(
+    IconData icon,
+    String label,
+    String value,
+    ColorScheme colorScheme,
+  ) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: colorScheme.onSurfaceVariant),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 14),
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatTime(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$hour:$minute $period';
   }
 
   double _calculateTotalPrice(List<model.Court> selectedCourtsList) {
@@ -501,6 +717,192 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
       total += (priceInDollars * selectedDuration) / 60.0;
     }
     return total;
+  }
+
+  Widget _buildHourButton(model.Datum venueData, ColorScheme colorScheme) {
+    // Calculate total hours across all selected arenas
+    final totalMinutes = selectedCourts.length * selectedDuration;
+    final totalHours = totalMinutes / 60.0;
+
+    final hourText = totalHours == 1.0 ? 'hour' : 'hours';
+    final arenaCount = selectedCourts.length;
+    final arenaText = arenaCount == 1 ? 'arena' : 'arenas';
+
+    String summaryText;
+    if (totalHours % 1 == 0) {
+      summaryText =
+          '${totalHours.toInt()} $hourText added • $arenaCount $arenaText selected';
+    } else {
+      summaryText =
+          '${totalHours.toStringAsFixed(1)} $hourText added • $arenaCount $arenaText selected';
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: ElevatedButton(
+        onPressed: () => _showBookingSummaryBottomSheet(venueData),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 2,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                summaryText,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Icon(Icons.keyboard_arrow_up, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showBookingSummaryBottomSheet(model.Datum venueData) {
+    if (selectedCourts.isEmpty) return;
+
+    // Check if any selected courts are unavailable
+    final hasUnavailableCourts = selectedCourts.any(
+      (courtId) => unavailableCourts.contains(courtId),
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useRootNavigator: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: hasUnavailableCourts ? 0.3 : 0.5,
+        minChildSize: 0.25,
+        maxChildSize: 0.85,
+        expand: false,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 8),
+                width: 32,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+
+              // Content
+              Expanded(
+                child: hasUnavailableCourts
+                    ? _buildUnavailableMessage()
+                    : _buildBookingSummaryContent(venueData, scrollController),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUnavailableMessage() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 32.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 48, color: colorScheme.error),
+          const SizedBox(height: 16),
+          Text(
+            'Some selected arenas are no longer available',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: colorScheme.onSurface,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Please remove unavailable arenas or choose different ones.',
+            style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colorScheme.errorContainer,
+              foregroundColor: colorScheme.onErrorContainer,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'Close',
+              style: TextStyle(
+                color: colorScheme.onErrorContainer,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBookingSummaryContent(
+    model.Datum venueData,
+    ScrollController scrollController,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final selectedCourtsList = _getFilteredCourts(
+      venueData,
+    ).where((court) => selectedCourts.contains(court.id)).toList();
+
+    return SingleChildScrollView(
+      controller: scrollController,
+      physics: const BouncingScrollPhysics(),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: BookingSummaryWidget(
+          selectedCourtsList: selectedCourtsList,
+          selectedCourtsWithDuration: selectedCourtsWithDuration,
+          selectedTime: selectedTime,
+          selectedDuration: selectedDuration,
+          totalPrice: _calculateTotalPrice(selectedCourtsList),
+          currency: currency,
+          onAddToBooking: () {
+            Navigator.pop(context); // Close bottom sheet first
+            _addToBooking(venueData);
+          },
+          colorScheme: colorScheme,
+        ),
+      ),
+    );
   }
 
   void _addToBooking(model.Datum venueData) {
@@ -532,41 +934,67 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
         ? selectedCourtsList.first
         : filteredCourts.first; // Fallback to first filtered court
 
-    // Calculate the actual price as shown in booking summary
-    final priceInDollars = selectedCourt.hourlyRate / 86.0;
-    final totalCourtPrice = (priceInDollars * selectedDuration) / 60.0;
-
-    // Create a Game object for booking
-    final gameForBooking = Game.forBooking(
-      gameId: 'booking_${DateTime.now().millisecondsSinceEpoch}',
-      organiserUserId: 'current_user', // This should come from auth
-      sportId: selectedCourt.sportId,
-      gameDate: selectedDate,
-      gameTime:
-          '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}:00',
-      venueName: venueData.venue.name,
+    // Create VenueInfo from venue data
+    final venueInfo = VenueInfo.fromVenueModel(
       venueId: venueData.venue.id,
-      venueAddress: '${venueData.venue.address}, ${venueData.venue.city}',
+      venueName: venueData.venue.name,
+      venueAddress: venueData.venue.address,
+      venueCity: venueData.venue.city,
       venueLatitude: venueData.venue.latitude,
       venueLongitude: venueData.venue.longitude,
-      courtId: selectedCourt.id,
-      courtName: selectedCourt.name,
-      hourlyRate:
-          totalCourtPrice, // Use calculated total price instead of raw hourly rate
-      convenienceFee: 0.08, // $0.08 USD
+      venuePhone: venueData.venue.phone,
+      venueEmail: venueData.venue.email,
+      openingHours: venueData.venue.openingHours,
+      closingHours: venueData.venue.closingHours,
+      nonOperatingDays: venueData.venue.nonOperatingDays,
+      venueRating: venueData.venue.rating,
+      cancellationHours: venueData.venue.cancellationHours,
+    );
+
+    // Create BookingCourt objects for selected courts
+    final bookingCourts = selectedCourtsList.map((court) {
+      final courtDuration =
+          selectedCourtsWithDuration[court.id] ?? selectedDuration;
+      return BookingCourt.fromCourt(
+        courtId: court.id,
+        courtName: court.name,
+        sportId: court.sportId,
+        courtType: court.type,
+        courtSurface: court.surface,
+        hourlyRate: court.hourlyRate / 86.0, // Convert to USD
+        durationMinutes: courtDuration,
+        features: court.features,
+        equipment: court.equipment,
+      );
+    }).toList();
+
+    // Create VenueBooking object for booking
+    final venueBooking = VenueBooking.fromVenueSelection(
+      bookingId: 'booking_${DateTime.now().millisecondsSinceEpoch}',
+      userId: 'current_user', // This should come from auth
+      venueInfo: venueInfo,
+      selectedCourts: bookingCourts,
+      sportId: selectedCourt.sportId,
+      bookingDate: selectedDate,
+      bookingTime:
+          '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}:00',
+      totalDuration: selectedDuration,
+      currency: 'USD',
       paymentSplit: PaymentSplit.halfAdvance,
+      convenienceFee: 0.08, // $0.08 USD
+      isKarmaRedeemEnabled: false,
     );
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PaymentCheckPage(gameData: gameForBooking),
+        builder: (context) => PaymentCheckPage(venueBookingData: venueBooking),
       ),
     );
 
     // Clear selected courts after navigation
     setState(() {
-      selectedCourts.clear();
+      selectedCourtsWithDuration.clear();
     });
   }
 
@@ -694,6 +1122,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
                     child: CourtSelectionWidget(
                       courts: _getFilteredCourts(venueData),
                       selectedCourts: selectedCourts,
+                      selectedCourtsWithDuration: selectedCourtsWithDuration,
                       unavailableCourts: unavailableCourts,
                       onAddCourt: _addCourt,
                       onRemoveCourt: _removeCourt,
@@ -702,70 +1131,13 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
                   ),
                 ),
 
-                // Fixed bottom section for booking summary
+                // Fixed bottom section for hour button
                 // Only show if there are selected courts AND none are unavailable
                 if (selectedCourts.isNotEmpty &&
                     !selectedCourts.any(
                       (courtId) => unavailableCourts.contains(courtId),
                     ))
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: BookingSummaryWidget(
-                      selectedCourtsList: _getFilteredCourts(venueData)
-                          .where((court) => selectedCourts.contains(court.id))
-                          .toList(),
-                      selectedTime: selectedTime,
-                      selectedDuration: selectedDuration,
-                      totalPrice: _calculateTotalPrice(
-                        _getFilteredCourts(venueData)
-                            .where((court) => selectedCourts.contains(court.id))
-                            .toList(),
-                      ),
-                      currency: currency,
-                      onAddToBooking: () => _addToBooking(venueData),
-                      colorScheme: colorScheme,
-                    ),
-                  ),
-
-                // Show message when courts are selected but some are unavailable
-                if (selectedCourts.isNotEmpty &&
-                    selectedCourts.any(
-                      (courtId) => unavailableCourts.contains(courtId),
-                    ))
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: colorScheme.errorContainer,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: colorScheme.error.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.warning_amber,
-                            color: colorScheme.onErrorContainer,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Some selected courts are unavailable for this time slot. Please select only available courts to proceed.',
-                              style: TextStyle(
-                                color: colorScheme.onErrorContainer,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  _buildHourButton(venueData, colorScheme),
               ],
             ),
     );

@@ -86,14 +86,14 @@ class VenueSportSelector extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    // Auto-select single sport if not already selected
-    if (sports.length == 1 && selectedSportId == null) {
+    // Auto-select first sport if not already selected
+    if (selectedSportId == null && sports.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         onSportSelected(sports.first);
       });
     }
 
-    // Show horizontal selector for both single and multiple sports
+    // Show horizontal selector for both single and multiple sports (no "All" option)
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -121,8 +121,8 @@ class VenueSportSelector extends StatelessWidget {
                 )
               : LayoutBuilder(
                   builder: (context, constraints) {
-                    // Calculate total width needed for all cards
-                    final totalCards = sports.length + 1; // +1 for "All" option
+                    // Calculate total width needed for all sport cards (no "All" option)
+                    final totalCards = sports.length;
                     final cardWidth = 90.0;
                     final cardMargin = 12.0;
                     final totalWidth =
@@ -134,56 +134,46 @@ class VenueSportSelector extends StatelessWidget {
                       return Center(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // "All" option - only for multiple sports
-                            _buildSportCard(
-                              sportId: null,
-                              displayName: 'All Sports',
-                              icon: Icons.sports,
-                              courtCount: venueData.court
-                                  .where((c) => c.isBookable)
-                                  .length,
-                              isSelected: selectedSportId == null,
-                            ),
-                            // Individual sports
-                            ...sports.map(
-                              (sport) => _buildSportCard(
-                                sportId: sport,
-                                displayName: _getSportDisplayName(sport),
-                                icon: _getSportIcon(sport),
-                                courtCount: _getCourtCount(sport),
-                                isSelected: selectedSportId == sport,
-                              ),
-                            ),
-                          ],
+                          children: sports
+                              .map(
+                                (sport) => Padding(
+                                  padding: EdgeInsets.only(
+                                    right: sport == sports.last
+                                        ? 0
+                                        : cardMargin,
+                                  ),
+                                  child: _buildSportCard(
+                                    sportId: sport,
+                                    displayName: _getSportDisplayName(sport),
+                                    icon: _getSportIcon(sport),
+                                    courtCount: _getCourtCount(sport),
+                                    isSelected: selectedSportId == sport,
+                                  ),
+                                ),
+                              )
+                              .toList(),
                         ),
                       );
                     } else {
                       // If content doesn't fit, use scrollable list
                       return ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: totalCards,
+                        itemCount: sports.length,
                         itemBuilder: (context, index) {
-                          if (index == 0) {
-                            // "All" option
-                            return _buildSportCard(
-                              sportId: null,
-                              displayName: 'All Sports',
-                              icon: Icons.sports,
-                              courtCount: venueData.court
-                                  .where((c) => c.isBookable)
-                                  .length,
-                              isSelected: selectedSportId == null,
-                            );
-                          }
-
-                          final sport = sports[index - 1];
-                          return _buildSportCard(
-                            sportId: sport,
-                            displayName: _getSportDisplayName(sport),
-                            icon: _getSportIcon(sport),
-                            courtCount: _getCourtCount(sport),
-                            isSelected: selectedSportId == sport,
+                          final sport = sports[index];
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              right: index == sports.length - 1
+                                  ? 0
+                                  : cardMargin,
+                            ),
+                            child: _buildSportCard(
+                              sportId: sport,
+                              displayName: _getSportDisplayName(sport),
+                              icon: _getSportIcon(sport),
+                              courtCount: _getCourtCount(sport),
+                              isSelected: selectedSportId == sport,
+                            ),
                           );
                         },
                       );

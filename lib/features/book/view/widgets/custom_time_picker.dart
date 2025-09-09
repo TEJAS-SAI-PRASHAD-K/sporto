@@ -17,6 +17,9 @@ class CustomTimePicker {
       return null;
     }
 
+    // Capture scaffold messenger reference before async operations
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     return await showDialog<TimeOfDay>(
       context: context,
       builder: (BuildContext context) {
@@ -96,7 +99,7 @@ class CustomTimePicker {
         }
 
         if (closestSlot != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             SnackBar(
               content: Text(
                 'Selected time not available. Closest available time: ${_formatTime(closestSlot)} selected.',

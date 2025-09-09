@@ -6,7 +6,7 @@ part of 'venue_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$venueViewModelHash() => r'1db62acc012213e422a7b4d7a449faf00cd6c891';
+String _$venueViewModelHash() => r'004b2358d4b60a5e181cfa1c43387c6957cb9290';
 
 /// See also [VenueViewModel].
 @ProviderFor(VenueViewModel)

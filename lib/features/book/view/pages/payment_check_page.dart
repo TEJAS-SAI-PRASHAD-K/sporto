@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:playo/core/models/game.dart';
+import 'package:playo/core/models/venue_booking.dart';
 
 class PaymentCheckPage extends StatefulWidget {
-  final Game? gameData;
+  final VenueBooking? venueBookingData;
 
-  const PaymentCheckPage({super.key, this.gameData});
+  const PaymentCheckPage({super.key, this.venueBookingData});
 
   @override
   State<PaymentCheckPage> createState() => _PaymentCheckPageState();
@@ -15,18 +15,20 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
   bool showCouponField = false;
   final TextEditingController couponController = TextEditingController();
 
-  // Game data from booking page
-  late Game gameData;
+  // Venue booking data from booking page
+  late VenueBooking venueBookingData;
 
   @override
   void initState() {
     super.initState();
-    // Ensure we have game data - this should always be provided
-    if (widget.gameData == null) {
-      throw Exception('PaymentCheckPage requires gameData to be provided');
+    // Ensure we have venue booking data - this should always be provided
+    if (widget.venueBookingData == null) {
+      throw Exception(
+        'PaymentCheckPage requires venueBookingData to be provided',
+      );
     }
-    gameData = widget.gameData!;
-    isKarmaRedeemEnabled = gameData.isKarmaRedeemEnabled ?? false;
+    venueBookingData = widget.venueBookingData!;
+    isKarmaRedeemEnabled = venueBookingData.isKarmaRedeemEnabled;
   }
 
   @override
@@ -50,7 +52,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          gameData.venueName ?? 'Unknown Venue',
+          venueBookingData.venueName,
           style: TextStyle(
             color: colorScheme.onSurface,
             fontSize: 18,
@@ -87,12 +89,12 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
   }
 
   Widget _buildSportBadge(ColorScheme colorScheme) {
-    // Get sport name from game's sportId, convert to uppercase
-    final sportName = gameData.sportId.toUpperCase();
+    // Get sport name from venue booking's sportId, convert to uppercase
+    final sportName = venueBookingData.sportId.toUpperCase();
 
     // Choose appropriate icon based on sport
     IconData sportIcon;
-    switch (gameData.sportId.toLowerCase()) {
+    switch (venueBookingData.sportId.toLowerCase()) {
       case 'badminton':
         sportIcon = Icons.sports_tennis;
         break;
@@ -162,25 +164,25 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
         children: [
           _buildDetailRow(
             Icons.sports_tennis,
-            gameData.courtName ?? 'Court',
+            venueBookingData.courtNames,
             colorScheme,
           ),
           const SizedBox(height: 12),
           _buildDetailRow(
             Icons.calendar_today,
-            gameData.formattedDate,
+            venueBookingData.formattedDate,
             colorScheme,
           ),
           const SizedBox(height: 12),
           _buildDetailRow(
             Icons.access_time,
-            gameData.formattedTimeSlot,
+            venueBookingData.formattedTimeSlot,
             colorScheme,
           ),
           const SizedBox(height: 12),
           _buildDetailRow(
             Icons.monetization_on_outlined,
-            "USD ${gameData.courtPrice.toStringAsFixed(2)}",
+            "USD ${venueBookingData.subtotal.toStringAsFixed(2)}",
             colorScheme,
           ),
         ],
@@ -220,13 +222,13 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
       children: [
         _buildPriceRow(
           "Court Price",
-          "USD ${gameData.courtPrice.toStringAsFixed(2)}",
+          "USD ${venueBookingData.subtotal.toStringAsFixed(2)}",
           colorScheme,
         ),
         const SizedBox(height: 12),
         _buildPriceRow(
           "Convenience Fee",
-          "USD ${(gameData.convenienceFee ?? 0.0).toStringAsFixed(2)}",
+          "USD ${venueBookingData.convenienceFee.toStringAsFixed(2)}",
           colorScheme,
           hasInfoIcon: true,
         ),
@@ -375,7 +377,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                 ),
               ),
               Text(
-                "USD ${gameData.totalAmount.toStringAsFixed(2)}",
+                "USD ${venueBookingData.totalAmount.toStringAsFixed(2)}",
                 style: TextStyle(
                   color: colorScheme.primary,
                   fontSize: 18,
@@ -399,7 +401,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                       ),
                     ),
                     Text(
-                      "USD ${gameData.advancePayable.toStringAsFixed(2)}",
+                      "USD ${venueBookingData.advancePayable.toStringAsFixed(2)}",
                       style: TextStyle(
                         color: colorScheme.onSurface,
                         fontSize: 16,
@@ -421,7 +423,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                       ),
                     ),
                     Text(
-                      "USD ${gameData.toBePayedAtVenue.toStringAsFixed(2)}",
+                      "USD ${venueBookingData.toBePayedAtVenue.toStringAsFixed(2)}",
                       style: TextStyle(
                         color: colorScheme.onSurface,
                         fontSize: 16,
@@ -498,7 +500,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "USD ${gameData.totalAmount.toStringAsFixed(2)}",
+                "USD ${venueBookingData.totalAmount.toStringAsFixed(2)}",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,

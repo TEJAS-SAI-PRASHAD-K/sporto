@@ -4,6 +4,7 @@ import 'package:playo/core/models/venue.dart' as model;
 class CourtSelectionWidget extends StatelessWidget {
   final List<model.Court> courts;
   final Set<String> selectedCourts;
+  final Map<String, int> selectedCourtsWithDuration;
   final Set<String> unavailableCourts; // New parameter for unavailable courts
   final Function(String) onAddCourt;
   final Function(String) onRemoveCourt;
@@ -13,6 +14,7 @@ class CourtSelectionWidget extends StatelessWidget {
     super.key,
     required this.courts,
     required this.selectedCourts,
+    required this.selectedCourtsWithDuration,
     required this.unavailableCourts,
     required this.onAddCourt,
     required this.onRemoveCourt,

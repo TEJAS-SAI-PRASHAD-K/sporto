@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/core/models/venue.dart' as model;
+import 'package:playo/core/models/game.dart';
 import 'package:playo/features/book/viewmodel/venue_view_model.dart';
-import 'package:playo/features/book/view/widgets/sport_selection_widget.dart';
+import 'package:playo/features/book/view/widgets/venue_sport_selector.dart';
 import 'package:playo/features/book/view/widgets/date_picker_widget.dart';
 import 'package:playo/features/book/view/widgets/court_selection_widget.dart';
 import 'package:playo/features/book/view/widgets/booking_summary_widget.dart';
@@ -26,6 +27,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
   int selectedDuration = 60;
   Set<String> selectedCourts = {};
   Set<String> unavailableCourts = {}; // Track unavailable courts
+  String? selectedSportId; // Track selected sport for filtering
 
   List<DateTime> availableDates = [];
   List<TimeOfDay> availableTimeSlots = [];
@@ -55,13 +57,166 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
     );
   }
 
+  void _onSportSelected(String? sportId) {
+    setState(() {
+      selectedSportId = sportId;
+      // Clear selected courts when changing sport filter
+      selectedCourts.clear();
+
+      // Recheck availability for the new filtered courts
+      final venueState = ref.read(venueViewModelProvider).valueOrNull;
+      if (venueState != null) {
+        final venueData = venueState.data.firstWhere(
+          (datum) => datum.venue.id == widget.venueId,
+          orElse: () => venueState.data.first,
+        );
+        _checkSlotAvailability(venueData);
+      }
+    });
+  }
+
+  List<model.Court> _getFilteredCourts(model.Datum venueData) {
+    if (selectedSportId == null) {
+      return venueData.court.where((court) => court.isBookable).toList();
+    }
+    return venueData.court
+        .where((court) => court.isBookable && court.sportId == selectedSportId)
+        .toList();
+  }
+
+  bool _hasAvailableSlots(DateTime testDate, model.Datum venueData) {
+    // Generate all possible time slots for this date
+    final allTimeSlots = VenueOperatingHours.generateAvailableTimeSlots(
+      openingHours: venueData.venue.openingHours,
+      closingHours: venueData.venue.closingHours,
+      nonOperatingDays: venueData.venue.nonOperatingDays,
+      selectedDate: testDate,
+      slotIntervalMinutes: durationStep,
+      minimumBookingDuration: minDuration,
+    );
+
+    // If no time slots are available at all, return false
+    if (allTimeSlots.isEmpty) return false;
+
+    // Check if we're past operating hours for today
+    final now = DateTime.now();
+    final isToday = DateUtils.isSameDay(testDate, now);
+
+    if (isToday) {
+      final currentTimeInMinutes =
+          TimeOfDay.now().hour * 60 + TimeOfDay.now().minute;
+      final closingTimeInMinutes = _parseTimeToMinutes(
+        venueData.venue.closingHours,
+      );
+
+      // If current time is past closing hours, no slots available
+      if (currentTimeInMinutes >= closingTimeInMinutes) {
+        return false;
+      }
+    }
+
+    // Check each time slot to see if at least one court is available
+    for (final timeSlot in allTimeSlots) {
+      // Get all courts (not filtered by sport during date filtering)
+      for (final court in venueData.court.where((c) => c.isBookable)) {
+        // Temporarily set values to check availability
+        final tempSelectedTime = selectedTime;
+        final tempSelectedDateIndex = selectedDateIndex;
+
+        selectedTime = timeSlot;
+        // Set a temporary date index (we'll restore it)
+        final tempDateIndex = availableDates.isNotEmpty
+            ? availableDates.indexWhere(
+                (date) => DateUtils.isSameDay(date, testDate),
+              )
+            : -1;
+        if (tempDateIndex != -1) {
+          selectedDateIndex = tempDateIndex;
+        }
+
+        final isCourtUnavailable = _isCourtUnavailable(
+          court,
+          testDate: testDate,
+        );
+
+        // Restore original values
+        selectedTime = tempSelectedTime;
+        selectedDateIndex = tempSelectedDateIndex;
+
+        // If at least one court is available for this time slot, date has available slots
+        if (!isCourtUnavailable) {
+          return true;
+        }
+      }
+    }
+
+    return false; // No available slots found for this date
+  }
+
+  int _parseTimeToMinutes(String timeString) {
+    try {
+      final parts = timeString.split(':');
+      if (parts.length >= 2) {
+        final hours = int.parse(parts[0]);
+        final minutes = int.parse(parts[1]);
+        return hours * 60 + minutes;
+      }
+    } catch (e) {
+      debugPrint('Error parsing time: $timeString');
+    }
+    return 0;
+  }
+
   void _initializeFromVenueData(model.Datum venueData) {
-    // Initialize available dates based on venue operating days
-    availableDates = VenueOperatingHours.generateAvailableDates(
+    // Initialize selectedSportId with the sport from navigation if provided
+    if (widget.sportName != null && selectedSportId == null) {
+      // Find matching sport in venue courts
+      final matchingSport = venueData.court
+          .where((court) => court.isBookable)
+          .map((court) => court.sportId)
+          .firstWhere(
+            (sportId) =>
+                sportId.toLowerCase() == widget.sportName!.toLowerCase(),
+            orElse: () => '',
+          );
+      if (matchingSport.isNotEmpty) {
+        selectedSportId = matchingSport;
+      }
+    }
+
+    // Auto-select sport if venue has only one sport and no sport is selected
+    if (selectedSportId == null) {
+      final availableSports = venueData.court
+          .where((court) => court.isBookable)
+          .map((court) => court.sportId)
+          .toSet()
+          .toList();
+
+      if (availableSports.length == 1) {
+        selectedSportId = availableSports.first;
+      }
+    }
+
+    // Generate all potential dates based on venue operating days
+    final allPotentialDates = VenueOperatingHours.generateAvailableDates(
       startDate: DateTime.now(),
-      numberOfDays: 30, // Next 30 available days
+      numberOfDays: 60, // Generate more days to account for filtering
       nonOperatingDays: venueData.venue.nonOperatingDays,
     );
+
+    // Filter dates to only include those with available slots
+    availableDates = [];
+    for (final testDate in allPotentialDates) {
+      if (_hasAvailableSlots(testDate, venueData)) {
+        availableDates.add(testDate);
+      }
+
+      // Stop when we have enough available dates (30 is good)
+      if (availableDates.length >= 30) break;
+    }
+
+    // Set first available date as selected
+    selectedDateIndex = 0;
 
     // Initialize available time slots based on venue operating hours
     if (availableDates.isNotEmpty) {
@@ -114,9 +269,10 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
 
   void _updateUnavailableCourts(model.Datum venueData) {
     final newUnavailableCourts = <String>{};
+    final filteredCourts = _getFilteredCourts(venueData);
 
-    // Check each court for availability
-    for (final court in venueData.court) {
+    // Check each filtered court for availability
+    for (final court in filteredCourts) {
       if (_isCourtUnavailable(court)) {
         newUnavailableCourts.add(court.id);
       }
@@ -127,7 +283,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
     // Debug info for development (can be removed in production)
     if (newUnavailableCourts.isNotEmpty) {
       debugPrint(
-        'Unavailable courts: ${newUnavailableCourts.length} out of ${venueData.court.length}',
+        'Unavailable courts: ${newUnavailableCourts.length} out of ${filteredCourts.length}',
       );
     }
 
@@ -137,13 +293,19 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
     );
   }
 
-  bool _isCourtUnavailable(model.Court court) {
+  bool _isCourtUnavailable(model.Court court, {DateTime? testDate}) {
     // Enhanced logic to work for venues with any number of arenas
     // This would be replaced with real booking data in production
 
     final selectedStartMinutes = selectedTime.hour * 60 + selectedTime.minute;
     final selectedEndMinutes = selectedStartMinutes + selectedDuration;
-    final selectedDate = availableDates[selectedDateIndex];
+
+    // Use test date if provided, otherwise use the selected date from available dates
+    final selectedDate =
+        testDate ??
+        (availableDates.isNotEmpty
+            ? availableDates[selectedDateIndex]
+            : DateTime.now());
 
     // Get court index (first court = 0, second court = 1, etc.)
     final venueState = ref.read(venueViewModelProvider).valueOrNull;
@@ -198,6 +360,18 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
 
         if (selectedStartMinutes < maintenanceEndMinutes &&
             selectedEndMinutes > maintenanceStartMinutes) {
+          return true;
+        }
+      }
+
+      // Single arena is also unavailable during peak hours 8-10 PM on weekdays
+      if (selectedDate.weekday >= DateTime.monday &&
+          selectedDate.weekday <= DateTime.friday) {
+        const peakStartMinutes = 20 * 60; // 8:00 PM
+        const peakEndMinutes = 22 * 60; // 10:00 PM
+
+        if (selectedStartMinutes < peakEndMinutes &&
+            selectedEndMinutes > peakStartMinutes) {
           return true;
         }
       }
@@ -325,9 +499,46 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
     }
 
     // Navigate to payment check page
+    final selectedDate = availableDates[selectedDateIndex];
+    final filteredCourts = _getFilteredCourts(venueData);
+    final selectedCourtsList = filteredCourts
+        .where((court) => selectedCourts.contains(court.id))
+        .toList();
+
+    final selectedCourt = selectedCourtsList.isNotEmpty
+        ? selectedCourtsList.first
+        : filteredCourts.first; // Fallback to first filtered court
+
+    // Calculate the actual price as shown in booking summary
+    final priceInDollars = selectedCourt.hourlyRate / 86.0;
+    final totalCourtPrice = (priceInDollars * selectedDuration) / 60.0;
+
+    // Create a Game object for booking
+    final gameForBooking = Game.forBooking(
+      gameId: 'booking_${DateTime.now().millisecondsSinceEpoch}',
+      organiserUserId: 'current_user', // This should come from auth
+      sportId: selectedCourt.sportId,
+      gameDate: selectedDate,
+      gameTime:
+          '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}:00',
+      venueName: venueData.venue.name,
+      venueId: venueData.venue.id,
+      venueAddress: '${venueData.venue.address}, ${venueData.venue.city}',
+      venueLatitude: venueData.venue.latitude,
+      venueLongitude: venueData.venue.longitude,
+      courtId: selectedCourt.id,
+      courtName: selectedCourt.name,
+      hourlyRate:
+          totalCourtPrice, // Use calculated total price instead of raw hourly rate
+      convenienceFee: 0.08, // $0.08 USD
+      paymentSplit: PaymentSplit.halfAdvance,
+    );
+
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PaymentCheckPage()),
+      MaterialPageRoute(
+        builder: (context) => PaymentCheckPage(gameData: gameForBooking),
+      ),
     );
 
     // Clear selected courts after navigation
@@ -401,9 +612,11 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Sport selection widget
-                      SportSelectionWidget(
-                        sportName: widget.sportName,
+                      // Venue sport selector widget
+                      VenueSportSelector(
+                        venueData: venueData,
+                        selectedSportId: selectedSportId,
+                        onSportSelected: _onSportSelected,
                         colorScheme: colorScheme,
                       ),
 
@@ -437,7 +650,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
 
                       const SizedBox(height: 20),
 
-                      // Available Arenas header
+                      // Available Arenas header - simplified since we only show available dates
                       Text(
                         "Available Arenas",
                         style: TextStyle(
@@ -456,7 +669,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: CourtSelectionWidget(
-                      courts: venueData.court,
+                      courts: _getFilteredCourts(venueData),
                       selectedCourts: selectedCourts,
                       unavailableCourts: unavailableCourts,
                       onAddCourt: _addCourt,
@@ -475,13 +688,13 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: BookingSummaryWidget(
-                      selectedCourtsList: venueData.court
+                      selectedCourtsList: _getFilteredCourts(venueData)
                           .where((court) => selectedCourts.contains(court.id))
                           .toList(),
                       selectedTime: selectedTime,
                       selectedDuration: selectedDuration,
                       totalPrice: _calculateTotalPrice(
-                        venueData.court
+                        _getFilteredCourts(venueData)
                             .where((court) => selectedCourts.contains(court.id))
                             .toList(),
                       ),

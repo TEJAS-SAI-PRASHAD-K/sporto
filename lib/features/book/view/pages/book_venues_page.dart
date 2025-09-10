@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:playo/core/models/venue.dart' as model;
+import 'package:playo/features/book/view/pages/book_slot_page.dart';
 import 'package:playo/features/book/view/widgets/rectangle_outlined_container.dart';
 import 'package:playo/features/book/view/widgets/circle_icon_button.dart';
 import 'package:playo/features/book/view/widgets/info_row.dart';
@@ -176,7 +177,7 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                       const Icon(Icons.sports_tennis, size: 20),
                       const SizedBox(width: 6),
                       Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
+                        padding: const EdgeInsets.only(right: 24.0),
                         child: Text(
                           '${_formatCount(totalGames)} Total Games',
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -362,7 +363,17 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
               const SizedBox(width: 12),
               Expanded(
                 child: FilledButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BookSlotPage(
+                          venueId: widget.datum.venue.id,
+                          sportName: 'Sports', // Default sport
+                        ),
+                      ),
+                    );
+                  },
                   style: FilledButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(9),

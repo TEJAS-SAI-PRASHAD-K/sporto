@@ -77,15 +77,11 @@ class TrainViewModel extends _$TrainViewModel {
   // Public read-only view of the built-in service categories used by the UI
   List<ServiceCategory> get categories => List.unmodifiable(_categories);
   @override
-  AsyncValue<Trainer> build() {
+  AsyncValue<Trainer>? build() {
     _trainerRemoteRepository = ref.watch(trainerRemoteRepositoryProvider);
     _currentUserNotifier = ref.watch(currentUserNotifierProvider.notifier);
 
-    // Automatically fetch venues when the provider is created
-    fetchTrainers();
-
-    // Return loading initially
-    return const AsyncValue.loading();
+    return null;
   }
 
   Future<void> fetchTrainers() async {

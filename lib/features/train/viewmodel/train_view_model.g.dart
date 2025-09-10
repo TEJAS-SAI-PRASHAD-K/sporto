@@ -6,12 +6,12 @@ part of 'train_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$trainViewModelHash() => r'fcac122c45cc76cdee41d9d59bec3199d8340411';
+String _$trainViewModelHash() => r'496ece79266207d00126a691341d38ec31b31c7c';
 
 /// See also [TrainViewModel].
 @ProviderFor(TrainViewModel)
 final trainViewModelProvider =
-    AutoDisposeNotifierProvider<TrainViewModel, AsyncValue<Trainer>>.internal(
+    AutoDisposeNotifierProvider<TrainViewModel, AsyncValue<Trainer>?>.internal(
       TrainViewModel.new,
       name: r'trainViewModelProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -21,6 +21,6 @@ final trainViewModelProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$TrainViewModel = AutoDisposeNotifier<AsyncValue<Trainer>>;
+typedef _$TrainViewModel = AutoDisposeNotifier<AsyncValue<Trainer>?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

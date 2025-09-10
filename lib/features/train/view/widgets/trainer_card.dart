@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/train/model/trainer.dart';
+import 'package:playo/core/models/trainer.dart' as model;
 
 class TrainerCard extends StatelessWidget {
-  final Trainer trainer;
+  final model.Datum datum;
   final VoidCallback? onTap;
 
-  const TrainerCard({super.key, required this.trainer, this.onTap});
+  const TrainerCard({super.key, required this.datum, this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    final t = datum.trainer;
+    final avatarUrl = t.avatar.isNotEmpty ? t.avatar.first : null;
+    final tags = const["Trainer"];
+
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -27,31 +31,38 @@ class TrainerCard extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(16),
                     ),
-                    child: Image.asset(trainer.bannerAsset, fit: BoxFit.cover),
+                    child: avatarUrl != null
+                        ? Image.network(avatarUrl, fit: BoxFit.cover)
+                        : Container(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainer,
+                          ),
                   ),
                 ),
-                Positioned(
-                  right: 12,
-                  top: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      trainer.tags.join(' • '),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        letterSpacing: .2,
+                if (tags.isNotEmpty)
+                  Positioned(
+                    right: 12,
+                    top: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        tags.join(' • '),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          letterSpacing: .2,
+                        ),
                       ),
                     ),
                   ),
-                ),
               ],
             ),
             Padding(
@@ -60,14 +71,15 @@ class TrainerCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    trainer.name,
+                    '${t.firstName} ${t.lastName}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${trainer.location}, ${trainer.city}',
+                    // location fields are not present on this model; using service location if available
+                    t.serviceVenue,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.outline,
                     ),
@@ -76,7 +88,7 @@ class TrainerCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    trainer.audiences.join(', '),
+                    t.audienceTypes.join(', '),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.outline,
                     ),
@@ -85,16 +97,16 @@ class TrainerCard extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        trainer.rating != null ? Icons.star : Icons.star_border,
+                        t.rating != 0 ? Icons.star : Icons.star_border,
                         size: 18,
-                        color: trainer.rating != null
+                        color: t.rating != 0
                             ? Colors.amber
                             : Theme.of(context).colorScheme.outline,
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        trainer.rating != null
-                            ? '${trainer.rating!.toStringAsFixed(1)} (${trainer.ratingCount} Ratings)'
+                        t.rating != 0
+                            ? '${t.rating.toStringAsFixed(1)} (${t.totalReviews} Ratings)'
                             : '--',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),

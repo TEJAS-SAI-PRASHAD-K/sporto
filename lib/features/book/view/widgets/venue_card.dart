@@ -177,8 +177,8 @@ class _VenueCardState extends State<VenueCard> {
                           Text(
                             '~ ${widget.distanceKm.toStringAsFixed(1)} km away',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withOpacity(
-                                0.6,
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.6,
                               ),
                             ),
                           ),
@@ -194,7 +194,7 @@ class _VenueCardState extends State<VenueCard> {
                             'Price starting from',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onPrimaryContainer
-                                  .withOpacity(0.6),
+                                  .withValues(alpha: 0.6),
                             ),
                           ),
                           const SizedBox(width: 6),

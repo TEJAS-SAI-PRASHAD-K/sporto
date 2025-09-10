@@ -6,12 +6,12 @@ part of 'venue_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$venueViewModelHash() => r'81a83649b01241cf8491fb747efa2539fa777bc1';
+String _$venueViewModelHash() => r'004b2358d4b60a5e181cfa1c43387c6957cb9290';
 
 /// See also [VenueViewModel].
 @ProviderFor(VenueViewModel)
 final venueViewModelProvider =
-    AutoDisposeNotifierProvider<VenueViewModel, AsyncValue<Venue>?>.internal(
+    AutoDisposeNotifierProvider<VenueViewModel, AsyncValue<Venue>>.internal(
       VenueViewModel.new,
       name: r'venueViewModelProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -21,6 +21,6 @@ final venueViewModelProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$VenueViewModel = AutoDisposeNotifier<AsyncValue<Venue>?>;
+typedef _$VenueViewModel = AutoDisposeNotifier<AsyncValue<Venue>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:playo/core/common/widgets/main_app_bar.dart';
+import 'package:playo/features/play/view/pages/create_game_page.dart';
 import 'package:provider/provider.dart';
 import 'package:playo/features/play/viewmodel/play_page_viewmodel.dart';
 import 'package:playo/features/play/view/widgets/play_tabs_bar.dart';
@@ -102,7 +103,13 @@ class _PlayPageBodyState extends State<PlayPageBody> {
                         icon: Icons.add,
                         label: 'Create Game',
                         color: Theme.of(context).colorScheme.primary,
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => CreateGamePage(),
+                            ),
+                          );
+                        },
                       ),
                       const Spacer(),
                       _ActionButton(

@@ -12,6 +12,7 @@ import 'package:playo/features/more/view/pages/preference_and_privacy_page.dart'
 import 'package:playo/features/more/view/pages/refer_and_earn_page.dart';
 import 'package:playo/features/more/view/widgets/more_list_tile.dart';
 import 'package:playo/features/more/view/widgets/signout_dialogue_box.dart';
+import 'package:playo/core/common/pages/profile_page.dart';
 
 class MorePage extends ConsumerStatefulWidget {
   const MorePage({super.key});
@@ -28,31 +29,49 @@ class _MorePageState extends ConsumerState<MorePage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        title: Row(
-          children: [
-            // Avatar
-            Container(
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(9)),
-              child: CircleAvatar(
-                radius: 20,
-                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                child: _buildAvatarImage(user),
-              ),
+        title: GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProfilePage(userId: user?.userId ?? ''),
             ),
-            const SizedBox(width: 18),
-            // Name and subtitle
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
               children: [
-                Text(
-                  user?.firstName ?? 'Profile Name',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                // Avatar
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer,
+                    child: _buildAvatarImage(user),
+                  ),
                 ),
-                Text('View your profile', style: TextStyle(fontSize: 12)),
+                const SizedBox(width: 18),
+                // Name and subtitle
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      user?.firstName ?? 'Profile Name',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text('View your profile', style: TextStyle(fontSize: 12)),
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
       body: Padding(

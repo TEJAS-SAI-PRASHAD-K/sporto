@@ -494,219 +494,16 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
     // Don't add courts that are unavailable
     if (unavailableCourts.contains(courtId)) return;
 
-    // Show Add Arena confirmation modal
-    _showAddArenaModal(courtId);
+    // Directly add the court without showing modal
+    setState(() {
+      selectedCourtsWithDuration[courtId] = selectedDuration;
+    });
   }
 
   void _removeCourt(String courtId) {
     setState(() {
       selectedCourtsWithDuration.remove(courtId);
     });
-  }
-
-  void _showAddArenaModal(String courtId) {
-    final venueState = ref.read(venueViewModelProvider).valueOrNull;
-    if (venueState == null) return;
-
-    final venueData = venueState.data.firstWhere(
-      (datum) => datum.venue.id == widget.venueId,
-      orElse: () => venueState.data.first,
-    );
-
-    final court = venueData.court.firstWhere((c) => c.id == courtId);
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.4,
-        minChildSize: 0.3,
-        maxChildSize: 0.5,
-        builder: (context, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: Column(
-            children: [
-              // Handle bar
-              Container(
-                margin: const EdgeInsets.only(top: 8),
-                width: 32,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-
-              // Content
-              Expanded(child: _buildAddArenaContent(court)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddArenaContent(model.Court court) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    // Calculate price using global duration
-    final priceInDollars = court.hourlyRate / 86.0;
-    final totalPrice = (priceInDollars * selectedDuration) / 60.0;
-
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title
-          Text(
-            'Add Arena to Booking',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Arena Details
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                _buildArenaDetailRow(
-                  Icons.sports_tennis,
-                  'Arena',
-                  court.name,
-                  colorScheme,
-                ),
-                const SizedBox(height: 12),
-                _buildArenaDetailRow(
-                  Icons.access_time,
-                  'Time',
-                  _formatTime(selectedTime),
-                  colorScheme,
-                ),
-                const SizedBox(height: 12),
-                _buildArenaDetailRow(
-                  Icons.timer,
-                  'Duration',
-                  '${selectedDuration ~/ 60}h ${selectedDuration % 60 > 0 ? '${selectedDuration % 60}m' : ''}',
-                  colorScheme,
-                ),
-                const SizedBox(height: 12),
-                _buildArenaDetailRow(
-                  Icons.monetization_on_outlined,
-                  'Price',
-                  'USD ${totalPrice.toStringAsFixed(2)}',
-                  colorScheme,
-                ),
-              ],
-            ),
-          ),
-
-          const Spacer(),
-
-          // Action buttons
-          Row(
-            children: [
-              if (selectedCourts.contains(court.id))
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _removeCourt(court.id);
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text('Remove'),
-                  ),
-                ),
-              if (selectedCourts.contains(court.id)) const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedCourtsWithDuration[court.id] = selectedDuration;
-                    });
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    selectedCourts.contains(court.id)
-                        ? 'Update Arena'
-                        : 'Add Arena',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildArenaDetailRow(
-    IconData icon,
-    String label,
-    String value,
-    ColorScheme colorScheme,
-  ) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: colorScheme.onSurfaceVariant),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            label,
-            style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 14),
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            color: colorScheme.onSurface,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _formatTime(TimeOfDay time) {
-    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
-    final minute = time.minute.toString().padLeft(2, '0');
-    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
-    return '$hour:$minute $period';
   }
 
   double _calculateTotalPrice(List<model.Court> selectedCourtsList) {
@@ -938,16 +735,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
     final venueInfo = VenueInfo.fromVenueModel(
       venueId: venueData.venue.id,
       venueName: venueData.venue.name,
-      venueAddress: venueData.venue.address,
       venueCity: venueData.venue.city,
-      venueLatitude: venueData.venue.latitude,
-      venueLongitude: venueData.venue.longitude,
-      venuePhone: venueData.venue.phone,
-      venueEmail: venueData.venue.email,
-      openingHours: venueData.venue.openingHours,
-      closingHours: venueData.venue.closingHours,
-      nonOperatingDays: venueData.venue.nonOperatingDays,
-      venueRating: venueData.venue.rating,
       cancellationHours: venueData.venue.cancellationHours,
     );
 

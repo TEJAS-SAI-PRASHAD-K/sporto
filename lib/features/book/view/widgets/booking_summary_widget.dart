@@ -31,124 +31,127 @@ class BookingSummaryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 12.0,
-        right: 12.0,
-        top: 12,
-        bottom: 0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Title
-          Center(
-            child: Text(
-              "Booking Summary",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Selected Arenas Section
-          Text(
-            selectedCourtsList.length == 1
-                ? "Selected Arena"
-                : "Selected Arenas",
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Title
+        Center(
+          child: Text(
+            "Booking Summary",
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
           ),
-          const SizedBox(height: 12),
+        ),
+        const SizedBox(height: 24),
 
-          // Arena list with improved layout for multiple arenas
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: selectedCourtsList.asMap().entries.map((entry) {
-                final index = entry.key;
-                final court = entry.value;
-                // Get the specific duration for this court
-                final courtDuration =
-                    selectedCourtsWithDuration[court.id] ?? selectedDuration;
-                final courtPrice = _calculateCourtPrice(court, courtDuration);
-                final isLast = index == selectedCourtsList.length - 1;
+        // Selected Arenas Section
+        Text(
+          selectedCourtsList.length == 1 ? "Selected Arena" : "Selected Arenas",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 12),
 
-                return Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    border: isLast
-                        ? null
-                        : Border(
-                            bottom: BorderSide(
-                              color: colorScheme.outline.withValues(alpha: 0.2),
-                              width: 0.5,
+        // Arena list with improved layout for multiple arenas
+        Container(
+          padding: const EdgeInsets.only(
+            left: 12,
+            right: 12,
+            top: 6,
+            bottom: 6,
+          ),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: selectedCourtsList.asMap().entries.map((entry) {
+              final index = entry.key;
+              final court = entry.value;
+              // Get the specific duration for this court
+              final courtDuration =
+                  selectedCourtsWithDuration[court.id] ?? selectedDuration;
+              final courtPrice = _calculateCourtPrice(court, courtDuration);
+              final isLast = index == selectedCourtsList.length - 1;
+
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  border: isLast
+                      ? null
+                      : Border(
+                          bottom: BorderSide(
+                            color: colorScheme.outline.withValues(alpha: 0.2),
+                            width: 0.5,
+                          ),
+                        ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            court.name,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: colorScheme.onSurface,
                             ),
                           ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              court.name,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: colorScheme.onSurface,
-                              ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${courtDuration ~/ 60}h ${courtDuration % 60 > 0 ? '${courtDuration % 60}m' : ''}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colorScheme.onSurfaceVariant,
                             ),
-                            Text(
-                              '${courtDuration ~/ 60}h ${courtDuration % 60 > 0 ? '${courtDuration % 60}m' : ''}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        "USD ${courtPrice.toStringAsFixed(2)}",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: colorScheme.onSurface,
-                        ),
+                    ),
+                    Text(
+                      "USD ${courtPrice.toStringAsFixed(2)}",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
                       ),
-                    ],
-                  ),
-                );
-              }).toList(),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+
+        const SizedBox(height: 96),
+
+        // Fixed bottom section with total price and button
+        Container(
+          padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: colorScheme.outline.withValues(alpha: 0.2),
+                width: 0.5,
+              ),
             ),
           ),
-
-          // Fixed spacing instead of Spacer to avoid layout issues
-          const SizedBox(height: 32),
-
-          // Bottom section with total price and button
-          Column(
+          child: Column(
             children: [
               // Total Price
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -157,7 +160,7 @@ class BookingSummaryWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: colorScheme.onPrimaryContainer,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     Text(
@@ -165,12 +168,15 @@ class BookingSummaryWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: colorScheme.onPrimaryContainer,
+                        color: colorScheme.primary,
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+
+              // Proceed to payment button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -180,10 +186,11 @@ class BookingSummaryWidget extends StatelessWidget {
                     foregroundColor: colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(9),
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    elevation: 2,
                   ),
-                  child: Text(
+                  child: const Text(
                     'PROCEED TO PAYMENT',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
@@ -191,8 +198,8 @@ class BookingSummaryWidget extends StatelessWidget {
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

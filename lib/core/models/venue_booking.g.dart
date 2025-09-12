@@ -9,18 +9,7 @@ part of 'venue_booking.dart';
 VenueBooking _$VenueBookingFromJson(Map<String, dynamic> json) => VenueBooking(
   venueId: json['venue_id'] as String,
   venueName: json['venue_name'] as String,
-  venueAddress: json['venue_address'] as String,
   venueCity: json['venue_city'] as String,
-  venueLatitude: (json['venue_latitude'] as num).toDouble(),
-  venueLongitude: (json['venue_longitude'] as num).toDouble(),
-  venuePhone: json['venue_phone'] as String,
-  venueEmail: json['venue_email'] as String,
-  openingHours: json['opening_hours'] as String,
-  closingHours: json['closing_hours'] as String,
-  nonOperatingDays: (json['non_operating_days'] as List<dynamic>)
-      .map((e) => e as String)
-      .toList(),
-  venueRating: (json['venue_rating'] as num).toDouble(),
   cancellationHours: (json['cancellation_hours'] as num).toInt(),
   selectedCourts: (json['selected_courts'] as List<dynamic>)
       .map((e) => BookingCourt.fromJson(e as Map<String, dynamic>))
@@ -51,16 +40,7 @@ Map<String, dynamic> _$VenueBookingToJson(VenueBooking instance) =>
     <String, dynamic>{
       'venue_id': instance.venueId,
       'venue_name': instance.venueName,
-      'venue_address': instance.venueAddress,
       'venue_city': instance.venueCity,
-      'venue_latitude': instance.venueLatitude,
-      'venue_longitude': instance.venueLongitude,
-      'venue_phone': instance.venuePhone,
-      'venue_email': instance.venueEmail,
-      'opening_hours': instance.openingHours,
-      'closing_hours': instance.closingHours,
-      'non_operating_days': instance.nonOperatingDays,
-      'venue_rating': instance.venueRating,
       'cancellation_hours': instance.cancellationHours,
       'selected_courts': instance.selectedCourts,
       'booking_id': instance.bookingId,
@@ -133,34 +113,14 @@ Map<String, dynamic> _$BookingCourtToJson(BookingCourt instance) =>
 VenueInfo _$VenueInfoFromJson(Map<String, dynamic> json) => VenueInfo(
   venueId: json['venue_id'] as String,
   venueName: json['venue_name'] as String,
-  venueAddress: json['venue_address'] as String,
   venueCity: json['venue_city'] as String,
-  venueLatitude: (json['venue_latitude'] as num).toDouble(),
-  venueLongitude: (json['venue_longitude'] as num).toDouble(),
-  venuePhone: json['venue_phone'] as String,
-  venueEmail: json['venue_email'] as String,
-  openingHours: json['opening_hours'] as String,
-  closingHours: json['closing_hours'] as String,
-  nonOperatingDays: (json['non_operating_days'] as List<dynamic>)
-      .map((e) => e as String)
-      .toList(),
-  venueRating: (json['venue_rating'] as num).toDouble(),
   cancellationHours: (json['cancellation_hours'] as num).toInt(),
 );
 
 Map<String, dynamic> _$VenueInfoToJson(VenueInfo instance) => <String, dynamic>{
   'venue_id': instance.venueId,
   'venue_name': instance.venueName,
-  'venue_address': instance.venueAddress,
   'venue_city': instance.venueCity,
-  'venue_latitude': instance.venueLatitude,
-  'venue_longitude': instance.venueLongitude,
-  'venue_phone': instance.venuePhone,
-  'venue_email': instance.venueEmail,
-  'opening_hours': instance.openingHours,
-  'closing_hours': instance.closingHours,
-  'non_operating_days': instance.nonOperatingDays,
-  'venue_rating': instance.venueRating,
   'cancellation_hours': instance.cancellationHours,
 };
 

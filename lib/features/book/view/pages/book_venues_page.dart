@@ -157,7 +157,7 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                       ),
                       const SizedBox(width: 6),
                       Padding(
-                        padding: const EdgeInsets.only(right: 8),
+                        padding: const EdgeInsets.only(right: 52),
                         child: Text(
                           '(${_formatCount(totalReviews)} ratings)',
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -165,19 +165,11 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 16,
-                        child: VerticalDivider(
-                          width: 4,
-                          thickness: 1,
-                          color: theme.dividerColor,
-                        ),
-                      ),
                       const SizedBox(width: 24),
                       const Icon(Icons.sports_tennis, size: 20),
                       const SizedBox(width: 6),
                       Padding(
-                        padding: const EdgeInsets.only(right: 24.0),
+                        padding: const EdgeInsets.only(right: 16.0),
                         child: Text(
                           '${_formatCount(totalGames)} Total Games',
                           style: theme.textTheme.bodySmall?.copyWith(

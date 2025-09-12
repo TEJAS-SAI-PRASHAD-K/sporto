@@ -37,6 +37,8 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
     final rating = venue.rating;
     final totalReviews = venue.totalReviews;
     final totalGames = courts.length;
+    final amenities = venue.amenities;
+    final sports = venue.sportIds;
 
     return Scaffold(
       body: CustomScrollView(
@@ -231,14 +233,12 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                   height: 90,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
-                    children: const [
-                      SportCard(label: 'Badminton', icon: Icons.sports_tennis),
-                      SportCard(label: 'Football', icon: Icons.sports_soccer),
-                      SportCard(label: 'Cricket', icon: Icons.sports_cricket),
-                    ],
+                    children: List.generate(
+                      sports.length,
+                      (index) => SportCard(sport: sports[index]),
+                    ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
 
                 // Amenities (hardcoded)
@@ -249,40 +249,40 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: const [
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Lockers'),
-                    ),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Parking'),
-                    ),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Washroom'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: const [
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Drinking water'),
-                    ),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Rent rackets'),
-                    ),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Rent shoes'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                const RectangleOutlinedContainer(text: 'Pro shop'),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true, // important
+                    physics: const NeverScrollableScrollPhysics(),
 
+                    padding: const EdgeInsets.all(8),
+                    itemCount: (amenities.length / 3).ceil(), // number of rows
+                    itemBuilder: (context, rowIndex) {
+                      int startIndex = rowIndex * 3;
+
+                      return Row(
+                        children: List.generate(3, (colIndex) {
+                          int amenitiesIndex = startIndex + colIndex;
+
+                          // check if facility exists (for last incomplete row)
+                          if (amenitiesIndex >= amenities.length) {
+                            return const Expanded(
+                              child: SizedBox(),
+                            ); // filler space
+                          }
+
+                          return Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: RectangleOutlinedContainer(
+                                text: amenities[amenitiesIndex],
+                              ),
+                            ),
+                          );
+                        }),
+                      );
+                    },
+                  ),
+                ),
                 const SizedBox(height: 20),
 
                 // Games section

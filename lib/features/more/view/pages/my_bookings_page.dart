@@ -158,7 +158,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? colorScheme.primary
-                                : Colors.transparent,
+                                : colorScheme.surface,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),

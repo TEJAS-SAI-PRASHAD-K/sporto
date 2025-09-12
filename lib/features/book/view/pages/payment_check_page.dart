@@ -636,11 +636,13 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
 
   /// Show success message when booking is saved
   void _showSuccessMessage() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.white, size: 20),
+            Icon(Icons.check_circle, color: colorScheme.onPrimary, size: 20),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -650,7 +652,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                   Text(
                     "Booking Confirmed!",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: colorScheme.onPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -658,7 +660,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                   Text(
                     "Your booking has been successfully saved.",
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: colorScheme.onPrimary.withValues(alpha: 0.9),
                       fontSize: 14,
                     ),
                   ),
@@ -667,7 +669,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
             ),
           ],
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: colorScheme.primary,
         duration: const Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -677,21 +679,23 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
 
   /// Show error message
   void _showErrorMessage(String message) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.error_outline, color: Colors.white, size: 20),
+            Icon(Icons.error_outline, color: colorScheme.onError, size: 20),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
-                style: TextStyle(color: Colors.white, fontSize: 14),
+                style: TextStyle(color: colorScheme.onError, fontSize: 14),
               ),
             ),
           ],
         ),
-        backgroundColor: Colors.red,
+        backgroundColor: colorScheme.error,
         duration: const Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

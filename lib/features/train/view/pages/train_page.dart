@@ -138,7 +138,8 @@ class _TrainPageState extends State<TrainPage> {
                             childAspectRatio: .85,
                           ),
                       delegate: SliverChildBuilderDelegate((context, index) {
-                        final c = vm.categories[index];
+                        final categories = vm.categories;
+                        final c = categories[index];
                         return CategoryChip(category: c, onTap: () {});
                       }, childCount: vm.categories.length),
                     ),

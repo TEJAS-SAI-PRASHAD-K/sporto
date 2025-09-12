@@ -146,7 +146,15 @@ class _BookPageState extends ConsumerState<BookPage> {
                   );
                 } else {
                   //DEALS
-                  return const Center(child: Text("No deals available"));
+                  return const Center(
+                    child: Text(
+                      "No deals available",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
                 }
               },
             ),

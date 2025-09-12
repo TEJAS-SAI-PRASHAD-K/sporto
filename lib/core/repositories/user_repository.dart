@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,6 +50,9 @@ class UserRepository {
     app_user.User user,
   ) async {
     try {
+      debugPrint('Attempting to create/update user: ${user.userId}');
+      debugPrint('User data: ${user.toJson()}');
+
       // Upsert avoids a pre-select and works with both insert/update when RLS allows both
       final response = await supabase
           .from('users')
@@ -62,7 +66,33 @@ class UserRepository {
       return Left(Failure("No internet connection"));
     } on PostgrestException catch (e) {
       debugPrint('Supabase error: ${e.message}');
-      return Left(Failure("Database error: ${e.message}"));
+      debugPrint('Supabase error code: ${e.code}');
+      debugPrint('Supabase error details: ${e.details}');
+      debugPrint('Supabase error hint: ${e.hint}');
+      log(e.message);
+      log(e.code.toString());
+      log(e.details.toString());
+      log(e.hint.toString());
+
+      // Provide more specific error messages based on common issues
+      if (e.message.contains('new row violates row-level security policy')) {
+        return Left(
+          Failure(
+            "Permission denied: Unable to create user profile. Please check database policies.",
+          ),
+        );
+      } else if (e.message.contains(
+        'duplicate key value violates unique constraint',
+      )) {
+        return Left(
+          Failure("User with this email or phone number already exists."),
+        );
+      } else if (e.message.contains('null value in column') &&
+          e.message.contains('email_address')) {
+        return Left(Failure("Email address is required but not provided."));
+      } else {
+        return Left(Failure("Database error: ${e.message}"));
+      }
     } catch (e) {
       debugPrint('Unexpected error: $e');
       return Left(Failure("Unexpected error: ${e.toString()}"));

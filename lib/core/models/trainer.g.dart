@@ -7,113 +7,217 @@ part of 'trainer.dart';
 // **************************************************************************
 
 Trainer _$TrainerFromJson(Map<String, dynamic> json) => Trainer(
-  trainerId: json['trainer_id'] as String,
-  firstName: json['first_name'] as String,
-  lastName: json['last_name'] as String?,
-  bio: json['bio'] as String?,
-  sportId: json['sport_id'] as String?,
-  serviceArea: json['service_area'] as String?,
-  audienceType: json['audience_type'] as String?,
-  address: json['address'] as String?,
-  hourlyRate: (json['hourly_rate'] as num?)?.toDouble(),
-  ratings: (json['ratings'] as num?)?.toDouble(),
-  totalReviews: (json['total_reviews'] as num?)?.toInt() ?? 0,
-  avatarUrl: json['avatar_url'] as String?,
-  emailAddress: json['email_address'] as String,
-  mobileNumber: json['mobile_number'] as String?,
-  createdAt: json['created_at'] == null
-      ? null
-      : DateTime.parse(json['created_at'] as String),
-  updatedAt: json['updated_at'] == null
-      ? null
-      : DateTime.parse(json['updated_at'] as String),
-  isAvailable: json['is_available'] as bool? ?? true,
+  data: (json['data'] as List<dynamic>)
+      .map((e) => Datum.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  meta: Meta.fromJson(json['meta'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$TrainerToJson(Trainer instance) => <String, dynamic>{
-  'trainer_id': instance.trainerId,
-  'first_name': instance.firstName,
-  'last_name': instance.lastName,
-  'bio': instance.bio,
-  'sport_id': instance.sportId,
-  'service_area': instance.serviceArea,
-  'audience_type': instance.audienceType,
-  'address': instance.address,
-  'hourly_rate': instance.hourlyRate,
-  'ratings': instance.ratings,
-  'total_reviews': instance.totalReviews,
-  'avatar_url': instance.avatarUrl,
-  'email_address': instance.emailAddress,
-  'mobile_number': instance.mobileNumber,
-  'created_at': instance.createdAt?.toIso8601String(),
-  'updated_at': instance.updatedAt?.toIso8601String(),
-  'is_available': instance.isAvailable,
+  'data': instance.data,
+  'meta': instance.meta,
 };
+
+Datum _$DatumFromJson(Map<String, dynamic> json) => Datum(
+  id: (json['id'] as num).toInt(),
+  documentId: json['documentId'] as String,
+  trainer: TrainerClass.fromJson(json['trainer'] as Map<String, dynamic>),
+  trainingService: TrainingService.fromJson(
+    json['trainingService'] as Map<String, dynamic>,
+  ),
+  trainerReview: TrainerReview.fromJson(
+    json['trainerReview'] as Map<String, dynamic>,
+  ),
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  updatedAt: DateTime.parse(json['updatedAt'] as String),
+  publishedAt: DateTime.parse(json['publishedAt'] as String),
+);
+
+Map<String, dynamic> _$DatumToJson(Datum instance) => <String, dynamic>{
+  'id': instance.id,
+  'documentId': instance.documentId,
+  'trainer': instance.trainer,
+  'trainingService': instance.trainingService,
+  'trainerReview': instance.trainerReview,
+  'createdAt': instance.createdAt.toIso8601String(),
+  'updatedAt': instance.updatedAt.toIso8601String(),
+  'publishedAt': instance.publishedAt.toIso8601String(),
+};
+
+TrainerClass _$TrainerClassFromJson(Map<String, dynamic> json) => TrainerClass(
+  id: json['id'] as String,
+  bio: json['bio'] as String,
+  avatar: (json['avatar'] as List<dynamic>).map((e) => e as String).toList(),
+  rating: (json['rating'] as num).toDouble(),
+  userId: json['userId'] as String,
+  currency: json['currency'] as String,
+  lastName: json['lastName'] as String,
+  schedule: (json['schedule'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  sportIds: (json['sportIds'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  firstName: json['firstName'] as String,
+  updatedAt: DateTime.parse(json['updatedAt'] as String),
+  hourlyRate: (json['hourlyRate'] as num).toInt(),
+  isVerified: json['isVerified'] as bool,
+  isAvailable: json['isAvailable'] as bool,
+  achievements: (json['achievements'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  businessName: json['businessName'] as String,
+  serviceAreas: (json['serviceAreas'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  serviceVenue: json['serviceVenue'] as String,
+  sessionTypes: (json['sessionTypes'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  totalReviews: (json['totalReviews'] as num).toInt(),
+  audienceTypes: (json['audienceTypes'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  languagesSpoken: (json['languagesSpoken'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  specializations: (json['specializations'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+  completedSessions: (json['completedSessions'] as num).toInt(),
+);
+
+Map<String, dynamic> _$TrainerClassToJson(TrainerClass instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'bio': instance.bio,
+      'avatar': instance.avatar,
+      'rating': instance.rating,
+      'userId': instance.userId,
+      'currency': instance.currency,
+      'lastName': instance.lastName,
+      'schedule': instance.schedule,
+      'sportIds': instance.sportIds,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'firstName': instance.firstName,
+      'updatedAt': instance.updatedAt.toIso8601String(),
+      'hourlyRate': instance.hourlyRate,
+      'isVerified': instance.isVerified,
+      'isAvailable': instance.isAvailable,
+      'achievements': instance.achievements,
+      'businessName': instance.businessName,
+      'serviceAreas': instance.serviceAreas,
+      'serviceVenue': instance.serviceVenue,
+      'sessionTypes': instance.sessionTypes,
+      'totalReviews': instance.totalReviews,
+      'audienceTypes': instance.audienceTypes,
+      'languagesSpoken': instance.languagesSpoken,
+      'specializations': instance.specializations,
+      'completedSessions': instance.completedSessions,
+    };
+
+TrainerReview _$TrainerReviewFromJson(Map<String, dynamic> json) =>
+    TrainerReview(
+      id: json['id'] as String,
+      tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
+      rating: (json['rating'] as num).toDouble(),
+      comment: json['comment'] as String,
+      isPublic: json['isPublic'] as bool,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      sessionId: json['sessionId'] as String,
+      trainerId: json['trainerId'] as String,
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      isReported: json['isReported'] as bool,
+      reviewerId: json['reviewerId'] as String,
+      isAnonymous: json['isAnonymous'] as bool,
+      respondedAt: DateTime.parse(json['respondedAt'] as String),
+      trainerResponse: json['trainerResponse'] as String,
+    );
+
+Map<String, dynamic> _$TrainerReviewToJson(TrainerReview instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'tags': instance.tags,
+      'rating': instance.rating,
+      'comment': instance.comment,
+      'isPublic': instance.isPublic,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'sessionId': instance.sessionId,
+      'trainerId': instance.trainerId,
+      'updatedAt': instance.updatedAt.toIso8601String(),
+      'isReported': instance.isReported,
+      'reviewerId': instance.reviewerId,
+      'isAnonymous': instance.isAnonymous,
+      'respondedAt': instance.respondedAt.toIso8601String(),
+      'trainerResponse': instance.trainerResponse,
+    };
 
 TrainingService _$TrainingServiceFromJson(Map<String, dynamic> json) =>
     TrainingService(
-      serviceId: json['service_id'] as String,
-      trainerId: json['trainer_id'] as String,
-      sportId: json['sport_id'] as String,
-      serviceName: json['service_name'] as String?,
-      serviceDescription: json['service_description'] as String?,
-      serviceType: $enumDecodeNullable(
-        _$ServiceTypeEnumMap,
-        json['service_type'],
-      ),
-      price: (json['price'] as num?)?.toDouble(),
-      ageGroup: json['age_group'] as String?,
-      maximumParticipants: (json['maximum_participants'] as num?)?.toInt(),
-      isServiceActive: json['is_service_active'] as bool? ?? true,
-      createdAt: json['created_at'] == null
-          ? null
-          : DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
+      id: json['id'] as String,
+      name: json['name'] as String,
+      type: json['type'] as String,
+      price: (json['price'] as num).toInt(),
+      sportId: json['sportId'] as String,
+      currency: json['currency'] as String,
+      duration: (json['duration'] as num).toInt(),
+      isActive: json['isActive'] as bool,
+      isOnline: json['isOnline'] as bool,
+      location: json['location'] as String,
+      ageGroups: (json['ageGroups'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      trainerId: json['trainerId'] as String,
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      description: json['description'] as String,
+      skillLevels: (json['skillLevels'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      maxParticipants: (json['maxParticipants'] as num).toInt(),
     );
 
 Map<String, dynamic> _$TrainingServiceToJson(TrainingService instance) =>
     <String, dynamic>{
-      'service_id': instance.serviceId,
-      'trainer_id': instance.trainerId,
-      'sport_id': instance.sportId,
-      'service_name': instance.serviceName,
-      'service_description': instance.serviceDescription,
-      'service_type': _$ServiceTypeEnumMap[instance.serviceType],
+      'id': instance.id,
+      'name': instance.name,
+      'type': instance.type,
       'price': instance.price,
-      'age_group': instance.ageGroup,
-      'maximum_participants': instance.maximumParticipants,
-      'is_service_active': instance.isServiceActive,
-      'created_at': instance.createdAt?.toIso8601String(),
-      'updated_at': instance.updatedAt?.toIso8601String(),
+      'sportId': instance.sportId,
+      'currency': instance.currency,
+      'duration': instance.duration,
+      'isActive': instance.isActive,
+      'isOnline': instance.isOnline,
+      'location': instance.location,
+      'ageGroups': instance.ageGroups,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'trainerId': instance.trainerId,
+      'updatedAt': instance.updatedAt.toIso8601String(),
+      'description': instance.description,
+      'skillLevels': instance.skillLevels,
+      'maxParticipants': instance.maxParticipants,
     };
 
-const _$ServiceTypeEnumMap = {
-  ServiceType.oneOnOne: 'one-on-one',
-  ServiceType.group: 'group',
+Meta _$MetaFromJson(Map<String, dynamic> json) => Meta(
+  pagination: Pagination.fromJson(json['pagination'] as Map<String, dynamic>),
+);
+
+Map<String, dynamic> _$MetaToJson(Meta instance) => <String, dynamic>{
+  'pagination': instance.pagination,
 };
 
-TrainingSession _$TrainingSessionFromJson(Map<String, dynamic> json) =>
-    TrainingSession(
-      sessionId: json['session_id'] as String,
-      serviceId: json['service_id'] as String,
-      trainerId: json['trainer_id'] as String,
-      studentUserId: json['student_user_id'] as String,
-      createdAt: json['created_at'] == null
-          ? null
-          : DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
-    );
+Pagination _$PaginationFromJson(Map<String, dynamic> json) => Pagination(
+  page: (json['page'] as num).toInt(),
+  pageSize: (json['pageSize'] as num).toInt(),
+  pageCount: (json['pageCount'] as num).toInt(),
+  total: (json['total'] as num).toInt(),
+);
 
-Map<String, dynamic> _$TrainingSessionToJson(TrainingSession instance) =>
+Map<String, dynamic> _$PaginationToJson(Pagination instance) =>
     <String, dynamic>{
-      'session_id': instance.sessionId,
-      'service_id': instance.serviceId,
-      'trainer_id': instance.trainerId,
-      'student_user_id': instance.studentUserId,
-      'created_at': instance.createdAt?.toIso8601String(),
-      'updated_at': instance.updatedAt?.toIso8601String(),
+      'page': instance.page,
+      'pageSize': instance.pageSize,
+      'pageCount': instance.pageCount,
+      'total': instance.total,
     };

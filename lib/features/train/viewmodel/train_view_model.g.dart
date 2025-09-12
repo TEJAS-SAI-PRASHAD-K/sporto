@@ -1,29 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'home_remote_repository.dart';
+part of 'train_view_model.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$homeRemoteRepositoryHash() =>
-    r'a0baf08a01524f7d3c073a444e88e5e94eeaff3a';
+String _$trainViewModelHash() => r'496ece79266207d00126a691341d38ec31b31c7c';
 
-/// See also [homeRemoteRepository].
-@ProviderFor(homeRemoteRepository)
-final homeRemoteRepositoryProvider =
-    AutoDisposeProvider<HomeRemoteRepository>.internal(
-      homeRemoteRepository,
-      name: r'homeRemoteRepositoryProvider',
+/// See also [TrainViewModel].
+@ProviderFor(TrainViewModel)
+final trainViewModelProvider =
+    AutoDisposeNotifierProvider<TrainViewModel, AsyncValue<Trainer>?>.internal(
+      TrainViewModel.new,
+      name: r'trainViewModelProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$homeRemoteRepositoryHash,
+          : _$trainViewModelHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef HomeRemoteRepositoryRef = AutoDisposeProviderRef<HomeRemoteRepository>;
+typedef _$TrainViewModel = AutoDisposeNotifier<AsyncValue<Trainer>?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

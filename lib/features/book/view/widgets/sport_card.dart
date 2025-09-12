@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
 
 class SportCard extends StatelessWidget {
-  const SportCard({super.key, required this.label, required this.icon});
-  final String label;
-  final IconData icon;
+  const SportCard({super.key, required this.sport});
+  final String sport;
+
+  // A map of sports to icons
+  static const Map<String, IconData> _sportIcons = {
+    'badminton': Icons.sports_tennis,
+    'football': Icons.sports_soccer,
+    'cricket': Icons.sports_cricket,
+    'tennis': Icons.sports_tennis,
+    'basketball': Icons.sports_basketball,
+    'hockey': Icons.sports_hockey,
+    'volleyball': Icons.sports_volleyball,
+  };
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    // Get the icon based on the sport name (default: sports icon)
+    final icon = _sportIcons[sport] ?? Icons.sports;
+
     return Container(
       width: 140,
       margin: const EdgeInsets.only(right: 12),
@@ -30,7 +44,7 @@ class SportCard extends StatelessWidget {
             Icon(icon, size: 28, color: theme.colorScheme.onSurfaceVariant),
             const SizedBox(height: 8),
             Text(
-              label,
+              sport,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),

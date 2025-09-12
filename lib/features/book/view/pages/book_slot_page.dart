@@ -735,16 +735,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
     final venueInfo = VenueInfo.fromVenueModel(
       venueId: venueData.venue.id,
       venueName: venueData.venue.name,
-      venueAddress: venueData.venue.address,
       venueCity: venueData.venue.city,
-      venueLatitude: venueData.venue.latitude,
-      venueLongitude: venueData.venue.longitude,
-      venuePhone: venueData.venue.phone,
-      venueEmail: venueData.venue.email,
-      openingHours: venueData.venue.openingHours,
-      closingHours: venueData.venue.closingHours,
-      nonOperatingDays: venueData.venue.nonOperatingDays,
-      venueRating: venueData.venue.rating,
       cancellationHours: venueData.venue.cancellationHours,
     );
 

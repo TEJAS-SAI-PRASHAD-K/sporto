@@ -10,42 +10,15 @@ enum PaymentSplit { fullAdvance, halfAdvance, venueOnly, custom }
 
 @JsonSerializable()
 class VenueBooking {
-  // Venue Information
+  // Essential Venue Information (for booking context only)
   @JsonKey(name: 'venue_id')
   final String venueId;
 
   @JsonKey(name: 'venue_name')
   final String venueName;
 
-  @JsonKey(name: 'venue_address')
-  final String venueAddress;
-
   @JsonKey(name: 'venue_city')
   final String venueCity;
-
-  @JsonKey(name: 'venue_latitude')
-  final double venueLatitude;
-
-  @JsonKey(name: 'venue_longitude')
-  final double venueLongitude;
-
-  @JsonKey(name: 'venue_phone')
-  final String venuePhone;
-
-  @JsonKey(name: 'venue_email')
-  final String venueEmail;
-
-  @JsonKey(name: 'opening_hours')
-  final String openingHours;
-
-  @JsonKey(name: 'closing_hours')
-  final String closingHours;
-
-  @JsonKey(name: 'non_operating_days')
-  final List<String> nonOperatingDays;
-
-  @JsonKey(name: 'venue_rating')
-  final double venueRating;
 
   @JsonKey(name: 'cancellation_hours')
   final int cancellationHours;
@@ -121,16 +94,7 @@ class VenueBooking {
   VenueBooking({
     required this.venueId,
     required this.venueName,
-    required this.venueAddress,
     required this.venueCity,
-    required this.venueLatitude,
-    required this.venueLongitude,
-    required this.venuePhone,
-    required this.venueEmail,
-    required this.openingHours,
-    required this.closingHours,
-    required this.nonOperatingDays,
-    required this.venueRating,
     required this.cancellationHours,
     required this.selectedCourts,
     required this.bookingId,
@@ -285,16 +249,7 @@ class VenueBooking {
     return VenueBooking(
       venueId: venueInfo.venueId,
       venueName: venueInfo.venueName,
-      venueAddress: venueInfo.venueAddress,
       venueCity: venueInfo.venueCity,
-      venueLatitude: venueInfo.venueLatitude,
-      venueLongitude: venueInfo.venueLongitude,
-      venuePhone: venueInfo.venuePhone,
-      venueEmail: venueInfo.venueEmail,
-      openingHours: venueInfo.openingHours,
-      closingHours: venueInfo.closingHours,
-      nonOperatingDays: venueInfo.nonOperatingDays,
-      venueRating: venueInfo.venueRating,
       cancellationHours: venueInfo.cancellationHours,
       selectedCourts: selectedCourts,
       bookingId: bookingId,
@@ -421,35 +376,8 @@ class VenueInfo {
   @JsonKey(name: 'venue_name')
   final String venueName;
 
-  @JsonKey(name: 'venue_address')
-  final String venueAddress;
-
   @JsonKey(name: 'venue_city')
   final String venueCity;
-
-  @JsonKey(name: 'venue_latitude')
-  final double venueLatitude;
-
-  @JsonKey(name: 'venue_longitude')
-  final double venueLongitude;
-
-  @JsonKey(name: 'venue_phone')
-  final String venuePhone;
-
-  @JsonKey(name: 'venue_email')
-  final String venueEmail;
-
-  @JsonKey(name: 'opening_hours')
-  final String openingHours;
-
-  @JsonKey(name: 'closing_hours')
-  final String closingHours;
-
-  @JsonKey(name: 'non_operating_days')
-  final List<String> nonOperatingDays;
-
-  @JsonKey(name: 'venue_rating')
-  final double venueRating;
 
   @JsonKey(name: 'cancellation_hours')
   final int cancellationHours;
@@ -457,16 +385,7 @@ class VenueInfo {
   VenueInfo({
     required this.venueId,
     required this.venueName,
-    required this.venueAddress,
     required this.venueCity,
-    required this.venueLatitude,
-    required this.venueLongitude,
-    required this.venuePhone,
-    required this.venueEmail,
-    required this.openingHours,
-    required this.closingHours,
-    required this.nonOperatingDays,
-    required this.venueRating,
     required this.cancellationHours,
   });
 
@@ -478,31 +397,13 @@ class VenueInfo {
   factory VenueInfo.fromVenueModel({
     required String venueId,
     required String venueName,
-    required String venueAddress,
     required String venueCity,
-    required double venueLatitude,
-    required double venueLongitude,
-    required String venuePhone,
-    required String venueEmail,
-    required String openingHours,
-    required String closingHours,
-    required List<String> nonOperatingDays,
-    required double venueRating,
     required int cancellationHours,
   }) {
     return VenueInfo(
       venueId: venueId,
       venueName: venueName,
-      venueAddress: venueAddress,
       venueCity: venueCity,
-      venueLatitude: venueLatitude,
-      venueLongitude: venueLongitude,
-      venuePhone: venuePhone,
-      venueEmail: venueEmail,
-      openingHours: openingHours,
-      closingHours: closingHours,
-      nonOperatingDays: nonOperatingDays,
-      venueRating: venueRating,
       cancellationHours: cancellationHours,
     );
   }

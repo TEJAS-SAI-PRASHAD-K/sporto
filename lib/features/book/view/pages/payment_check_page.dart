@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:playo/core/models/venue_booking.dart';
+import 'package:playo/core/services/booking_service.dart';
 
 class PaymentCheckPage extends StatefulWidget {
   final VenueBooking? venueBookingData;
@@ -14,6 +15,8 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
   bool isKarmaRedeemEnabled = false;
   bool showCouponField = false;
   final TextEditingController couponController = TextEditingController();
+  final BookingService _bookingService = BookingService();
+  bool _isProcessingPayment = false;
 
   // Venue booking data from booking page
   late VenueBooking venueBookingData;
@@ -478,15 +481,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
       ),
       child: SafeArea(
         child: ElevatedButton(
-          onPressed: () {
-            // Handle payment processing
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("Proceeding to payment..."),
-                backgroundColor: colorScheme.primary,
-              ),
-            );
-          },
+          onPressed: _isProcessingPayment ? null : _handleProceedToPay,
           style: ElevatedButton.styleFrom(
             backgroundColor: colorScheme.primary,
             foregroundColor: colorScheme.onPrimary,
@@ -496,29 +491,210 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
             ),
             elevation: 0,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "USD ${venueBookingData.totalAmount.toStringAsFixed(2)}",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+          child: _isProcessingPayment
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: colorScheme.onPrimary,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      "Processing...",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "USD ${venueBookingData.totalAmount.toStringAsFixed(2)}",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Text(
+                      "Proceed to Pay",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward, size: 20),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 16),
-              Text(
-                "Proceed to Pay",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Icon(Icons.arrow_forward, size: 20),
-            ],
-          ),
         ),
+      ),
+    );
+  }
+
+  /// Handle the proceed to pay button press
+  Future<void> _handleProceedToPay() async {
+    setState(() {
+      _isProcessingPayment = true;
+    });
+
+    try {
+      // Check if user is authenticated
+      if (!_bookingService.isUserAuthenticated()) {
+        _showErrorMessage("Please log in to continue with booking");
+        return;
+      }
+
+      // Update booking with current karma and coupon settings
+      final updatedBooking = _createUpdatedBooking();
+
+      // Save booking to database
+      final success = await _bookingService.saveVenueBooking(updatedBooking);
+
+      if (success) {
+        _showSuccessMessage();
+        // Navigate back to previous screens or to booking confirmation
+        Navigator.of(context).pop(); // Go back to booking page
+        Navigator.of(context).pop(); // Go back to venue page
+      } else {
+        _showErrorMessage("Failed to save booking. Please try again.");
+      }
+    } catch (e) {
+      _showErrorMessage("An error occurred: ${e.toString()}");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProcessingPayment = false;
+        });
+      }
+    }
+  }
+
+  /// Create an updated booking with current UI state
+  VenueBooking _createUpdatedBooking() {
+    // Calculate updated totals based on karma and coupon
+    double karmaDiscount = 0.0;
+    double couponDiscount = 0.0;
+
+    if (isKarmaRedeemEnabled) {
+      // Example: karma gives $1 discount per point (adjust as needed)
+      karmaDiscount = 1.0; // You can implement karma calculation logic here
+    }
+
+    if (couponController.text.isNotEmpty) {
+      // Example: apply coupon discount (implement your coupon logic)
+      couponDiscount =
+          2.0; // You can implement coupon validation and discount logic
+    }
+
+    final updatedTotalAmount =
+        (venueBookingData.subtotal +
+                venueBookingData.convenienceFee -
+                karmaDiscount -
+                couponDiscount)
+            .clamp(0.0, double.infinity);
+
+    // Create a new booking object with updated values
+    return VenueBooking(
+      venueId: venueBookingData.venueId,
+      venueName: venueBookingData.venueName,
+      venueCity: venueBookingData.venueCity,
+      cancellationHours: venueBookingData.cancellationHours,
+      selectedCourts: venueBookingData.selectedCourts,
+      bookingId: venueBookingData.bookingId,
+      userId: _bookingService.getCurrentUserId() ?? venueBookingData.userId,
+      sportId: venueBookingData.sportId,
+      bookingDate: venueBookingData.bookingDate,
+      bookingTime: venueBookingData.bookingTime,
+      totalDuration: venueBookingData.totalDuration,
+      bookingStatus: BookingStatus.pending,
+      subtotal: venueBookingData.subtotal,
+      convenienceFee: venueBookingData.convenienceFee,
+      couponDiscount: couponDiscount,
+      karmaDiscount: karmaDiscount,
+      totalAmount: updatedTotalAmount,
+      currency: venueBookingData.currency,
+      paymentSplit: venueBookingData.paymentSplit,
+      couponCode: couponController.text.isNotEmpty
+          ? couponController.text
+          : null,
+      isKarmaRedeemEnabled: isKarmaRedeemEnabled,
+      karmaPointsUsed: isKarmaRedeemEnabled ? 1.0 : 0.0, // Adjust as needed
+      specialRequests: null, // You can add a field for this if needed
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+  }
+
+  /// Show success message when booking is saved
+  void _showSuccessMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Booking Confirmed!",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    "Your booking has been successfully saved.",
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  /// Show error message
+  void _showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.error_outline, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }

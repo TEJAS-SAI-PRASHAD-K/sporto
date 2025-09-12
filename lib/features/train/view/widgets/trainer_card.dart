@@ -11,7 +11,7 @@ class TrainerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = datum.trainer;
     final avatarUrl = t.avatar.isNotEmpty ? t.avatar.first : null;
-    final tags = const["Trainer"];
+    final tags = const ["Trainer"];
 
     return InkWell(
       onTap: onTap,

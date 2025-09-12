@@ -4,14 +4,12 @@ import 'package:playo/core/models/trainer.dart';
 import 'package:playo/features/train/model/service_category.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:playo/features/train/repository/trainer_remote_repository.dart';
-import 'package:playo/core/providers/current_user_provider.dart';
 
 part 'train_view_model.g.dart';
 
 @riverpod
 class TrainViewModel extends _$TrainViewModel {
   late TrainerRemoteRepository _trainerRemoteRepository;
-  late CurrentUserNotifier _currentUserNotifier;
   final List<ServiceCategory> _categories = [
     ServiceCategory(
       id: 'badminton',
@@ -74,13 +72,13 @@ class TrainViewModel extends _$TrainViewModel {
       background: ServiceCategory.generateColorForCategory('Fitness Trainer'),
     ),
   ];
+
   // Public read-only view of the built-in service categories used by the UI
   List<ServiceCategory> get categories => List.unmodifiable(_categories);
+
   @override
   AsyncValue<Trainer>? build() {
     _trainerRemoteRepository = ref.watch(trainerRemoteRepositoryProvider);
-    _currentUserNotifier = ref.watch(currentUserNotifierProvider.notifier);
-
     return null;
   }
 
@@ -91,7 +89,12 @@ class TrainViewModel extends _$TrainViewModel {
 
     state = res.fold(
       (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (trainers) => AsyncValue.data(trainers),
+      (trainer) => AsyncValue.data(trainer),
     );
+  }
+
+  // Helper getter to access trainer data list
+  List<Datum> get trainers {
+    return state?.value?.data ?? [];
   }
 }

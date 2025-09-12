@@ -148,7 +148,7 @@ class _BookPageState extends ConsumerState<BookPage> {
                   //DEALS
                   return const Center(
                     child: Text(
-                      "No deals available",
+                      "No Deals available",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

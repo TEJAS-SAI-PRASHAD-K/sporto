@@ -6,7 +6,7 @@ part of 'sports_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$sportsViewModelHash() => r'f4461d02a25ea549fba45ef5b5768d4e5ddf4417';
+String _$sportsViewModelHash() => r'd72654bd7aab27beb663f2c0f98cc8c20c814908';
 
 /// See also [SportsViewModel].
 @ProviderFor(SportsViewModel)

@@ -10,6 +10,7 @@ import 'package:playo/features/play/view/widgets/menu_overlay.dart';
 import 'package:playo/features/play/model/game.dart';
 import 'package:playo/features/play/view/widgets/game_card.dart';
 import 'package:playo/features/play/view/pages/game_details_page.dart';
+import 'package:playo/features/play/view/widgets/upcoming_games.dart';
 
 class PlayPage extends StatelessWidget {
   const PlayPage({super.key});
@@ -129,8 +130,58 @@ class _PlayPageBodyState extends State<PlayPageBody> {
                   ),
                 ),
               Expanded(
-                child: vm.tabIndex == 1
-                    ? ListView.builder(
+                child: vm.tabIndex == 0
+                    ? // Calendar tab
+                      SingleChildScrollView(
+                        child: vm.subTabIndex == 0
+                            ? // Upcoming sub-tab
+                              UpcomingGames(
+                                userCreatedGames: vm.userCreatedGames,
+                                nearbyGames: vm.nearbyGames,
+                                onCreateGame: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => CreateGamePage(),
+                                    ),
+                                  );
+                                },
+                                onGameTap: (game) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          GameDetailsPage(game: game),
+                                    ),
+                                  );
+                                },
+                                onGameBoardTap: () {
+                                  // TODO: Navigate to game board
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Game Board tapped!'),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                                },
+                                onInvitePlaypalsTap: () {
+                                  // TODO: Navigate to invite playpals screen
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Invite Playpals tapped!'),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                                },
+                              )
+                            : // Past sub-tab
+                              EmptyGamesWidget(
+                                title: vm.emptyTitle,
+                                buttonText: vm.buttonLabel,
+                                selectedCity: vm.selectedCity,
+                              ),
+                      )
+                    : vm.tabIndex == 1
+                    ? // My Sports tab
+                      ListView.builder(
                         itemCount: vm.currentSportGames.length,
                         itemBuilder: (context, index) {
                           final Game g = vm.currentSportGames[index];
@@ -146,7 +197,8 @@ class _PlayPageBodyState extends State<PlayPageBody> {
                           );
                         },
                       )
-                    : EmptyGamesWidget(
+                    : // Other Sports tab
+                      EmptyGamesWidget(
                         title: vm.emptyTitle,
                         buttonText: vm.buttonLabel,
                         selectedCity: vm.selectedCity,

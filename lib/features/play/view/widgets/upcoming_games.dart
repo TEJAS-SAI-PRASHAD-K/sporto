@@ -122,239 +122,247 @@ class _UpcomingGamesState extends State<UpcomingGames> {
   }
 
   Widget _buildUserGameCard(Game game, ColorScheme colorScheme) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Game Header with Avatar and Host Badge
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: colorScheme.primary,
-                child: Icon(
-                  Icons.person,
-                  color: colorScheme.onPrimary,
-                  size: 20,
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => widget.onGameTap(game),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Game Header with Avatar and Host Badge
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: colorScheme.primary,
+                  child: Icon(
+                    Icons.person,
+                    color: colorScheme.onPrimary,
+                    size: 20,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'My ${game.sport} Game',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.secondary,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-
-                          child: Text(
-                            'HOST',
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'My ${game.sport} Game',
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: colorScheme.onSecondary,
-                              letterSpacing: 0.5,
+                              color: colorScheme.onSurface,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      game.venue.split(',').first, // City name
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colorScheme.onSurfaceVariant,
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.secondary,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+
+                            child: Text(
+                              'HOST',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.onSecondary,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Game Details
-          Row(
-            children: [
-              Icon(Icons.public, size: 16, color: colorScheme.onSurfaceVariant),
-              const SizedBox(width: 4),
-              Text(
-                'Public',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Time and Going Count Section
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                // Time Section
-                Expanded(
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 20,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 8),
                       Text(
-                        _getTimeSlot(game.startTime),
+                        game.venue.split(',').first, // City name
                         style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: colorScheme.onSurface,
+                          fontSize: 14,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
                 ),
+              ],
+            ),
 
-                // Going Count Section
-                Row(
-                  children: [
-                    Text(
-                      '${game.goingCount.toString().padLeft(2, '0')}',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Going',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+            const SizedBox(height: 12),
+
+            // Game Details
+            Row(
+              children: [
+                Icon(
+                  Icons.public,
+                  size: 16,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Public',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
-          ),
 
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          Row(
-            children: [
-              // Game Board Button
-              Expanded(
-                child: InkWell(
-                  onTap: widget.onGameBoardTap,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surface,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: colorScheme.secondary.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
+            // Time and Going Count Section
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  // Time Section
+                  Expanded(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.dashboard_outlined,
-                          size: 16,
-                          color: colorScheme.secondary,
+                          Icons.access_time,
+                          size: 20,
+                          color: colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 8),
                         Text(
-                          'Game Board',
+                          _getTimeSlot(game.startTime),
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 16,
                             fontWeight: FontWeight.w500,
-                            color: colorScheme.secondary,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ),
 
-              const SizedBox(width: 8),
-
-              // Invite Playpals Button
-              Expanded(
-                child: InkWell(
-                  onTap: widget.onInvitePlaypalsTap,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surface,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: colorScheme.secondary.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.person_add_alt_1_outlined,
-                          size: 16,
-                          color: colorScheme.secondary,
+                  // Going Count Section
+                  Row(
+                    children: [
+                      Text(
+                        '${game.goingCount.toString().padLeft(2, '0')}',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Invite playpals',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Going',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            Row(
+              children: [
+                // Game Board Button
+                Expanded(
+                  child: InkWell(
+                    onTap: widget.onGameBoardTap,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: colorScheme.secondary.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.dashboard_outlined,
+                            size: 16,
                             color: colorScheme.secondary,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 6),
+                          Text(
+                            'Game Board',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: colorScheme.secondary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+
+                const SizedBox(width: 8),
+
+                // Invite Playpals Button
+                Expanded(
+                  child: InkWell(
+                    onTap: widget.onInvitePlaypalsTap,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: colorScheme.secondary.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person_add_alt_1_outlined,
+                            size: 16,
+                            color: colorScheme.secondary,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Invite playpals',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: colorScheme.secondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

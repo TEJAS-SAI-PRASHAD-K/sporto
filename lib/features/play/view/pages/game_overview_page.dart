@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:playo/features/play/model/game.dart';
 import 'package:playo/features/play/view/pages/add_players_page.dart';
+import 'package:playo/features/play/view/pages/manage_players_page.dart';
 
 class GameOverviewPage extends StatelessWidget {
   final Game game;
@@ -323,7 +324,13 @@ class GameOverviewPage extends StatelessWidget {
                           _QuickAction(
                             icon: Icons.manage_accounts_outlined,
                             label: 'Manage',
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const ManagePlayersPage(),
+                                ),
+                              );
+                            },
                           ),
                           _QuickAction(
                             icon: Icons.chevron_right,
@@ -387,6 +394,8 @@ class GameOverviewPage extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: cs.primary,
+                    foregroundColor: cs.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

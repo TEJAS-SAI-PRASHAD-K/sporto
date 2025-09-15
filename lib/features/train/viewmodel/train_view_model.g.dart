@@ -6,7 +6,7 @@ part of 'train_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$trainViewModelHash() => r'496ece79266207d00126a691341d38ec31b31c7c';
+String _$trainViewModelHash() => r'1a99e19973fcea26dc9f5be1c89f8069a2738cf2';
 
 /// See also [TrainViewModel].
 @ProviderFor(TrainViewModel)

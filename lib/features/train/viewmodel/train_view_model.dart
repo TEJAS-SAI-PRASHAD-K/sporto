@@ -1,4 +1,8 @@
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 import 'package:playo/core/models/trainer.dart';
 import 'package:playo/features/train/model/service_category.dart';
@@ -93,5 +97,110 @@ class TrainViewModel extends _$TrainViewModel {
       (failure) => AsyncValue.error(failure.message, StackTrace.current),
       (trainers) => AsyncValue.data(trainers),
     );
+  }
+
+  /// Send an instant message email to the trainer using SMTP.
+  /// Returns true on success, throws on fatal error.
+  Future<bool> sendInstantMessageEmail({
+    required Datum datum,
+    required String? sport,
+    required String? message,
+    // Optional SMTP config can be passed; otherwise read from environment
+    String? smtpHost,
+    int? smtpPort,
+    String? smtpUsername,
+    String? smtpPassword,
+    bool useSsl = true,
+  }) async {
+    final trainer = datum.trainer;
+
+    // Build message body with user details from current user notifier
+    final currentUser = _currentUserNotifier.state;
+    final senderName = currentUser?.firstName ?? 'User';
+    final senderEmail =
+        currentUser?.emailAddress ??
+        _currentUserNotifier.userEmail ??
+        'no-reply@example.com';
+    final senderPhone =
+        currentUser?.mobileNumber ?? _currentUserNotifier.userPhone ?? '';
+
+    final bodyMessage = StringBuffer();
+    bodyMessage.writeln('Hi ${trainer.firstName},');
+    bodyMessage.writeln();
+    if (message != null && message.trim().isNotEmpty) {
+      bodyMessage.writeln(message.trim());
+    } else {
+      bodyMessage.writeln(
+        'I am interested in connecting with you regarding ${sport ?? 'your services'}. Please let me know your availability.',
+      );
+    }
+    bodyMessage.writeln();
+    bodyMessage.writeln('---');
+    bodyMessage.writeln('Sender details:');
+    bodyMessage.writeln('Name: $senderName');
+    bodyMessage.writeln('Email: $senderEmail');
+    if (senderPhone.isNotEmpty) bodyMessage.writeln('Phone: $senderPhone');
+
+    // SMTP config fallback to environment variables via flutter_dotenv
+    final host = smtpHost ?? dotenv.env['SMTP_HOST'] ?? '';
+    final portEnv =
+        smtpPort ?? int.tryParse(dotenv.env['SMTP_PORT'] ?? '') ?? 0;
+    final username = smtpUsername ?? dotenv.env['SMTP_USERNAME'] ?? '';
+    final password = smtpPassword ?? dotenv.env['SMTP_PASSWORD'] ?? '';
+
+    if (host.isEmpty || username.isEmpty || password.isEmpty) {
+      throw Exception(
+        'SMTP configuration is missing. Set SMTP_HOST, SMTP_USERNAME and SMTP_PASSWORD in environment.',
+      );
+    }
+
+    final effectivePort = portEnv > 0 ? portEnv : (useSsl ? 465 : 587);
+
+    final smtpServer = SmtpServer(
+      host,
+      port: effectivePort,
+      username: username,
+      password: password,
+      ssl: useSsl,
+    );
+
+    // Prefer the email provided on the datum/trainer object (fetched from Strapi).
+    // Only attempt to resolve the trainer's user profile when that email is empty.
+    String recipientEmail = trainer.email;
+    if (recipientEmail.isEmpty) {
+      final trainerUser = await _currentUserNotifier.getUserProfile(
+        trainer.userId,
+      );
+      recipientEmail = trainerUser?.emailAddress ?? '';
+    }
+
+    if (recipientEmail.isEmpty) {
+      throw Exception('Trainer email not available');
+    }
+
+    // Construct message. Use the configured SMTP username as the envelope From by default,
+    // but include sender's name and email in the body for clarity.
+    final fromAddress = Address(username, senderName);
+
+    final mailMessage = Message()
+      ..from = fromAddress
+      ..recipients.add(recipientEmail)
+      ..subject =
+          'Sporto: ${senderName} wants to connect about ${sport ?? 'your services'}'
+      ..text = bodyMessage.toString();
+
+    try {
+      final sendReport = await send(mailMessage, smtpServer);
+      // mailer returns a SendReport; if no exception, assume success
+      debugPrint('Email sent: $sendReport');
+      return true;
+    } on MailerException catch (e) {
+      debugPrint('MailerException: ${e.message}');
+      // Re-throw to let caller show error
+      throw Exception('Failed to send email: ${e.message}');
+    } catch (e) {
+      debugPrint('Error sending email: $e');
+      throw Exception('Failed to send email: $e');
+    }
   }
 }

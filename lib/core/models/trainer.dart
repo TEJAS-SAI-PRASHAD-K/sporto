@@ -86,6 +86,8 @@ class TrainerClass {
   final String id;
   @JsonKey(name: "bio")
   final String bio;
+  @JsonKey(name: "email")
+  final String email;
   @JsonKey(name: "avatar")
   final List<String> avatar;
   @JsonKey(name: "rating")
@@ -136,6 +138,7 @@ class TrainerClass {
   TrainerClass({
     required this.id,
     required this.bio,
+    required this.email,
     required this.avatar,
     required this.rating,
     required this.userId,
@@ -164,6 +167,7 @@ class TrainerClass {
   TrainerClass copyWith({
     String? id,
     String? bio,
+    String? email,
     List<String>? avatar,
     double? rating,
     String? userId,
@@ -190,6 +194,7 @@ class TrainerClass {
   }) => TrainerClass(
     id: id ?? this.id,
     bio: bio ?? this.bio,
+    email: email ?? this.email,
     avatar: avatar ?? this.avatar,
     rating: rating ?? this.rating,
     userId: userId ?? this.userId,

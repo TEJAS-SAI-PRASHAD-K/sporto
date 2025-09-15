@@ -47,6 +47,7 @@ Map<String, dynamic> _$DatumToJson(Datum instance) => <String, dynamic>{
 TrainerClass _$TrainerClassFromJson(Map<String, dynamic> json) => TrainerClass(
   id: json['id'] as String,
   bio: json['bio'] as String,
+  email: json['email'] as String,
   avatar: (json['avatar'] as List<dynamic>).map((e) => e as String).toList(),
   rating: (json['rating'] as num).toDouble(),
   userId: json['userId'] as String,
@@ -92,6 +93,7 @@ Map<String, dynamic> _$TrainerClassToJson(TrainerClass instance) =>
     <String, dynamic>{
       'id': instance.id,
       'bio': instance.bio,
+      'email': instance.email,
       'avatar': instance.avatar,
       'rating': instance.rating,
       'userId': instance.userId,

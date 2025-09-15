@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:playo/core/models/trainer.dart' as model;
+import 'package:playo/features/train/view/widgets/instant_connect_bottom_sheet.dart';
 
 class TrainerDetailsPage extends StatelessWidget {
   final model.Datum datum;
@@ -8,7 +9,7 @@ class TrainerDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = datum.trainer;
-    final tServices = datum.trainingService;
+    // final tServices = datum.trainingService; // unused
     final tReviews = datum.trainerReview;
     final avatarUrl = t.avatar.isNotEmpty ? t.avatar.first : null;
 
@@ -155,17 +156,15 @@ class TrainerDetailsPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          tReviews.rating != null
-                              ? Icons.star
-                              : Icons.star_border,
+                          tReviews.rating > 0 ? Icons.star : Icons.star_border,
                           size: 24,
-                          color: tReviews.rating != null
+                          color: tReviews.rating > 0
                               ? Theme.of(context).colorScheme.primary
                               : Theme.of(context).colorScheme.outline,
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          tReviews.rating != null ? '${tReviews.rating}' : '--',
+                          tReviews.rating > 0 ? '${tReviews.rating}' : '--',
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
@@ -337,7 +336,9 @@ class TrainerDetailsPage extends StatelessWidget {
               ),
               elevation: 0,
             ),
-            onPressed: () {},
+            onPressed: () {
+              InstantConnectBottomSheet.show(context, datum);
+            },
             child: Text(
               'INSTANT CONNECT 🚀',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(

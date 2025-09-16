@@ -9,7 +9,7 @@ import 'package:playo/features/play/view/widgets/empty_games_widget.dart';
 import 'package:playo/features/play/view/widgets/menu_overlay.dart';
 import 'package:playo/features/play/model/game.dart';
 import 'package:playo/features/play/view/widgets/game_card.dart';
-import 'package:playo/features/play/view/pages/game_overview_page.dart';
+import 'package:playo/features/play/view/pages/game_overview/game_overview_page.dart';
 import 'package:playo/features/play/view/widgets/upcoming_games.dart';
 
 class PlayPage extends StatelessWidget {

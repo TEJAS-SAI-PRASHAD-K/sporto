@@ -56,7 +56,13 @@ class _ManageExpensesPageState extends State<ManageExpensesPage> {
                     title: 'No Expense Recorded',
                     subtitle: 'Expenses added by players will appear here!',
                     ctaLabel: 'ADD EXPENSE',
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const AddExpensePage(),
+                        ),
+                      );
+                    },
                   ),
                   _EmptyState(
                     title: 'No Dues',

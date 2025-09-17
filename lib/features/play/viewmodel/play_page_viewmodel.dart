@@ -27,6 +27,10 @@ class PlayPageViewModel extends ChangeNotifier {
   // Fake games data keyed by sport id
   final Map<String, List<Game>> _gamesBySport = {};
 
+  // User created games and nearby games for Calendar tab
+  List<Game>? _cachedUserCreatedGames;
+  List<Game>? _cachedNearbyGames;
+
   // Getters
   int get tabIndex => _tabIndex;
   int get subTabIndex => _subTabIndex;
@@ -63,6 +67,8 @@ class PlayPageViewModel extends ChangeNotifier {
       // Clear cached actions when city changes as games might be different
       _cachedUpcomingActions = null;
       _cachedPastActions = null;
+      _cachedUserCreatedGames = null;
+      _cachedNearbyGames = null;
     }
   }
 
@@ -153,6 +159,47 @@ class PlayPageViewModel extends ChangeNotifier {
     return _gamesBySport[sportId] ?? const [];
   }
 
+  // Public getters for Calendar tab
+  List<Game> get userCreatedGames {
+    if (_tabIndex != 0) return const [];
+    return _cachedUserCreatedGames ??= _getUserCreatedGames();
+  }
+
+  List<Game> get nearbyGames {
+    if (_tabIndex != 0) return const [];
+    return _cachedNearbyGames ??= _getNearbyGames();
+  }
+
+  List<Game> _getUserCreatedGames() {
+    // Return user's created games - for now using Swimming games as example
+    // To test empty state, you can return an empty list: return const [];
+    DateTime now = DateTime.now();
+    return [
+      Game(
+        id: 'user-swimming-1',
+        sport: 'Swimming',
+        type: 'Regular',
+        organizerName: 'You',
+        startTime: now.add(
+          const Duration(days: 1, hours: 9),
+        ), // Tomorrow morning
+        endTime: now.add(const Duration(days: 1, hours: 10)),
+        venue: 'Amaravati Sports Complex',
+        distanceKm: 0.0,
+        goingCount: 1,
+        capacity: 8,
+        levelLabel: 'All Levels',
+        mustHaveSkill: false,
+        booked: false,
+      ),
+    ];
+  }
+
+  List<Game> _getNearbyGames() {
+    // Return nearby games - can be empty for now
+    return const [];
+  }
+
   void _seedFakeGames() {
     DateTime now = DateTime.now();
     List<Game> sample(String sport, {bool booked = false}) => [
@@ -200,6 +247,8 @@ class PlayPageViewModel extends ChangeNotifier {
     _cachedUpcomingActions = null;
     _cachedPastActions = null;
     _cachedDefaultActions = null;
+    _cachedUserCreatedGames = null;
+    _cachedNearbyGames = null;
     super.dispose();
   }
 }

@@ -137,7 +137,7 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
               // Current Location Option
               TextField(
                 decoration: InputDecoration(
-                  hintText: "Search by Sport",
+                  hintText: "Search by Location",
                   suffixIcon: Icon(
                     Iconsax.search_normal_1_copy,
                     color: Theme.of(context).colorScheme.outline,

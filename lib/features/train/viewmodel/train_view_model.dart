@@ -125,7 +125,7 @@ class TrainViewModel extends _$TrainViewModel {
         currentUser?.mobileNumber ?? _currentUserNotifier.userPhone ?? '';
 
     final bodyMessage = StringBuffer();
-    bodyMessage.writeln('Hi ${trainer.firstName},');
+    bodyMessage.writeln('Hi ${trainer.firstName} ${trainer.lastName},');
     bodyMessage.writeln();
     if (message != null && message.trim().isNotEmpty) {
       bodyMessage.writeln(message.trim());
@@ -166,17 +166,12 @@ class TrainViewModel extends _$TrainViewModel {
 
     // Prefer the email provided on the datum/trainer object (fetched from Strapi).
     // Only attempt to resolve the trainer's user profile when that email is empty.
-    String recipientEmail = trainer.email;
-    if (recipientEmail.isEmpty) {
-      final trainerUser = await _currentUserNotifier.getUserProfile(
-        trainer.userId,
-      );
-      recipientEmail = trainerUser?.emailAddress ?? '';
-    }
+    final recipientEmail = trainer.email;
 
     if (recipientEmail.isEmpty) {
       throw Exception('Trainer email not available');
     }
+
 
     // Construct message. Use the configured SMTP username as the envelope From by default,
     // but include sender's name and email in the body for clarity.

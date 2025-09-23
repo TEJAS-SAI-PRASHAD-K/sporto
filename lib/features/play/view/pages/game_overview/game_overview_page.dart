@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:playo/features/play/model/game.dart';
 import 'package:playo/features/play/view/pages/game_overview/add_expense/manage_expenses_page.dart';
 import 'package:playo/features/play/view/pages/game_overview/add_players_page.dart';
 import 'package:playo/features/play/view/pages/game_overview/manage_players_page.dart';
 import 'package:playo/features/play/view/pages/game_overview/players_page.dart';
+import 'package:playo/features/play/repository/games_remote_repository.dart';
+import 'package:playo/init_dependecies.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:playo/core/models/game.dart' as core_game;
+import 'package:playo/features/play/view/pages/update_game_page.dart';
 
-class GameOverviewPage extends StatelessWidget {
+class GameOverviewPage extends StatefulWidget {
   final Game game;
-  const GameOverviewPage({super.key, required this.game});
+  final ValueChanged<Game>? onGameUpdated;
+  const GameOverviewPage({super.key, required this.game, this.onGameUpdated});
+  @override
+  State<GameOverviewPage> createState() => _GameOverviewPageState();
+}
+
+class _GameOverviewPageState extends State<GameOverviewPage> {
+  late Game _game;
+
+  @override
+  void initState() {
+    super.initState();
+    _game = widget.game;
+  }
 
   String _dateLabel(DateTime dt) {
     const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -43,12 +62,53 @@ class GameOverviewPage extends StatelessWidget {
     }
   }
 
-  String _timeOfDay(DateTime dt) {
-    final h = dt.hour;
-    if (h >= 5 && h < 12) return 'Morning';
-    if (h >= 12 && h < 17) return 'Afternoon';
-    if (h >= 17 && h < 21) return 'Evening';
-    return 'Night';
+  // Exact time utilities for subtitle
+
+  String _fmtTime(DateTime dt) {
+    int h = dt.hour % 12;
+    if (h == 0) h = 12;
+    final m = dt.minute.toString().padLeft(2, '0');
+    final ampm = dt.hour >= 12 ? 'PM' : 'AM';
+    return '$h:$m $ampm';
+  }
+
+  String _fmtRange(DateTime start, DateTime end) =>
+      '${_fmtTime(start)} - ${_fmtTime(end)}';
+
+  String _buildInviteLink(Game game) {
+    // For demo: simple deep link with game_id. Replace with your dynamic link.
+    return 'https://playo.app/join?game_id=${game.id}';
+  }
+
+  Widget _privacyToggleButton({
+    required BuildContext context,
+    required IconData icon,
+    required bool selected,
+    required String tooltip,
+    required VoidCallback onTap,
+  }) {
+    final cs = Theme.of(context).colorScheme;
+    final Color bg = selected ? cs.onPrimary : cs.surface;
+    final Color fg = selected ? cs.primary : cs.onSurfaceVariant;
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: selected ? cs.primary : cs.outlineVariant,
+            ),
+          ),
+          child: Icon(icon, color: fg, size: 20),
+        ),
+      ),
+    );
   }
 
   @override
@@ -62,21 +122,33 @@ class GameOverviewPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              game.sport,
+              _game.sport,
               style: const TextStyle(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 2),
             Text(
-              '${_timeOfDay(game.startTime)} • ${_dateLabel(game.startTime)}',
+              '${_fmtRange(_game.startTime, _game.endTime)} • ${_dateLabel(_game.startTime)}',
               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
             ),
           ],
         ),
-        actions: const [
-          Icon(Icons.public_outlined),
-          SizedBox(width: 8),
-          Icon(Icons.more_vert),
-          SizedBox(width: 8),
+        actions: [
+          IconButton(
+            onPressed: () {
+              final url = _buildInviteLink(_game);
+              final text = 'Join my ${_game.sport} game on Playo: $url';
+              Share.share(text, subject: 'Playo Game Invite');
+            },
+            icon: const Icon(Icons.share_outlined),
+            tooltip: 'Share Invite',
+          ),
+          const SizedBox(width: 4),
+          IconButton(
+            onPressed: _showMoreMenu,
+            icon: const Icon(Icons.more_vert, size: 18),
+            tooltip: 'More',
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Column(
@@ -95,7 +167,7 @@ class GameOverviewPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              game.venue.split(',').first,
+                              _game.venue.split(',').first,
                               style: TextStyle(
                                 color: cs.primary,
                                 fontWeight: FontWeight.w600,
@@ -141,7 +213,7 @@ class GameOverviewPage extends StatelessWidget {
                   ),
                 ),
 
-                // Other Instructions with button
+                // Other Instructions
                 _SectionCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,19 +222,46 @@ class GameOverviewPage extends StatelessWidget {
                         'Other Instructions',
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'You can let the joinees know more about your game',
-                        style: TextStyle(color: cs.onSurfaceVariant),
-                      ),
                       const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton(
-                          onPressed: () {},
-                          child: const Text('ADD INSTRUCTIONS'),
-                        ),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          if (_game.payAndJoin && _game.costPerPlayer != null)
+                            _chip(
+                              context,
+                              'INR ${_game.costPerPlayer!.toStringAsFixed(0)}/Player',
+                              Icons.payments_outlined,
+                            ),
+                          if (_game.type.toLowerCase().contains('tournament'))
+                            _chip(
+                              context,
+                              'Tournament',
+                              Icons.emoji_events_outlined,
+                            ),
+                          if (_game.costShared)
+                            _chip(context, 'Cost Shared', Icons.call_split),
+                          if (_game.bringYourOwnEquipment)
+                            _chip(
+                              context,
+                              'Bring Your Own Equipment',
+                              Icons.backpack_outlined,
+                            ),
+                          if ((_game.totalPlayers ?? 0) > 0)
+                            _chip(
+                              context,
+                              'Required Players ${_game.totalPlayers}',
+                              Icons.groups_2_outlined,
+                            ),
+                        ],
                       ),
+                      if ((_game.instructionsNote ?? '').isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          _game.instructionsNote!,
+                          style: TextStyle(color: cs.onSurfaceVariant),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -219,19 +318,42 @@ class GameOverviewPage extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'Players (${game.goingCount})',
+                            'Players (${_game.goingCount})',
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                           const Spacer(),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.lock_outline),
-                            tooltip: 'Privacy',
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.public_outlined),
-                            tooltip: 'Public',
+                          Row(
+                            children: [
+                              _privacyToggleButton(
+                                context: context,
+                                icon: Icons.lock_outline,
+                                selected: !_game.isPublic,
+                                tooltip: 'Invite Only',
+                                onTap: () {
+                                  if (_game.isPublic) {
+                                    setState(() {
+                                      _game = _game.copyWith(isPublic: false);
+                                    });
+                                    widget.onGameUpdated?.call(_game);
+                                  }
+                                },
+                              ),
+                              const SizedBox(width: 8),
+                              _privacyToggleButton(
+                                context: context,
+                                icon: Icons.public_outlined,
+                                selected: _game.isPublic,
+                                tooltip: 'Public',
+                                onTap: () {
+                                  if (!_game.isPublic) {
+                                    setState(() {
+                                      _game = _game.copyWith(isPublic: true);
+                                    });
+                                    widget.onGameUpdated?.call(_game);
+                                  }
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -265,7 +387,7 @@ class GameOverviewPage extends StatelessWidget {
                         ),
                         title: Row(
                           children: [
-                            Expanded(child: Text(game.organizerName)),
+                            Expanded(child: Text(_game.organizerName)),
                             const SizedBox(width: 6),
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -348,9 +470,8 @@ class GameOverviewPage extends StatelessWidget {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (_) => PlayersPage(
-                                    game: game,
-                                    inviteOnly:
-                                        false, // TODO: wire actual privacy state
+                                    game: _game,
+                                    inviteOnly: !_game.isPublic,
                                   ),
                                 ),
                               );
@@ -388,12 +509,16 @@ class GameOverviewPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'This game is Public',
+                        _game.isPublic
+                            ? 'This game is Public'
+                            : 'This game is Invite Only',
                         style: TextStyle(color: cs.onSurfaceVariant),
                       ),
                       const SizedBox(width: 6),
                       Icon(
-                        Icons.public_outlined,
+                        _game.isPublic
+                            ? Icons.public_outlined
+                            : Icons.lock_outline,
                         size: 16,
                         color: cs.onSurfaceVariant,
                       ),
@@ -429,6 +554,122 @@ class GameOverviewPage extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _showMoreMenu() async {
+    final cs = Theme.of(context).colorScheme;
+    final result = await showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black54,
+      builder: (ctx) {
+        return Dialog(
+          insetPadding: const EdgeInsets.only(top: 70, right: 12),
+          alignment: Alignment.topRight,
+          backgroundColor: cs.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 220),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.event_available_outlined),
+                  title: const Text('Add to Calendar'),
+                  onTap: () => Navigator.pop(ctx, 'calendar'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.notifications_off_outlined),
+                  title: const Text('Mute Notifications'),
+                  onTap: () => Navigator.pop(ctx, 'mute'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.edit_outlined),
+                  title: const Text('Edit Game Details'),
+                  onTap: () => Navigator.pop(ctx, 'edit'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (!mounted) return;
+    switch (result) {
+      case 'calendar':
+        // TODO: implement calendar integration
+        break;
+      case 'mute':
+        // TODO: implement mute notifications toggle
+        break;
+      case 'edit':
+        final r = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => _UpdateGameRouteProxy(gameId: _game.id),
+          ),
+        );
+        if (r == 'deleted') {
+          if (!mounted) return;
+          Navigator.pop(context, 'deleted');
+        }
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+// Small helper route that loads core Game and shows UpdateGamePage
+class _UpdateGameRouteProxy extends StatelessWidget {
+  final String gameId;
+  const _UpdateGameRouteProxy({required this.gameId});
+
+  @override
+  Widget build(BuildContext context) {
+    final supabase = serviceLocator<SupabaseClient>();
+    final repo = GamesRemoteRepository(supabase);
+    return FutureBuilder<core_game.Game>(
+      future: repo
+          .getGameById(gameId)
+          .then((e) => e.getOrElse((_) => throw Exception('Failed'))),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(),
+            body: const Center(child: Text('Failed to load game')),
+          );
+        }
+        return UpdateGamePage(game: snapshot.data!);
+      },
+    );
+  }
+}
+
+Widget _chip(BuildContext context, String label, IconData icon) {
+  final cs = Theme.of(context).colorScheme;
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      color: cs.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: cs.onSurfaceVariant),
+        const SizedBox(width: 6),
+        Text(label, style: TextStyle(fontSize: 12, color: cs.onSurface)),
+      ],
+    ),
+  );
 }
 
 class _SectionCard extends StatelessWidget {

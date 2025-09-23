@@ -3,11 +3,15 @@ import 'package:playo/features/play/model/game.dart';
 
 class UpcomingGames extends StatefulWidget {
   final List<Game> userCreatedGames;
+  // When showing Upcoming tab, we also render nearby games. For Past tab, pass empty.
   final List<Game> nearbyGames;
   final VoidCallback onCreateGame;
   final Function(Game) onGameTap;
-  final VoidCallback? onGameBoardTap;
-  final VoidCallback? onInvitePlaypalsTap;
+  final void Function(Game)? onGameBoardTap;
+  final void Function(Game)? onInvitePlaypalsTap;
+  final void Function(Game)? onJoinTap;
+  final void Function(Game)? onRehostTap;
+  final bool isPastMode;
 
   const UpcomingGames({
     super.key,
@@ -17,6 +21,9 @@ class UpcomingGames extends StatefulWidget {
     required this.onGameTap,
     this.onGameBoardTap,
     this.onInvitePlaypalsTap,
+    this.onJoinTap,
+    this.onRehostTap,
+    this.isPastMode = false,
   });
 
   @override
@@ -47,7 +54,7 @@ class _UpcomingGamesState extends State<UpcomingGames> {
               ),
               const SizedBox(height: 16),
               Text(
-                'No upcoming games',
+                widget.isPastMode ? 'No past games' : 'No upcoming games',
                 style: TextStyle(
                   fontSize: 16,
                   color: colorScheme.onSurfaceVariant,
@@ -67,58 +74,60 @@ class _UpcomingGamesState extends State<UpcomingGames> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // User Created Games Section
         if (widget.userCreatedGames.isNotEmpty) ...[
-          _buildUserCreatedGamesSection(colorScheme),
+          ..._buildUserCreatedGrouped(colorScheme),
           const SizedBox(height: 16),
         ],
-
-        // Nearby Games Section
-        if (widget.nearbyGames.isNotEmpty)
-          _buildNearbyGamesSection(colorScheme),
+        if (widget.nearbyGames.isNotEmpty) ...[
+          ..._buildNearbyGrouped(colorScheme),
+        ],
       ],
     );
   }
 
-  Widget _buildUserCreatedGamesSection(ColorScheme colorScheme) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Date Header
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainer,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+  List<Widget> _buildUserCreatedGrouped(ColorScheme colorScheme) {
+    final groups = _groupByDate(widget.userCreatedGames);
+    final entries = groups.entries.toList();
+    if (widget.isPastMode) {
+      entries.sort((a, b) => b.key.compareTo(a.key)); // recent past first
+    }
+    return entries.map((entry) {
+      final date = entry.key;
+      final games = entry.value;
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainer,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+              ),
+              child: Text(
+                _formatDate(date),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.primary,
+                ),
               ),
             ),
-            child: Text(
-              _formatDate(widget.userCreatedGames.first.startTime),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: colorScheme.primary,
-              ),
-            ),
-          ),
-
-          // Games List
-          ...widget.userCreatedGames.map(
-            (game) => _buildUserGameCard(game, colorScheme),
-          ),
-        ],
-      ),
-    );
+            ...games.map((g) => _buildUserGameCard(g, colorScheme)),
+          ],
+        ),
+      );
+    }).toList();
   }
 
   Widget _buildUserGameCard(Game game, ColorScheme colorScheme) {
@@ -135,12 +144,21 @@ class _UpcomingGamesState extends State<UpcomingGames> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: colorScheme.primary,
-                  child: Icon(
-                    Icons.person,
-                    color: colorScheme.onPrimary,
-                    size: 20,
-                  ),
+                  backgroundColor: colorScheme.surfaceVariant,
+                  backgroundImage:
+                      (game.sportImageUrl != null &&
+                          game.sportImageUrl!.isNotEmpty)
+                      ? NetworkImage(game.sportImageUrl!)
+                      : null,
+                  child:
+                      (game.sportImageUrl == null ||
+                          game.sportImageUrl!.isEmpty)
+                      ? Icon(
+                          Icons.sports,
+                          color: colorScheme.onSurfaceVariant,
+                          size: 20,
+                        )
+                      : null,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -199,13 +217,33 @@ class _UpcomingGamesState extends State<UpcomingGames> {
             Row(
               children: [
                 Icon(
-                  Icons.public,
+                  game.isPublic ? Icons.public : Icons.lock_outline,
                   size: 16,
                   color: colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'Public',
+                  game.isPublic ? 'Public' : 'Invite Only',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if (game.payAndJoin) ...[
+                  _dot(colorScheme),
+                  Text(
+                    'Pay & join',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+                const SizedBox(width: 8),
+                _dot(colorScheme),
+                Text(
+                  game.levelLabel,
                   style: TextStyle(
                     fontSize: 14,
                     color: colorScheme.onSurfaceVariant,
@@ -236,7 +274,7 @@ class _UpcomingGamesState extends State<UpcomingGames> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          _getTimeSlot(game.startTime),
+                          _formatTimeRange(game.startTime, game.endTime),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -279,7 +317,7 @@ class _UpcomingGamesState extends State<UpcomingGames> {
                 // Game Board Button
                 Expanded(
                   child: InkWell(
-                    onTap: widget.onGameBoardTap,
+                    onTap: () => widget.onGameBoardTap?.call(game),
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -319,10 +357,12 @@ class _UpcomingGamesState extends State<UpcomingGames> {
 
                 const SizedBox(width: 8),
 
-                // Invite Playpals Button
+                // Right-side Action Button: Invite (Upcoming) or Re-host (Past)
                 Expanded(
                   child: InkWell(
-                    onTap: widget.onInvitePlaypalsTap,
+                    onTap: () => widget.isPastMode
+                        ? widget.onRehostTap?.call(game)
+                        : widget.onInvitePlaypalsTap?.call(game),
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -341,13 +381,15 @@ class _UpcomingGamesState extends State<UpcomingGames> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.person_add_alt_1_outlined,
+                            widget.isPastMode
+                                ? Icons.replay_outlined
+                                : Icons.person_add_alt_1_outlined,
                             size: 16,
                             color: colorScheme.secondary,
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'Invite playpals',
+                            widget.isPastMode ? 'Re-host' : 'Invite playpals',
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
@@ -361,36 +403,84 @@ class _UpcomingGamesState extends State<UpcomingGames> {
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            // Instruction badges (optional)
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (game.costShared)
+                  _chip(
+                    colorScheme,
+                    label: 'Cost Shared',
+                    icon: Icons.call_split,
+                  ),
+                if (game.bringYourOwnEquipment)
+                  _chip(
+                    colorScheme,
+                    label: 'Bring Your Own Equipment',
+                    icon: Icons.backpack_outlined,
+                  ),
+                if (game.payAndJoin && game.costPerPlayer != null)
+                  _chip(
+                    colorScheme,
+                    label:
+                        'INR ${game.costPerPlayer!.toStringAsFixed(0)}/Player',
+                    icon: Icons.payments_outlined,
+                  ),
+                if (game.type.toLowerCase().contains('tournament'))
+                  _chip(
+                    colorScheme,
+                    label: 'Tournament',
+                    icon: Icons.emoji_events_outlined,
+                  ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNearbyGamesSection(ColorScheme colorScheme) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Only show header if there are user created games above
-          if (widget.userCreatedGames.isNotEmpty) ...[
-            Text(
-              'Games near you',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: colorScheme.onSurface,
+  List<Widget> _buildNearbyGrouped(ColorScheme colorScheme) {
+    final groups = _groupByDate(widget.nearbyGames);
+    return groups.entries.map((entry) {
+      final date = entry.key;
+      final games = entry.value;
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: colorScheme.outline.withOpacity(0.2)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainer,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+              ),
+              child: Text(
+                _formatDate(date),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.primary,
+                ),
               ),
             ),
-            const SizedBox(height: 12),
+            ...games.map((g) => _buildNearbyGameCard(g, colorScheme)),
           ],
-          ...widget.nearbyGames.map(
-            (game) => _buildNearbyGameCard(game, colorScheme),
-          ),
-        ],
-      ),
-    );
+        ),
+      );
+    }).toList();
   }
 
   Widget _buildNearbyGameCard(Game game, ColorScheme colorScheme) {
@@ -431,12 +521,21 @@ class _UpcomingGamesState extends State<UpcomingGames> {
                 children: [
                   CircleAvatar(
                     radius: 16,
-                    backgroundColor: colorScheme.primary,
-                    child: Icon(
-                      Icons.person,
-                      size: 16,
-                      color: colorScheme.onPrimary,
-                    ),
+                    backgroundColor: colorScheme.surfaceVariant,
+                    backgroundImage:
+                        (game.sportImageUrl != null &&
+                            game.sportImageUrl!.isNotEmpty)
+                        ? NetworkImage(game.sportImageUrl!)
+                        : null,
+                    child:
+                        (game.sportImageUrl == null ||
+                            game.sportImageUrl!.isEmpty)
+                        ? Icon(
+                            Icons.sports,
+                            size: 16,
+                            color: colorScheme.onSurfaceVariant,
+                          )
+                        : null,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -463,9 +562,9 @@ class _UpcomingGamesState extends State<UpcomingGames> {
 
               const SizedBox(height: 8),
 
-              // Time
+              // Time Range
               Text(
-                _formatGameTime(game.startTime),
+                _formatTimeRange(game.startTime, game.endTime),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -577,12 +676,79 @@ class _UpcomingGamesState extends State<UpcomingGames> {
                     ),
                 ],
               ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  if (game.costShared)
+                    _chip(
+                      colorScheme,
+                      label: 'Cost Shared',
+                      icon: Icons.call_split,
+                    ),
+                  if (game.bringYourOwnEquipment)
+                    _chip(
+                      colorScheme,
+                      label: 'Bring Your Own Equipment',
+                      icon: Icons.backpack_outlined,
+                    ),
+                  if (game.payAndJoin && game.costPerPlayer != null)
+                    _chip(
+                      colorScheme,
+                      label:
+                          'INR ${game.costPerPlayer!.toStringAsFixed(0)}/Player',
+                      icon: Icons.payments_outlined,
+                    ),
+                  if (game.type.toLowerCase().contains('tournament'))
+                    _chip(
+                      colorScheme,
+                      label: 'Tournament',
+                      icon: Icons.emoji_events_outlined,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              // Join CTA for public nearby games
+              if (game.isPublic)
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => widget.onJoinTap?.call(game),
+                    child: const Text('JOIN'),
+                  ),
+                ),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _chip(ColorScheme cs, {required String label, IconData? icon}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 14, color: cs.onSurfaceVariant),
+            const SizedBox(width: 6),
+          ],
+          Text(label, style: TextStyle(fontSize: 12, color: cs.onSurface)),
+        ],
+      ),
+    );
+  }
+
+  Widget _dot(ColorScheme cs) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 4),
+    child: Text('•', style: TextStyle(color: cs.onSurfaceVariant)),
+  );
 
   String _formatDate(DateTime date) {
     final weekdays = [
@@ -612,39 +778,28 @@ class _UpcomingGamesState extends State<UpcomingGames> {
     return '${weekdays[date.weekday - 1]}, ${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
-  String _getTimeSlot(DateTime startTime) {
-    final hour = startTime.hour;
-    if (hour >= 5 && hour < 12) {
-      return 'Morning';
-    } else if (hour >= 12 && hour < 17) {
-      return 'Afternoon';
-    } else if (hour >= 17 && hour < 21) {
-      return 'Evening';
-    } else {
-      return 'Night';
+  String _formatTimeRange(DateTime start, DateTime end) {
+    String fmt(DateTime dt) {
+      final tod = TimeOfDay.fromDateTime(dt);
+      final period = tod.period == DayPeriod.am ? 'AM' : 'PM';
+      final hour = tod.hourOfPeriod == 0 ? 12 : tod.hourOfPeriod;
+      final minute = tod.minute.toString().padLeft(2, '0');
+      return '$hour:$minute $period';
     }
+
+    return '${fmt(start)} - ${fmt(end)}';
   }
 
-  String _formatGameTime(DateTime startTime) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final gameDate = DateTime(startTime.year, startTime.month, startTime.day);
-    final difference = gameDate.difference(today).inDays;
-
-    String dayLabel;
-    if (difference == 0) {
-      dayLabel = 'Today';
-    } else if (difference == 1) {
-      dayLabel = 'Tomorrow';
-    } else {
-      dayLabel = 'In $difference days';
+  Map<DateTime, List<Game>> _groupByDate(List<Game> games) {
+    final map = <DateTime, List<Game>>{};
+    for (final g in games) {
+      final d = DateTime(g.startTime.year, g.startTime.month, g.startTime.day);
+      map.putIfAbsent(d, () => []);
+      map[d]!.add(g);
     }
-
-    final timeOfDay = TimeOfDay.fromDateTime(startTime);
-    final period = timeOfDay.period == DayPeriod.am ? 'AM' : 'PM';
-    final hour = timeOfDay.hourOfPeriod == 0 ? 12 : timeOfDay.hourOfPeriod;
-    final minute = timeOfDay.minute.toString().padLeft(2, '0');
-
-    return '$dayLabel, $hour:$minute $period';
+    // Sort by date ascending
+    final entries = map.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    return {for (var e in entries) e.key: e.value};
   }
 }

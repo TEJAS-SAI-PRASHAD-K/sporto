@@ -84,12 +84,7 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
         final roleStr = (userMap['role'] as String?)?.toLowerCase();
         final user = User(
           userId: userMap['id'] as String,
-          firstName:
-              (userMap['first_name'] as String?) ??
-              _deriveFirstName(
-                userMap['full_name'] as String?,
-                userMap['email'] as String?,
-              ),
+          firstName: (userMap['first_name'] as String),
           lastName: userMap['last_name'] as String?,
           emailAddress: userMap['email'] as String,
           mobileNumber: userMap['phone'] as String?,
@@ -145,13 +140,7 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
         'is_active': 1,
         'is_email_verified': user.isEmailVerified ? 1 : 0,
         'is_phone_verified': user.isMobileVerified ? 1 : 0,
-        'is_profile_completed':
-            _isProfileComplete(
-              firstName: user.firstName,
-              lastName: user.lastName,
-              gender: user.gender,
-              preferredSports: user.favoriteSports,
-            )
+        'is_profile_completed': user.firstName.isEmpty || user.firstName == ""
             ? 1
             : 0,
         'is_online': 0,
@@ -177,29 +166,37 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
     }
   }
 
-  Future<void> _loadUserData(String userId) async {
+  Future<User?> _loadUserData(String userId) async {
     try {
       final result = await _userRepository.getUserById(userId);
+      User? loadedUser;
       result.fold(
         (failure) {
           debugPrint('Failed to load user data: ${failure.message}');
+          loadedUser = null;
         },
         (user) {
-          state = user;
-          _saveUserToCache(user); // Cache the user data locally
-          debugPrint(
-            'User data loaded: ${_composeFullName(user.firstName, user.lastName)}',
-          );
+          loadedUser = user;
         },
       );
+      if (loadedUser == null) {
+        debugPrint(
+          "No user loaded, redirecting to onboarding or complete profile",
+        );
+        // Optionally, set state to null or handle accordingly
+        // You can trigger navigation here if needed
+      }
+      state = loadedUser;
+      return loadedUser;
     } catch (e) {
       debugPrint('Error loading user data: $e');
     }
+    return null;
   }
 
   Future<void> createOrUpdateUser({
     required String emailAddress,
-    required String firstName,
+    String? firstName,
     String? lastName,
     String? mobileNumber,
     String? avatarUrl,
@@ -221,11 +218,15 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
         throw Exception('No authenticated user found');
       }
 
+      final user = await _loadUserData(authUser.id);
+
+      debugPrint(user?.toJson().toString() ?? "Loaded User from SPB null");
+
       // Create user with auth user ID
       final userToSave = User(
         userId: authUser.id,
-        firstName: firstName,
-        lastName: lastName,
+        firstName: firstName ?? user?.firstName ?? "",
+        lastName: lastName ?? user?.lastName,
         emailAddress: emailAddress,
         mobileNumber: mobileNumber,
         avatarUrl: avatarUrl,
@@ -327,18 +328,6 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
     }
   }
 
-  bool _isProfileComplete({
-    String? firstName,
-    String? lastName,
-    String? gender,
-    List<String>? preferredSports,
-  }) {
-    return firstName?.isNotEmpty == true &&
-        lastName?.isNotEmpty == true &&
-        gender?.isNotEmpty == true &&
-        (preferredSports?.isNotEmpty == true);
-  }
-
   Future<void> logout() async {
     try {
       // Clear local cache before signing out
@@ -386,12 +375,7 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
   // Getters
   bool get isLoggedIn => _supabase.auth.currentUser != null && state != null;
   bool get isAuthenticated => _supabase.auth.currentUser != null;
-  bool get isProfileCompleted => _isProfileComplete(
-    firstName: state?.firstName,
-    lastName: state?.lastName,
-    gender: state?.gender,
-    preferredSports: state?.favoriteSports,
-  );
+  bool get isProfileCompleted => state != null && state!.firstName.isNotEmpty;
   String? get userId => _supabase.auth.currentUser?.id;
   String? get userEmail => _supabase.auth.currentUser?.email;
   String? get userPhone => _supabase.auth.currentUser?.phone;
@@ -399,16 +383,6 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
   // Helpers
   String _composeFullName(String firstName, String? lastName) =>
       lastName == null || lastName.isEmpty ? firstName : '$firstName $lastName';
-
-  String _deriveFirstName(String? fullName, String? email) {
-    if (fullName != null && fullName.trim().isNotEmpty) {
-      return fullName.trim().split(' ').first;
-    }
-    if (email != null && email.contains('@')) {
-      return email.split('@').first;
-    }
-    return 'User';
-  }
 
   DateTime? _tryParseDateTime(String? value) {
     if (value == null || value.isEmpty) return null;

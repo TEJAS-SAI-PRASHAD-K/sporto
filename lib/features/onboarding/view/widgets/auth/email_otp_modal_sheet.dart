@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:playo/core/widgets/bottom_navigation_bar.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 import 'package:playo/core/common/widgets/loader.dart';
 import 'package:playo/core/utils/show_snackbar.dart';
@@ -86,13 +87,12 @@ class _EmailOtpPageContentState extends ConsumerState<EmailOtpPageContent> {
         ref.listen(authViewModelProvider, (_, next) {
           next?.when(
             data: (_) {
-              Navigator.of(context).pop(); // Close the modal
+              Navigator.of(context).pop();
               final currentUser = ref.read(currentUserNotifierProvider);
-              final needsProfile =
-                  currentUser == null ||
-                  (currentUser.firstName.isEmpty ||
-                      (currentUser.favoriteSports == null ||
-                          currentUser.favoriteSports!.isEmpty));
+              if (currentUser == null) {
+                debugPrint("Null user in notifier");
+              }
+              final needsProfile = currentUser!.firstName.isEmpty;
               if (needsProfile) {
                 Navigator.pushAndRemoveUntil(
                   context,
@@ -102,7 +102,11 @@ class _EmailOtpPageContentState extends ConsumerState<EmailOtpPageContent> {
                   (Route<dynamic> route) => false,
                 );
               } else {
-                Navigator.of(context).pop();
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (builder) => const BottomNavBar()),
+                  (Route<dynamic> route) => false,
+                );
               }
             },
             error: (error, st) {

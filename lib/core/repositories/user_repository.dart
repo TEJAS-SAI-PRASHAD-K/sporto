@@ -28,6 +28,8 @@ class UserRepository {
           .eq('user_id', userId)
           .single();
 
+      debugPrint(response.toString());
+
       final user = app_user.User.fromJson(response);
       return Right(user);
     } on SocketException {

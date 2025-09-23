@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/core/providers/current_user_provider.dart';
-// import 'dart:io';
-// import 'package:image_picker/image_picker.dart';
+import 'package:playo/core/common/widgets/profile_text_field.dart';
+import 'package:playo/core/common/widgets/profile_section_header.dart';
+import 'package:playo/core/common/widgets/profile_dropdown_field.dart';
 
 class ChangeAvatarSheet extends StatelessWidget {
   final List<String> avatarImages;
@@ -41,8 +42,9 @@ class ChangeAvatarSheet extends StatelessWidget {
             children: List.generate(numRows, (rowIndex) {
               int startIndex = rowIndex * 4;
               int endIndex = (rowIndex + 1) * 4;
-              if (endIndex > avatarImages.length)
+              if (endIndex > avatarImages.length) {
                 endIndex = avatarImages.length;
+              }
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Row(
@@ -118,15 +120,6 @@ class EditProfilePage extends ConsumerStatefulWidget {
 }
 
 class _EditProfilePageState extends ConsumerState<EditProfilePage> {
-  String? _bioError;
-  final TextEditingController _bioController = TextEditingController();
-  // Removed unused _formKey
-  bool _isSaving = false;
-  String? _firstNameError;
-  String? _lastNameError;
-  String? _emailError;
-  String? _phoneError;
-
   bool _isValidEmail(String email) {
     final emailRegex = RegExp(r'^[\w\-.]+@[\w\-]+\.[a-zA-Z]{2,}$');
     return emailRegex.hasMatch(email);
@@ -135,10 +128,34 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   bool _isValidPhone(String phone) {
     // Accepts numbers with optional +country code, spaces, dashes, and min 10 digits
     final phoneRegex = RegExp(r'^(\+\d{1,4}[\s-]?)?(\d[\d\s-]{9,})$');
-    // Remove non-digit chars and check at least 10 digits
     final digits = phone.replaceAll(RegExp(r'\D'), '');
     return phoneRegex.hasMatch(phone) && digits.length >= 10;
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final user = ref.watch(currentUserNotifierProvider);
+    // Only set _selectedAvatarIndex if not already set (i.e., first load)
+    if (_selectedAvatarIndex == null &&
+        (user?.avatarUrl?.isNotEmpty ?? false)) {
+      final idx = avatarImages.indexOf(user!.avatarUrl!);
+      if (idx != -1) {
+        _selectedAvatarIndex = idx;
+      }
+    }
+  }
+
+  // ...existing code...
+  final TextEditingController _bioController = TextEditingController();
+  // Removed unused _formKey
+  bool _isSaving = false;
+  String? _firstNameError;
+  String? _lastNameError;
+  String? _emailError;
+  String? _phoneError;
+
+  // ...existing code...
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -173,7 +190,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (context) => ChangeAvatarSheet(
+      builder: (sheetContext) => ChangeAvatarSheet(
         avatarImages: avatarImages,
         selectedIndex: _selectedAvatarIndex,
         onAvatarSelected: (index) {
@@ -182,101 +199,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           });
         },
       ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    required ColorScheme colorScheme,
-    TextInputType? textInputType,
-    Widget? suffixIcon,
-    ValueChanged<String>? onChanged,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: textInputType,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-        filled: true,
-        fillColor: colorScheme.surface,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: colorScheme.outline.withValues(alpha: 0.3),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
-        ),
-        suffixIcon: suffixIcon,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-      ),
-      style: TextStyle(color: colorScheme.onSurface),
-      onChanged: onChanged,
-    );
-  }
-
-  Widget _buildSectionHeader(String title, ColorScheme colorScheme) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-          letterSpacing: 1.1,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDropdownField({
-    required String label,
-    required String? value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-    required ColorScheme colorScheme,
-  }) {
-    return DropdownButtonFormField<String>(
-      value: value,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-        filled: true,
-        fillColor: colorScheme.surface,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: colorScheme.outline.withValues(alpha: 0.3),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-      ),
-      style: TextStyle(color: colorScheme.onSurface),
-      items: items
-          .map(
-            (e) => DropdownMenuItem<String>(
-              value: e,
-              child: Text(e, style: TextStyle(color: colorScheme.onSurface)),
-            ),
-          )
-          .toList(),
-      onChanged: onChanged,
     );
   }
 
@@ -467,19 +389,32 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                         color: colorScheme.primaryContainer,
                       ),
                       child: ClipOval(
-                        child: _selectedAvatarIndex != null
-                            ? Image.asset(
-                                avatarImages[_selectedAvatarIndex!],
-                                fit: BoxFit.cover,
-                                width: 80,
-                                height: 80,
-                              )
-                            : Image.asset(
-                                "assets/images/boy_10.png",
-                                fit: BoxFit.cover,
-                                width: 80,
-                                height: 80,
-                              ),
+                        child: (() {
+                          final user = ref.watch(currentUserNotifierProvider);
+                          if (_selectedAvatarIndex != null) {
+                            return Image.asset(
+                              avatarImages[_selectedAvatarIndex!],
+                              fit: BoxFit.cover,
+                              width: 80,
+                              height: 80,
+                            );
+                          } else if ((user?.avatarUrl?.isNotEmpty ?? false) &&
+                              avatarImages.contains(user!.avatarUrl!)) {
+                            return Image.asset(
+                              user.avatarUrl!,
+                              fit: BoxFit.cover,
+                              width: 80,
+                              height: 80,
+                            );
+                          } else {
+                            return Image.asset(
+                              "assets/images/boy_10.png",
+                              fit: BoxFit.cover,
+                              width: 80,
+                              height: 80,
+                            );
+                          }
+                        })(),
                       ),
                     ),
                   ),
@@ -498,7 +433,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               ),
             ),
             const SizedBox(height: 24),
-            _buildTextField(
+            ProfileTextField(
               label: 'First Name',
               controller: _firstNameController,
               colorScheme: colorScheme,
@@ -529,7 +464,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 ),
               ),
             const SizedBox(height: 16),
-            _buildTextField(
+            ProfileTextField(
               label: 'Last Name',
               controller: _lastNameController,
               colorScheme: colorScheme,
@@ -560,9 +495,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 ),
               ),
             const SizedBox(height: 32),
-            _buildSectionHeader('CONTACT DETAILS', colorScheme),
+            ProfileSectionHeader(
+              title: 'CONTACT DETAILS',
+              colorScheme: colorScheme,
+            ),
             const SizedBox(height: 16),
-            _buildTextField(
+            ProfileTextField(
               label: 'Email',
               controller: _emailController,
               colorScheme: colorScheme,
@@ -570,7 +508,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               suffixIcon: _emailError != null
                   ? Icon(Icons.error, color: colorScheme.error)
                   : (_emailController.text.trim().isNotEmpty &&
-                            _emailError == null
+                            _emailError == null &&
+                            _isValidEmail(_emailController.text.trim())
                         ? Icon(Icons.check_circle, color: colorScheme.primary)
                         : null),
               onChanged: (val) {
@@ -593,7 +532,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 ),
               ),
             const SizedBox(height: 16),
-            _buildTextField(
+            ProfileTextField(
               label: 'Phone',
               controller: _phoneController,
               colorScheme: colorScheme,
@@ -601,7 +540,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               suffixIcon: _phoneError != null
                   ? Icon(Icons.error, color: colorScheme.error)
                   : (_phoneController.text.trim().isNotEmpty &&
-                            _phoneError == null
+                            _phoneError == null &&
+                            _isValidPhone(_phoneController.text.trim())
                         ? Icon(Icons.check_circle, color: colorScheme.primary)
                         : null),
               onChanged: (val) {
@@ -624,9 +564,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 ),
               ),
             const SizedBox(height: 32),
-            _buildSectionHeader('ABOUT', colorScheme),
+            ProfileSectionHeader(title: 'ABOUT', colorScheme: colorScheme),
             const SizedBox(height: 16),
-            _buildDropdownField(
+            ProfileDropdownField(
               label: 'Gender',
               value: _gender,
               items: const ['Male', 'Female', 'Other'],
@@ -634,36 +574,19 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               colorScheme: colorScheme,
             ),
             const SizedBox(height: 16),
-            _buildTextField(
+            ProfileTextField(
               label: 'Bio',
               controller: _bioController,
               colorScheme: colorScheme,
               textInputType: TextInputType.multiline,
-              suffixIcon: _bioError != null
-                  ? Icon(Icons.error, color: colorScheme.error)
-                  : (_bioController.text.trim().isNotEmpty && _bioError == null
-                        ? Icon(Icons.check_circle, color: colorScheme.primary)
-                        : null),
+              suffixIcon: null,
               onChanged: (val) {
                 setState(() {
-                  _bioError = val.trim().length > 200
-                      ? 'Bio must be under 200 characters'
-                      : null;
+                  // Add any bio validation here if needed
                 });
               },
             ),
-            if (_bioError != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4, left: 4),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _bioError!,
-                    style: TextStyle(color: colorScheme.error, fontSize: 12),
-                  ),
-                ),
-              ),
-            const SizedBox(height: 32),
+            // ...existing code...
           ],
         ),
       ),

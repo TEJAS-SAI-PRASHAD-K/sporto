@@ -1,12 +1,21 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:playo/features/play/model/menu_action.dart';
 import 'package:playo/features/play/model/sub_tab.dart';
 import 'package:playo/features/play/model/game.dart';
+import 'package:playo/features/play/repository/games_remote_repository.dart';
+import 'package:playo/features/play/mappers/game_mappers.dart';
+import 'package:playo/init_dependecies.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+SupabaseClient getItSupabase() => serviceLocator<SupabaseClient>();
 
 class PlayPageViewModel extends ChangeNotifier {
+  PlayPageViewModel();
   int _tabIndex = 0;
   int _subTabIndex = 0;
   String _selectedCity = 'Bengaluru';
+  Timer? _rolloverTimer;
 
   // Available cities list
   final List<String> _availableCities = [
@@ -30,6 +39,9 @@ class PlayPageViewModel extends ChangeNotifier {
   // User created games and nearby games for Calendar tab
   List<Game>? _cachedUserCreatedGames;
   List<Game>? _cachedNearbyGames;
+  List<Game>? _cachedPastUserCreatedGames;
+  Map<String, String> _sportNames = const {}; // sport_id -> sport_name
+  Map<String, String> _sportImages = const {}; // sport_id -> image_url
 
   // Getters
   int get tabIndex => _tabIndex;
@@ -47,6 +59,10 @@ class PlayPageViewModel extends ChangeNotifier {
       if (_tabIndex == 1 && _gamesBySport.isEmpty) {
         _seedFakeGames();
       }
+      // Ensure Calendar lists are up-to-date when switching to Calendar
+      if (_tabIndex == 0) {
+        unawaited(refreshUpcoming());
+      }
       notifyListeners();
     }
   }
@@ -54,6 +70,10 @@ class PlayPageViewModel extends ChangeNotifier {
   void setSubTabIndex(int value) {
     if (_subTabIndex != value) {
       _subTabIndex = value;
+      // Keep Calendar sub-tabs fresh (Upcoming/Past) when switching
+      if (_tabIndex == 0) {
+        unawaited(refreshUpcoming());
+      }
       notifyListeners();
     }
   }
@@ -170,29 +190,14 @@ class PlayPageViewModel extends ChangeNotifier {
     return _cachedNearbyGames ??= _getNearbyGames();
   }
 
+  List<Game> get pastUserCreatedGames {
+    if (_tabIndex != 0) return const [];
+    return _cachedPastUserCreatedGames ?? const [];
+  }
+
   List<Game> _getUserCreatedGames() {
-    // Return user's created games - for now using Swimming games as example
-    // To test empty state, you can return an empty list: return const [];
-    DateTime now = DateTime.now();
-    return [
-      Game(
-        id: 'user-swimming-1',
-        sport: 'Swimming',
-        type: 'Regular',
-        organizerName: 'You',
-        startTime: now.add(
-          const Duration(days: 1, hours: 9),
-        ), // Tomorrow morning
-        endTime: now.add(const Duration(days: 1, hours: 10)),
-        venue: 'Amaravati Sports Complex',
-        distanceKm: 0.0,
-        goingCount: 1,
-        capacity: 8,
-        levelLabel: 'All Levels',
-        mustHaveSkill: false,
-        booked: false,
-      ),
-    ];
+    // Synchronous cache; ensure async refresh elsewhere
+    return _cachedUserCreatedGames ?? const [];
   }
 
   List<Game> _getNearbyGames() {
@@ -244,11 +249,106 @@ class PlayPageViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _rolloverTimer?.cancel();
     _cachedUpcomingActions = null;
     _cachedPastActions = null;
     _cachedDefaultActions = null;
     _cachedUserCreatedGames = null;
     _cachedNearbyGames = null;
     super.dispose();
+  }
+
+  // Public method to refresh upcoming from Supabase
+  Future<void> refreshUpcoming() async {
+    try {
+      final repo = GamesRemoteRepository(getItSupabase());
+      await _ensureSportsLoaded();
+      // Fetch all games and partition locally into upcoming vs past
+      final res = await repo.listGames();
+      res.match((_) {}, (list) {
+        final nameResolver = (String id) => _sportNames[id] ?? id;
+        final imageResolver = (String id) => _sportImages[id] ?? '';
+        final supabase = getItSupabase();
+        final currentUserId = supabase.auth.currentUser?.id;
+        // Partition: user-created vs public nearby (others)
+        final createdByMeUpcoming = <Game>[];
+        final createdByMePast = <Game>[];
+        final publicOthers = <Game>[];
+        final cityLower = _selectedCity.toLowerCase();
+        final now = DateTime.now();
+        for (final g in list) {
+          final ui = GameMappers.toUi(
+            g,
+            sportNameResolver: nameResolver,
+            sportImageResolver: imageResolver,
+          );
+          final isMine = (g.organiserUserId == currentUserId);
+          final isPublic = (g.gameAccessType ?? 'Public') == 'Public';
+          if (isMine) {
+            // Decide upcoming vs past using end time
+            if (ui.endTime.isBefore(now)) {
+              createdByMePast.add(ui);
+            } else {
+              createdByMeUpcoming.add(ui);
+            }
+          } else if (isPublic) {
+            // Simple area/city filter for demo based on selected city string
+            final place =
+                ((g.venueAddress ?? g.venueName ?? g.areaOfGame) ?? '')
+                    .toString()
+                    .toLowerCase();
+            if (place.contains(cityLower) || cityLower.isEmpty) {
+              publicOthers.add(ui);
+            }
+          }
+        }
+        _cachedUserCreatedGames = createdByMeUpcoming;
+        _cachedPastUserCreatedGames = createdByMePast;
+        _cachedNearbyGames = publicOthers;
+        _scheduleNextRollover(createdByMeUpcoming);
+        notifyListeners();
+      });
+    } catch (_) {}
+  }
+
+  void _scheduleNextRollover(List<Game> upcomingMine) {
+    // Cancel any previous timer
+    _rolloverTimer?.cancel();
+    if (upcomingMine.isEmpty) return;
+    // Find the earliest end time in future
+    final now = DateTime.now();
+    final futureEnds =
+        upcomingMine.map((g) => g.endTime).where((t) => t.isAfter(now)).toList()
+          ..sort();
+    if (futureEnds.isEmpty) return;
+    final next = futureEnds.first;
+    final delay = next.difference(now) + const Duration(seconds: 1);
+    _rolloverTimer = Timer(delay, () {
+      // When the earliest upcoming game ends, refresh to move it to Past
+      unawaited(refreshUpcoming());
+    });
+  }
+
+  Future<void> _ensureSportsLoaded() async {
+    if (_sportNames.isNotEmpty && _sportImages.isNotEmpty) return;
+    try {
+      final supabase = getItSupabase();
+      final response = await supabase
+          .from('sports')
+          .select('sport_id, sport_name, image_url')
+          .eq('is_sport_active', true);
+      final list = (response as List).cast<Map<String, dynamic>>();
+      _sportNames = {
+        for (final row in list)
+          row['sport_id'] as String: (row['sport_name'] as String),
+      };
+      _sportImages = {
+        for (final row in list)
+          row['sport_id'] as String: (row['image_url'] as String?) ?? '',
+      };
+    } catch (_) {
+      _sportNames = const {};
+      _sportImages = const {};
+    }
   }
 }

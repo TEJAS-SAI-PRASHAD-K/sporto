@@ -3,9 +3,15 @@ import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:playo/init_dependecies.dart';
 import 'package:playo/core/models/sport.dart';
+// import 'package:playo/core/models/game.dart' as core_game;
+// import 'package:playo/core/error/failure.dart';
+// import 'package:playo/features/play/repository/games_remote_repository.dart';
+import 'package:playo/features/play/viewmodel/create_game_view_model.dart';
 
 class CreateGamePage extends StatefulWidget {
-  const CreateGamePage({super.key});
+  // When provided, form will be pre-filled using this game's details
+  final dynamic prefill; // Use dynamic to avoid import cycles; expects ui Game
+  const CreateGamePage({super.key, this.prefill});
 
   @override
   State<CreateGamePage> createState() => _CreateGamePageState();
@@ -18,6 +24,11 @@ class _CreateGamePageState extends State<CreateGamePage> {
   String gameType = "Regular"; // for radio buttons
   bool gameSkill = false;
   bool payAndJoin = false;
+  double? costPerPlayer;
+  int? totalPlayers;
+  bool bringOwnEquipment = false;
+  bool costShared = false;
+  final TextEditingController _instructionsCtrl = TextEditingController();
 
   // Selected values for the option tiles
   String? selectedSport;
@@ -25,6 +36,43 @@ class _CreateGamePageState extends State<CreateGamePage> {
   String? selectedArea;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+  TimeOfDay? selectedEndTime;
+
+  @override
+  void initState() {
+    super.initState();
+    // Attempt to prefill from provided game model (ui Game)
+    final g = widget.prefill;
+    if (g != null) {
+      try {
+        // Defensive assignment using duck typing on fields we know
+        selectedSport = g.sport as String?;
+        selectedSportId = g.sportId as String?;
+        selectedArea = g.venue as String?;
+        selectedDate = DateTime(
+          g.startTime.year,
+          g.startTime.month,
+          g.startTime.day,
+        );
+        selectedTime = TimeOfDay.fromDateTime(g.startTime as DateTime);
+        selectedEndTime = TimeOfDay.fromDateTime(g.endTime as DateTime);
+        isPublic = (g.isPublic as bool?) ?? true;
+        gameType = (g.type as String?) ?? 'Regular';
+        gameSkill = (g.mustHaveSkill as bool?) ?? false;
+        payAndJoin = (g.payAndJoin as bool?) ?? false;
+        costPerPlayer = g.costPerPlayer as double?;
+        totalPlayers = g.totalPlayers as int?;
+        costShared = (g.costShared as bool?) ?? false;
+        bringOwnEquipment = (g.bringYourOwnEquipment as bool?) ?? false;
+        final note = g.instructionsNote as String?;
+        if (note != null && note.isNotEmpty) {
+          _instructionsCtrl.text = note;
+        }
+      } catch (_) {
+        // Ignore prefill issues
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +116,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
             _buildOptionTile(
               icon: Icons.access_time,
               title: "Time",
-              subtitle: selectedTime == null
-                  ? "Pick Exact Time"
-                  : selectedTime!.format(context),
+              subtitle: _formatTimeTile(),
               onTap: _onSelectTime,
             ),
 
@@ -111,6 +157,9 @@ class _CreateGamePageState extends State<CreateGamePage> {
             ),
 
             if (showAdvanced) _buildAdvancedSettings(),
+
+            const SizedBox(height: 16),
+            _buildAddInstructionsSection(),
           ],
         ),
       ),
@@ -126,9 +175,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            onPressed: () {
-              
-            },
+            onPressed: _onCreateGame,
             child: const Text(
               "CREATE GAME",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -247,7 +294,59 @@ class _CreateGamePageState extends State<CreateGamePage> {
       },
     );
     if (picked != null) {
-      setState(() => selectedTime = picked);
+      setState(() {
+        selectedTime = picked;
+        selectedEndTime = null; // reset previous end time
+      });
+      // Prompt for end time immediately
+      final endPicked = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(
+          hour: (picked.hour + 1) % 24,
+          minute: picked.minute,
+        ),
+        builder: (context, child) {
+          final scheme = Theme.of(context).colorScheme;
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: scheme.copyWith(
+                primary: scheme.primary,
+                onPrimary: scheme.onPrimary,
+                surface: scheme.surface,
+                onSurface: scheme.onSurface,
+              ),
+              timePickerTheme: TimePickerThemeData(
+                dialBackgroundColor: scheme.surfaceVariant,
+                dialHandColor: scheme.primary,
+                dialTextColor: WidgetStateColor.resolveWith(
+                  (states) => states.contains(WidgetState.selected)
+                      ? scheme.onPrimary
+                      : scheme.onSurface,
+                ),
+                hourMinuteColor: WidgetStateColor.resolveWith(
+                  (states) => states.contains(WidgetState.selected)
+                      ? scheme.primary
+                      : scheme.surface,
+                ),
+                hourMinuteTextColor: WidgetStateColor.resolveWith(
+                  (states) => states.contains(WidgetState.selected)
+                      ? scheme.onPrimary
+                      : scheme.onSurface,
+                ),
+                entryModeIconColor: scheme.primary,
+                helpTextStyle: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(foregroundColor: scheme.primary),
+              ),
+            ),
+            child: child!,
+          );
+        },
+      );
+      if (endPicked != null) {
+        setState(() => selectedEndTime = endPicked);
+      }
     }
   }
 
@@ -402,14 +501,229 @@ class _CreateGamePageState extends State<CreateGamePage> {
           title: const Text("Pay and Join"),
           trailing: Transform.scale(
             scale: 0.8, // adjust size here
-            child: Switch(
-              value: payAndJoin,
-              onChanged: (val) => setState(() => payAndJoin = val),
+            child: Switch(value: payAndJoin, onChanged: _onTogglePayAndJoin),
+          ),
+        ),
+        if (payAndJoin) ...[
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextField(
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(
+                labelText: 'Cost Per Player',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (v) {
+                setState(() {
+                  costPerPlayer = double.tryParse(v);
+                });
+              },
             ),
           ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextField(
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Total Players (including you)',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (v) {
+                setState(() {
+                  totalPlayers = int.tryParse(v);
+                });
+              },
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Future<void> _onTogglePayAndJoin(bool val) async {
+    if (val) {
+      final accepted = await _showPayAndJoinTerms();
+      if (accepted == true) {
+        setState(() => payAndJoin = true);
+      } else {
+        setState(() => payAndJoin = false);
+      }
+    } else {
+      setState(() {
+        payAndJoin = false;
+        costPerPlayer = null;
+        totalPlayers = null;
+      });
+    }
+  }
+
+  Future<bool?> _showPayAndJoinTerms() {
+    final cs = Theme.of(context).colorScheme;
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Terms & Conditions'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 4),
+                _tcBullet(
+                  cs,
+                  'Joinees will be prompted to pay the requisite amount in order to confirm their participation, post which they will be auto-added to the game and cannot be removed from the roster by the Host.',
+                ),
+                const SizedBox(height: 12),
+                _tcBullet(
+                  cs,
+                  'Payment collected from Joinees will be auto-credited to your Playo Credits post completion of the game. Playo Credits can be used for transactions that you make on Playo and cannot be redeemed by way of cash or bank transfers.',
+                ),
+                const SizedBox(height: 12),
+                _tcBullet(
+                  cs,
+                  'In case of any disputes raised by Joinees with respect to the payment made by them towards this game, the disputed amount could be deducted from your Playo Credits upon resolution by Playo.',
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('DECLINE'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('ACCEPT'),
+            ),
+          ],
+        );
+      },
+    ).then((value) => value ?? false);
+  }
+
+  Widget _tcBullet(ColorScheme cs, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 6),
+          child: Icon(Icons.circle, size: 8, color: Colors.green),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(text, style: TextStyle(color: cs.onSurfaceVariant)),
         ),
       ],
     );
+  }
+
+  Widget _buildAddInstructionsSection() {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: cs.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Add Instructions',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            value: bringOwnEquipment,
+            onChanged: (v) => setState(() => bringOwnEquipment = v ?? false),
+            title: const Text('Bring Your Own Equipment'),
+            controlAffinity: ListTileControlAffinity.leading,
+          ),
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            value: costShared,
+            onChanged: (v) => setState(() => costShared = v ?? false),
+            title: const Text('Cost Shared'),
+            controlAffinity: ListTileControlAffinity.leading,
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _instructionsCtrl,
+            maxLines: 3,
+            decoration: const InputDecoration(
+              hintText:
+                  'Use this space to tell others about the format of the game and other details',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _onCreateGame() async {
+    // Basic validations
+    if (selectedSport == null) {
+      _showSnack('Please select a sport');
+      return;
+    }
+    // Area is optional for now; skip validation
+    if (selectedDate == null) {
+      _showSnack('Please pick a date');
+      return;
+    }
+    if (selectedTime == null) {
+      _showSnack('Please pick a start time');
+      return;
+    }
+    if (selectedEndTime == null) {
+      _showSnack('Please pick an end time');
+      return;
+    }
+
+    try {
+      final vm = CreateGameViewModel();
+      final ui = await vm.createGame(
+        sportName: selectedSport!,
+        sportId: selectedSportId!,
+        selectedArea: selectedArea,
+        selectedDate: selectedDate!,
+        selectedTime: selectedTime!,
+        selectedEndTime: selectedEndTime!,
+        isPublic: isPublic,
+        gameType: gameType,
+        gameSkill: gameSkill,
+        payAndJoin: payAndJoin,
+        costPerPlayer: costPerPlayer,
+        totalPlayers: totalPlayers,
+        costShared: costShared,
+        bringYourOwnEquipment: bringOwnEquipment,
+        instructions: _instructionsCtrl.text,
+      );
+      if (mounted) Navigator.pop(context, ui);
+    } catch (e) {
+      _showSnack(e.toString());
+    }
+  }
+
+  // Helpers moved to ViewModel
+
+  String _formatTimeTile() {
+    if (selectedTime == null) return 'Pick Exact Time';
+    final start = selectedTime!.format(context);
+    if (selectedEndTime == null) return start;
+    final end = selectedEndTime!.format(context);
+    return '$start - $end';
+  }
+
+  void _showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 }
 
@@ -437,7 +751,6 @@ class _SportSelectionPageState extends State<SportSelectionPage> {
   }
 
   Future<List<Sport>> _loadSports() async {
-    // Fetch every active sport. Adjust selected columns to those mapped in model.
     final response = await _supabase
         .from('sports')
         .select(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:playo/core/common/pages/edit_profile_page.dart';
 import '../../providers/current_user_provider.dart';
 import '../../models/user.dart';
 
@@ -91,7 +92,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             IconButton(
               icon: Icon(Icons.edit, color: colorScheme.onSurface),
               onPressed: () {
-                // TODO: Navigate to edit profile
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditProfilePage()),
+                );
               },
             ),
         ],

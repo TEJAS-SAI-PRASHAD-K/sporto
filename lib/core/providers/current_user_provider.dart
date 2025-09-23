@@ -169,27 +169,29 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
   Future<User?> _loadUserData(String userId) async {
     try {
       final result = await _userRepository.getUserById(userId);
-
-      final user = result.fold<User?>(
+      User? loadedUser;
+      result.fold(
         (failure) {
           debugPrint('Failed to load user data: ${failure.message}');
-          return null;
+          loadedUser = null;
         },
         (user) {
-          state = user;
-          _saveUserToCache(user); // Cache the user data locally
-          debugPrint(
-            'User data loaded: ${_composeFullName(user.firstName, user.lastName)}',
-          );
-          return user;
+          loadedUser = user;
         },
       );
-
-      return user;
+      if (loadedUser == null) {
+        debugPrint(
+          "No user loaded, redirecting to onboarding or complete profile",
+        );
+        // Optionally, set state to null or handle accordingly
+        // You can trigger navigation here if needed
+      }
+      state = loadedUser;
+      return loadedUser;
     } catch (e) {
       debugPrint('Error loading user data: $e');
-      return null;
     }
+    return null;
   }
 
   Future<void> createOrUpdateUser({
@@ -223,8 +225,8 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
       // Create user with auth user ID
       final userToSave = User(
         userId: authUser.id,
-        firstName: user?.firstName ?? "User",
-        lastName: lastName,
+        firstName: firstName ?? user?.firstName ?? "",
+        lastName: lastName ?? user?.lastName,
         emailAddress: emailAddress,
         mobileNumber: mobileNumber,
         avatarUrl: avatarUrl,
@@ -373,7 +375,7 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
   // Getters
   bool get isLoggedIn => _supabase.auth.currentUser != null && state != null;
   bool get isAuthenticated => _supabase.auth.currentUser != null;
-  bool get isProfileCompleted => state != null || state!.firstName.isEmpty;
+  bool get isProfileCompleted => state != null && state!.firstName.isNotEmpty;
   String? get userId => _supabase.auth.currentUser?.id;
   String? get userEmail => _supabase.auth.currentUser?.email;
   String? get userPhone => _supabase.auth.currentUser?.phone;

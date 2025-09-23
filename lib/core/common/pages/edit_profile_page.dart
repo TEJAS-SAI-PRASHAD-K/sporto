@@ -336,7 +336,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isEnabled
-                        ? colorScheme.primary
+                        ? colorScheme.primary.withValues(alpha: 0.3)
                         : colorScheme.outline.withValues(alpha: 0.3),
                     foregroundColor: isEnabled
                         ? colorScheme.onPrimary
@@ -361,7 +361,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                           'SAVE',
                           style: textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onPrimaryContainer,
                           ),
                         ),
                 );

@@ -344,6 +344,42 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
     }
   }
 
+  /// Delete the current user's account and associated data.
+  /// This will attempt to delete the user's row from the `users` table,
+  /// remove local cache, and remove the auth user from Supabase if possible.
+  Future<void> deleteAccount() async {
+    try {
+      final authUser = _supabase.auth.currentUser;
+      if (authUser == null) throw Exception('No authenticated user found');
+
+      final userId = authUser.id;
+
+      // Attempt to delete user row from database via repository
+      final deleteResult = await _userRepository.deleteUser(userId);
+      deleteResult.match(
+        (failure) =>
+            throw Exception('Failed to delete user data: ${failure.message}'),
+        (_) => debugPrint('User row deleted from Supabase'),
+      );
+
+      // Remove local cache
+      await _removeUserFromCache(userId);
+
+      // Deleting the actual auth user (from GoTrue) requires a service_role key
+      // and should be done server-side. Here we remove the user's data row,
+      // clear local cache, and sign the user out locally.
+      try {
+        await _supabase.auth.signOut();
+      } catch (_) {}
+
+      // Clear state
+      state = null;
+    } catch (e) {
+      debugPrint('Error deleting account: $e');
+      rethrow;
+    }
+  }
+
   Future<void> refreshUser() async {
     if (state?.userId != null) {
       await _loadUserData(state!.userId);

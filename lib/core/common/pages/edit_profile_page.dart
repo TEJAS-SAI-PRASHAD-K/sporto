@@ -336,7 +336,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isEnabled
-                        ? colorScheme.primary.withValues(alpha: 0.3)
+                        ? colorScheme.primary.withValues(alpha: 0.65)
                         : colorScheme.outline.withValues(alpha: 0.3),
                     foregroundColor: isEnabled
                         ? colorScheme.onPrimary

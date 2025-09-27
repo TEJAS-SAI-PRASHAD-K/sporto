@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playo/core/widgets/bottom_navigation_bar.dart';
 import 'package:playo/features/onboarding/viewmodel/auth_view_model.dart';
 import 'package:playo/features/onboarding/providers/sports_provider.dart';
+import 'package:playo/core/providers/current_user_provider.dart';
 
 class PickYourFavSportsPage extends ConsumerStatefulWidget {
   final bool isLoggedIn;
@@ -16,6 +17,7 @@ class PickYourFavSportsPage extends ConsumerStatefulWidget {
 
 class _PickYourFavSportsPageState extends ConsumerState<PickYourFavSportsPage> {
   List<String> selectedSports = [];
+  bool _initializedFromUser = false;
 
   void toggleSport(String sportId) {
     setState(() {
@@ -29,6 +31,18 @@ class _PickYourFavSportsPageState extends ConsumerState<PickYourFavSportsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize selection from user's saved favorites (first build only)
+    final currentUser = ref.watch(currentUserNotifierProvider);
+    if (!_initializedFromUser &&
+        (currentUser?.favoriteSports?.isNotEmpty ?? false)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() {
+          selectedSports = List<String>.from(currentUser!.favoriteSports!);
+          _initializedFromUser = true;
+        });
+      });
+    }
     final sportsAsync = ref.watch(sportsViewModelProvider);
     return Scaffold(
       resizeToAvoidBottomInset: true,

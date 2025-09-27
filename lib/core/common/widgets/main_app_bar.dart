@@ -183,6 +183,7 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
                       : null;
                   debugPrint("${area ?? 'Unknown'}, ${place.locality ?? ''}");
 
+                  // Preserve favorite sports while updating location
                   await ref
                       .read(currentUserNotifierProvider.notifier)
                       .createOrUpdateUser(
@@ -195,6 +196,7 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
                         longitude: pos.longitude,
                         locationArea:
                             "${area ?? 'N/A'}, ${place.locality ?? ''}",
+                        favoriteSports: user.favoriteSports,
                       );
 
                   Navigator.pop(context);

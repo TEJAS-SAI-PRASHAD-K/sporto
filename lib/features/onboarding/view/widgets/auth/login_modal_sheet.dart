@@ -13,6 +13,7 @@ import 'package:playo/features/onboarding/view/pages/complete_your_profile_page.
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:playo/init_dependecies.dart';
 import 'package:playo/core/providers/current_user_provider.dart';
+
 const double _pagePadding = 16.0;
 const double _buttonHeight = 48.0;
 
@@ -59,9 +60,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
       const webClientId =
           '907897828805-j5p2gl8a45fdpien3qjq18rvtbdag7gn.apps.googleusercontent.com';
 
-      final googleSignIn = GoogleSignIn(
-        clientId: kIsWeb ? webClientId : null,
-      );
+      final googleSignIn = GoogleSignIn(clientId: kIsWeb ? webClientId : null);
 
       // Clear any cached Google session to avoid silent re-auth.
       try {
@@ -116,11 +115,14 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
         final parts = local.split(RegExp(r'[._\\-]'));
         if (parts.isNotEmpty) {
           firstName = _capitalize(parts[0]);
-          if (parts.length > 1) lastName = _capitalize(parts.sublist(1).join(' '));
+          if (parts.length > 1)
+            lastName = _capitalize(parts.sublist(1).join(' '));
         }
       }
 
-      final currentUserNotifier = ref.read(currentUserNotifierProvider.notifier);
+      final currentUserNotifier = ref.read(
+        currentUserNotifierProvider.notifier,
+      );
 
       // Upsert the app-level user after Supabase session is active
       await currentUserNotifier.createOrUpdateUser(
@@ -135,7 +137,11 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
       // Read provider state to decide navigation
       final currentUser = ref.read(currentUserNotifierProvider);
       if (currentUser == null) {
-        showSnackBar(context, 'Signed in but failed to load profile', SnackBarType.error);
+        showSnackBar(
+          context,
+          'Signed in but failed to load profile',
+          SnackBarType.error,
+        );
         return;
       }
 
@@ -397,4 +403,3 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
     );
   }
 }
-

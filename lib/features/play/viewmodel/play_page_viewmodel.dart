@@ -2,9 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:playo/features/play/model/menu_action.dart';
 import 'package:playo/features/play/model/sub_tab.dart';
-import 'package:playo/features/play/model/game.dart';
+import 'package:playo/core/models/game.dart';
+import 'package:playo/features/play/model/game_ui_extensions.dart';
 import 'package:playo/features/play/repository/games_remote_repository.dart';
-import 'package:playo/features/play/mappers/game_mappers.dart';
+import 'package:playo/features/play/model/sport_registry.dart';
 import 'package:playo/init_dependecies.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -33,6 +34,14 @@ class PlayPageViewModel extends ChangeNotifier {
   List<MenuAction>? _cachedPastActions;
   List<MenuAction>? _cachedDefaultActions;
 
+  // Stable ids for menu actions
+  static const String actCreateGame = 'create_game';
+  static const String actShareCalendar = 'share_calendar';
+  static const String actInvitePlaypals = 'invite_playpals';
+  static const String actMyBookings = 'my_bookings';
+  static const String actFilter = 'filter';
+  static const String actSort = 'sort';
+
   // Fake games data keyed by sport id
   final Map<String, List<Game>> _gamesBySport = {};
 
@@ -55,9 +64,9 @@ class PlayPageViewModel extends ChangeNotifier {
       _tabIndex = value;
       // Reset sub tab selection when switching main tab
       _subTabIndex = 0;
-      // Seed fake data when entering My Sports for the first time
-      if (_tabIndex == 1 && _gamesBySport.isEmpty) {
-        _seedFakeGames();
+      // Load sport-specific games when entering My Sports
+      if (_tabIndex == 1) {
+        unawaited(refreshCurrentSportGames());
       }
       // Ensure Calendar lists are up-to-date when switching to Calendar
       if (_tabIndex == 0) {
@@ -73,6 +82,9 @@ class PlayPageViewModel extends ChangeNotifier {
       // Keep Calendar sub-tabs fresh (Upcoming/Past) when switching
       if (_tabIndex == 0) {
         unawaited(refreshUpcoming());
+      } else if (_tabIndex == 1) {
+        // When switching sports within My Sports, refresh that sport's games
+        unawaited(refreshCurrentSportGames());
       }
       notifyListeners();
     }
@@ -89,6 +101,13 @@ class PlayPageViewModel extends ChangeNotifier {
       _cachedPastActions = null;
       _cachedUserCreatedGames = null;
       _cachedNearbyGames = null;
+
+      // Refresh current lists affected by city
+      if (_tabIndex == 0) {
+        unawaited(refreshUpcoming());
+      } else if (_tabIndex == 1) {
+        unawaited(refreshCurrentSportGames());
+      }
     }
   }
 
@@ -151,22 +170,26 @@ class PlayPageViewModel extends ChangeNotifier {
       // Calendar actions differ for upcoming vs past
       if (_subTabIndex == 0) {
         return _cachedUpcomingActions ??= const [
-          MenuAction(Icons.add, 'Create Game'),
-          MenuAction(Icons.share, 'Share Calendar'),
-          MenuAction(Icons.person_add_alt_1, 'Invite Playpals'),
-          MenuAction(Icons.history, 'My Bookings'),
+          MenuAction(Icons.add, 'Create Game', id: actCreateGame),
+          MenuAction(Icons.share, 'Share Calendar', id: actShareCalendar),
+          MenuAction(
+            Icons.person_add_alt_1,
+            'Invite Playpals',
+            id: actInvitePlaypals,
+          ),
+          MenuAction(Icons.history, 'My Bookings', id: actMyBookings),
         ];
       }
       return _cachedPastActions ??= const [
-        MenuAction(Icons.add, 'Create Game'),
-        MenuAction(Icons.history, 'My Bookings'),
+        MenuAction(Icons.add, 'Create Game', id: actCreateGame),
+        MenuAction(Icons.history, 'My Bookings', id: actMyBookings),
       ];
     }
     // Default actions for My Sports / Other Sports
     return _cachedDefaultActions ??= const [
-      MenuAction(Icons.tune, 'Filter'),
-      MenuAction(Icons.swap_vert, 'Sort'),
-      MenuAction(Icons.history, 'My Bookings'),
+      MenuAction(Icons.tune, 'Filter', id: actFilter),
+      MenuAction(Icons.swap_vert, 'Sort', id: actSort),
+      MenuAction(Icons.history, 'My Bookings', id: actMyBookings),
     ];
   }
 
@@ -176,7 +199,7 @@ class PlayPageViewModel extends ChangeNotifier {
   List<Game> get currentSportGames {
     if (_tabIndex != 1) return const [];
     final sportId = subTabs[_subTabIndex].id;
-    return _gamesBySport[sportId] ?? const [];
+    return _gamesBySport.putIfAbsent(sportId, () => <Game>[]);
   }
 
   // Public getters for Calendar tab
@@ -205,46 +228,88 @@ class PlayPageViewModel extends ChangeNotifier {
     return const [];
   }
 
-  void _seedFakeGames() {
-    DateTime now = DateTime.now();
-    List<Game> sample(String sport, {bool booked = false}) => [
-      Game(
-        id: '${sport.toLowerCase()}-1',
-        sport: sport,
-        type: sport == 'Badminton' ? 'Doubles • Regular' : 'Regular',
-        organizerName: 'Nagaraj Rao',
-        startTime: now.add(const Duration(days: 1, hours: 17)),
-        endTime: now.add(const Duration(days: 1, hours: 18)),
-        venue: 'NRC $sport Arena,Basavanagudi',
-        distanceKm: 2.93,
-        goingCount: 2,
-        capacity: sport == 'Badminton' ? 6 : 10,
-        levelLabel: 'Intermediate - Professional',
-        mustHaveSkill: true,
-        booked: booked,
-      ),
-      Game(
-        id: '${sport.toLowerCase()}-2',
-        sport: sport,
-        type: sport == 'Badminton' ? 'Doubles • Regular' : 'Regular',
-        organizerName: 'Nagaraj Rao',
-        startTime: now.add(const Duration(days: 1, hours: 16)),
-        endTime: now.add(const Duration(days: 1, hours: 17)),
-        venue: 'NRC $sport Arena,Basavanagudi',
-        distanceKm: 2.93,
-        goingCount: 2,
-        capacity: sport == 'Badminton' ? 6 : 10,
-        levelLabel: 'Intermediate - Professional',
-        mustHaveSkill: true,
-        booked: booked,
-      ),
-    ];
+  // Fetch and cache public games for the current sport tab (My Sports)
+  Future<void> refreshCurrentSportGames() async {
+    if (_tabIndex != 1) return;
+    try {
+      await _ensureSportsLoaded();
+      final repo = GamesRemoteRepository(getItSupabase());
+      final supabase = getItSupabase();
+      final currentUserId = supabase.auth.currentUser?.id;
+      final sportTabKey = subTabs[_subTabIndex].id; // e.g., 'badminton'
+      final resolvedSportId = _resolveSportIdForCurrentSubTab();
+      // If we cannot resolve any sport mapping yet, clear list and show empty state
+      if (resolvedSportId.isEmpty && _sportNames.isEmpty) {
+        _gamesBySport[sportTabKey] = <Game>[];
+        notifyListeners();
+        return;
+      }
+      final sportIdForQuery =
+          (resolvedSportId.isNotEmpty && _isUuid(resolvedSportId))
+              ? resolvedSportId
+              : null;
+      final now = DateTime.now();
+      final res = await repo.listGames(
+        sportId: sportIdForQuery,
+        fromDate: DateTime(now.year, now.month, now.day),
+        limit: 100,
+      );
+      res.match((_) {}, (list) {
+        final cityLower = _selectedCity.toLowerCase();
+        final labelLc = subTabs[_subTabIndex].label.toLowerCase();
+        final filtered = list.where((g) {
+          final isMine = (g.organiserUserId == currentUserId);
+          final isPublic = (g.gameAccessType ?? 'Public') == 'Public';
+          if (isMine || !isPublic) return false;
+          // Ensure sport match: if we didn't filter by sport_id at DB, match by resolved sport name
+          if (sportIdForQuery == null) {
+            final sportName = SportRegistry.nameFor(g.sportId).toLowerCase();
+            if (sportName != labelLc) return false;
+          }
+          // city/area match
+          final place = ((g.venueAddress ?? g.venueName ?? g.areaOfGame) ?? '')
+              .toString()
+              .toLowerCase();
+          if (cityLower.isNotEmpty && !place.contains(cityLower)) {
+            return false;
+          }
+          // upcoming only
+          if (g.endTime.isBefore(now)) return false;
+          return true;
+        }).toList()..sort((a, b) => a.startTime.compareTo(b.startTime));
+        _gamesBySport[sportTabKey] = filtered;
+        notifyListeners();
+      });
+    } catch (_) {}
+  }
 
-    _gamesBySport['badminton'] = sample('Badminton', booked: true);
-    _gamesBySport['running'] = sample('Running');
-    _gamesBySport['cycling'] = sample('Cycling');
-    _gamesBySport['volleyball'] = sample('Volleyball');
-    _gamesBySport['swimming'] = sample('Swimming');
+  // Try to map sub-tab to the correct sport_id used in DB
+  String _resolveSportIdForCurrentSubTab() {
+    final sub = subTabs[_subTabIndex];
+    final labelLc = sub.label.toLowerCase();
+    final idLc = sub.id.toLowerCase();
+    // exact match by name -> id
+    final byName = _sportNames.entries.firstWhere(
+      (e) => (e.value.toLowerCase() == labelLc),
+      orElse: () => const MapEntry('', ''),
+    );
+    if (byName.key.isNotEmpty) return byName.key;
+    // match by id directly
+    if (_sportNames.containsKey(sub.id)) return sub.id;
+    // try case-insensitive id match
+    final byIdInsensitive = _sportNames.keys.firstWhere(
+      (k) => k.toLowerCase() == idLc,
+      orElse: () => '',
+    );
+    if (byIdInsensitive.isNotEmpty) return byIdInsensitive;
+    // No valid mapping found
+    return '';
+  }
+
+  bool _isUuid(String s) {
+    final re = RegExp(
+        r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12} ?$');
+    return re.hasMatch(s);
   }
 
   @override
@@ -266,8 +331,6 @@ class PlayPageViewModel extends ChangeNotifier {
       // Fetch all games and partition locally into upcoming vs past
       final res = await repo.listGames();
       res.match((_) {}, (list) {
-        final nameResolver = (String id) => _sportNames[id] ?? id;
-        final imageResolver = (String id) => _sportImages[id] ?? '';
         final supabase = getItSupabase();
         final currentUserId = supabase.auth.currentUser?.id;
         // Partition: user-created vs public nearby (others)
@@ -277,28 +340,24 @@ class PlayPageViewModel extends ChangeNotifier {
         final cityLower = _selectedCity.toLowerCase();
         final now = DateTime.now();
         for (final g in list) {
-          final ui = GameMappers.toUi(
-            g,
-            sportNameResolver: nameResolver,
-            sportImageResolver: imageResolver,
-          );
           final isMine = (g.organiserUserId == currentUserId);
           final isPublic = (g.gameAccessType ?? 'Public') == 'Public';
+          // Update sport registry for name/image resolution
+          // (resolution can be used by UI widgets if needed)
+          // nameResolver and imageResolver are used via SportRegistry below
           if (isMine) {
-            // Decide upcoming vs past using end time
-            if (ui.endTime.isBefore(now)) {
-              createdByMePast.add(ui);
+            if (g.endTime.isBefore(now)) {
+              createdByMePast.add(g);
             } else {
-              createdByMeUpcoming.add(ui);
+              createdByMeUpcoming.add(g);
             }
           } else if (isPublic) {
-            // Simple area/city filter for demo based on selected city string
             final place =
                 ((g.venueAddress ?? g.venueName ?? g.areaOfGame) ?? '')
                     .toString()
                     .toLowerCase();
             if (place.contains(cityLower) || cityLower.isEmpty) {
-              publicOthers.add(ui);
+              publicOthers.add(g);
             }
           }
         }
@@ -346,6 +405,9 @@ class PlayPageViewModel extends ChangeNotifier {
         for (final row in list)
           row['sport_id'] as String: (row['image_url'] as String?) ?? '',
       };
+      // expose for UI extensions
+      SportRegistry.setNames(_sportNames);
+      SportRegistry.setImages(_sportImages);
     } catch (_) {
       _sportNames = const {};
       _sportImages = const {};

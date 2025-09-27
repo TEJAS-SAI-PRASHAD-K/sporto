@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:playo/core/common/widgets/main_app_bar.dart';
+import 'package:playo/features/more/view/pages/my_bookings_page.dart';
 import 'package:playo/features/play/view/pages/create_game_page.dart';
 import 'package:provider/provider.dart';
 import 'package:playo/features/play/viewmodel/play_page_viewmodel.dart';
@@ -7,7 +8,8 @@ import 'package:playo/features/play/view/widgets/play_tabs_bar.dart';
 import 'package:playo/features/play/view/widgets/play_sub_tabs_bar.dart';
 import 'package:playo/features/play/view/widgets/empty_games_widget.dart';
 import 'package:playo/features/play/view/widgets/menu_overlay.dart';
-import 'package:playo/features/play/model/game.dart';
+import 'package:playo/core/models/game.dart';
+import 'package:playo/features/play/model/game_ui_extensions.dart';
 import 'package:playo/features/play/view/widgets/game_card.dart';
 import 'package:playo/features/play/view/pages/game_overview/game_overview_page.dart';
 import 'package:playo/features/play/view/pages/game_board_page.dart';
@@ -16,6 +18,8 @@ import 'package:playo/features/play/view/widgets/upcoming_games.dart';
 import 'package:playo/features/play/repository/games_remote_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:playo/init_dependecies.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:flutter/services.dart';
 
 class PlayPage extends StatelessWidget {
   const PlayPage({super.key});
@@ -143,6 +147,43 @@ class _PlayPageBodyState extends State<PlayPageBody> {
       right: 12,
       actions: vm.menuActions,
       onClose: _hideMenu,
+      onActionTap: (action) async {
+        switch (action.id) {
+          case PlayPageViewModel.actCreateGame:
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (builder) => CreateGamePage()),
+            );
+            break;
+          case PlayPageViewModel.actShareCalendar:
+            _showShareCalendarSheet(vm);
+            break;
+          case PlayPageViewModel.actInvitePlaypals:
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (builder) => AddPlayersPage()),
+            );
+            break;
+          case PlayPageViewModel.actMyBookings:
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (builder) => MyBookingsPage()),
+            );
+            break;
+          case PlayPageViewModel.actFilter:
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (builder) => CreateGamePage()),
+            );
+            break;
+          case PlayPageViewModel.actSort:
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (builder) => CreateGamePage()),
+            );
+            break;
+        }
+      },
     );
 
     Overlay.of(context).insert(_menuOverlay!);
@@ -151,6 +192,103 @@ class _PlayPageBodyState extends State<PlayPageBody> {
   void _hideMenu() {
     _menuOverlay?.remove();
     _menuOverlay = null;
+  }
+
+  void _showShareCalendarSheet(PlayPageViewModel vm) {
+    final city = vm.selectedCity;
+    final link = 'https://playo.app/calendar?city=${Uri.encodeComponent(city)}';
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        final cs = Theme.of(ctx).colorScheme;
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Share Calendar',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: cs.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Share your $city game calendar with friends',
+                style: TextStyle(color: cs.onSurfaceVariant),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: cs.surfaceContainer,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: cs.outlineVariant),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        link,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: cs.onSurface),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Copy link',
+                      onPressed: () async {
+                        await Clipboard.setData(ClipboardData(text: link));
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Link copied')),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.copy_outlined),
+                    ),
+                    IconButton(
+                      tooltip: 'Share',
+                      onPressed: () {
+                        Share.share(
+                          'Check out my Playo calendar: ' + link,
+                          subject: 'Playo Calendar',
+                        );
+                      },
+                      icon: const Icon(Icons.share_outlined),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () {
+                    Share.share(
+                      'Check out my Playo calendar: ' + link,
+                      subject: 'Playo Calendar',
+                    );
+                  },
+                  child: const Text('SHARE'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -375,48 +513,52 @@ class _PlayPageBodyState extends State<PlayPageBody> {
                     )
                   : vm.tabIndex == 1
                   ? // My Sports tab
-                    ListView.builder(
-                      itemCount: vm.currentSportGames.length,
-                      itemBuilder: (context, index) {
-                        final Game g = vm.currentSportGames[index];
-                        return GameCard(
-                          game: g,
-                          onTap: () async {
-                            final result = await Navigator.of(context)
-                                .push<String>(
-                                  MaterialPageRoute(
-                                    builder: (_) => GameOverviewPage(
-                                      game: g,
-                                      onGameUpdated: _onGameUpdated,
-                                    ),
-                                  ),
-                                );
-                            if (result == 'deleted' && mounted) {
-                              final vm = Provider.of<PlayPageViewModel>(
-                                context,
-                                listen: false,
+                    (vm.currentSportGames.isEmpty
+                        ? EmptyGamesWidget(
+                            title: vm.emptyTitle,
+                            selectedCity: vm.selectedCity,
+                          )
+                        : ListView.builder(
+                            itemCount: vm.currentSportGames.length,
+                            itemBuilder: (context, index) {
+                              final Game g = vm.currentSportGames[index];
+                              return GameCard(
+                                game: g,
+                                onTap: () async {
+                                  final result = await Navigator.of(context)
+                                      .push<String>(
+                                        MaterialPageRoute(
+                                          builder: (_) => GameOverviewPage(
+                                            game: g,
+                                            onGameUpdated: _onGameUpdated,
+                                          ),
+                                        ),
+                                      );
+                                  if (result == 'deleted' && mounted) {
+                                    final vm = Provider.of<PlayPageViewModel>(
+                                      context,
+                                      listen: false,
+                                    );
+                                    setState(() {
+                                      _localUserCreated.removeWhere(
+                                        (x) => x.id == g.id,
+                                      );
+                                      vm.userCreatedGames.removeWhere(
+                                        (x) => x.id == g.id,
+                                      );
+                                      vm.currentSportGames.removeWhere(
+                                        (x) => x.id == g.id,
+                                      );
+                                    });
+                                    await vm.refreshUpcoming();
+                                  }
+                                },
                               );
-                              setState(() {
-                                _localUserCreated.removeWhere(
-                                  (x) => x.id == g.id,
-                                );
-                                vm.userCreatedGames.removeWhere(
-                                  (x) => x.id == g.id,
-                                );
-                                vm.currentSportGames.removeWhere(
-                                  (x) => x.id == g.id,
-                                );
-                              });
-                              await vm.refreshUpcoming();
-                            }
-                          },
-                        );
-                      },
-                    )
+                            },
+                          ))
                   : // Other Sports tab
                     EmptyGamesWidget(
                       title: vm.emptyTitle,
-                      buttonText: vm.buttonLabel,
                       selectedCity: vm.selectedCity,
                     ),
             ),

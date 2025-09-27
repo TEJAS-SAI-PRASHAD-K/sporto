@@ -7,10 +7,12 @@ import 'package:playo/core/models/sport.dart';
 // import 'package:playo/core/error/failure.dart';
 // import 'package:playo/features/play/repository/games_remote_repository.dart';
 import 'package:playo/features/play/viewmodel/create_game_view_model.dart';
+import 'package:playo/core/models/game.dart' as core_game;
+import 'package:playo/features/play/model/game_ui_extensions.dart';
 
 class CreateGamePage extends StatefulWidget {
   // When provided, form will be pre-filled using this game's details
-  final dynamic prefill; // Use dynamic to avoid import cycles; expects ui Game
+  final core_game.Game? prefill; // core Game; UI reads via extensions
   const CreateGamePage({super.key, this.prefill});
 
   @override
@@ -41,30 +43,30 @@ class _CreateGamePageState extends State<CreateGamePage> {
   @override
   void initState() {
     super.initState();
-    // Attempt to prefill from provided game model (ui Game)
-    final g = widget.prefill;
+    // Attempt to prefill from provided game model (core Game)
+    final core_game.Game? g = widget.prefill;
     if (g != null) {
       try {
-        // Defensive assignment using duck typing on fields we know
-        selectedSport = g.sport as String?;
-        selectedSportId = g.sportId as String?;
-        selectedArea = g.venue as String?;
+        // Use UI extension getters on core model
+        selectedSport = g.sport;
+        selectedSportId = g.sportId;
+        selectedArea = g.venue;
         selectedDate = DateTime(
           g.startTime.year,
           g.startTime.month,
           g.startTime.day,
         );
-        selectedTime = TimeOfDay.fromDateTime(g.startTime as DateTime);
-        selectedEndTime = TimeOfDay.fromDateTime(g.endTime as DateTime);
-        isPublic = (g.isPublic as bool?) ?? true;
-        gameType = (g.type as String?) ?? 'Regular';
-        gameSkill = (g.mustHaveSkill as bool?) ?? false;
-        payAndJoin = (g.payAndJoin as bool?) ?? false;
-        costPerPlayer = g.costPerPlayer as double?;
-        totalPlayers = g.totalPlayers as int?;
-        costShared = (g.costShared as bool?) ?? false;
-        bringOwnEquipment = (g.bringYourOwnEquipment as bool?) ?? false;
-        final note = g.instructionsNote as String?;
+        selectedTime = TimeOfDay.fromDateTime(g.startTime);
+        selectedEndTime = TimeOfDay.fromDateTime(g.endTime);
+        isPublic = g.isPublic;
+        gameType = g.type;
+        gameSkill = g.mustHaveSkill;
+        payAndJoin = g.payAndJoin;
+        costPerPlayer = g.costPerPlayer;
+        totalPlayers = g.totalPlayers;
+        costShared = g.costShared;
+        bringOwnEquipment = g.bringYourOwnEquipment;
+        final note = g.instructionsNote;
         if (note != null && note.isNotEmpty) {
           _instructionsCtrl.text = note;
         }

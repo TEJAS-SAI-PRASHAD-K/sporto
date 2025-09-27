@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/play/model/game.dart';
+import 'package:playo/core/models/game.dart';
+import 'package:playo/features/play/model/game_ui_extensions.dart';
 import 'package:playo/features/play/view/pages/game_overview/add_players_page.dart';
 import 'package:playo/features/play/view/pages/game_overview/manage_players_page.dart';
 import 'package:playo/features/play/view/widgets/game_sub_tab_bar.dart';

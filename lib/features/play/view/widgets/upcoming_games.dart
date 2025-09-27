@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/play/model/game.dart';
+import 'package:playo/core/models/game.dart';
+import 'package:playo/features/play/model/game_ui_extensions.dart';
 
 class UpcomingGames extends StatefulWidget {
   final List<Game> userCreatedGames;
@@ -213,42 +214,37 @@ class _UpcomingGamesState extends State<UpcomingGames> {
 
             const SizedBox(height: 12),
 
-            // Game Details
-            Row(
+            // Game Details (wrap if overflow)
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Icon(
-                  game.isPublic ? Icons.public : Icons.lock_outline,
-                  size: 16,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  game.isPublic ? 'Public' : 'Invite Only',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                if (game.payAndJoin) ...[
-                  _dot(colorScheme),
-                  Text(
-                    'Pay & join',
-                    style: TextStyle(
-                      fontSize: 14,
+                // Privacy label as one unit
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      game.isPublic ? Icons.public : Icons.lock_outline,
+                      size: 16,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                  ),
-                ],
-                const SizedBox(width: 8),
-                _dot(colorScheme),
-                Text(
-                  game.levelLabel,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+                    const SizedBox(width: 4),
+                    Text(
+                      game.isPublic ? 'Public' : 'Invite Only',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
+                // Type
+                _segment(colorScheme, _typeLabel(game)),
+                // Pay and join if any
+                if (game.payAndJoin) _segment(colorScheme, 'Pay & join'),
+                // Level
+                _segment(colorScheme, game.levelLabel),
               ],
             ),
 
@@ -562,6 +558,38 @@ class _UpcomingGamesState extends State<UpcomingGames> {
 
               const SizedBox(height: 8),
 
+              // Game Details (wrap if overflow)
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        game.isPublic ? Icons.public : Icons.lock_outline,
+                        size: 16,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        game.isPublic ? 'Public' : 'Invite Only',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                  _segment(colorScheme, _typeLabel(game)),
+                  if (game.payAndJoin) _segment(colorScheme, 'Pay & join'),
+                  _segment(colorScheme, game.levelLabel),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
               // Time Range
               Text(
                 _formatTimeRange(game.startTime, game.endTime),
@@ -745,6 +773,15 @@ class _UpcomingGamesState extends State<UpcomingGames> {
     );
   }
 
+  // A small segment that renders a dot separator and a label, kept as a single wrap-able unit.
+  Widget _segment(ColorScheme cs, String label) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      _dot(cs),
+      Text(label, style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant)),
+    ],
+  );
+
   Widget _dot(ColorScheme cs) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 4),
     child: Text('•', style: TextStyle(color: cs.onSurfaceVariant)),
@@ -788,6 +825,17 @@ class _UpcomingGamesState extends State<UpcomingGames> {
     }
 
     return '${fmt(start)} - ${fmt(end)}';
+  }
+
+  String _typeLabel(Game game) {
+    final t = (game.type).trim();
+    if (t.isEmpty) return 'Regular';
+    final l = t.toLowerCase();
+    if (l.contains('tournament')) return 'Tournament';
+    if (l.contains('coach')) return 'Coaching';
+    if (l.contains('regular')) return 'Regular';
+    // Title-case first letter as a fallback
+    return t[0].toUpperCase() + t.substring(1);
   }
 
   Map<DateTime, List<Game>> _groupByDate(List<Game> games) {

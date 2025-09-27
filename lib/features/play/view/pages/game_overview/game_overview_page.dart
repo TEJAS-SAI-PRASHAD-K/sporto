@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:playo/features/play/model/game.dart';
+import 'package:playo/core/models/game.dart';
+import 'package:playo/features/play/model/game_ui_extensions.dart';
 import 'package:playo/features/play/view/pages/game_overview/add_expense/manage_expenses_page.dart';
 import 'package:playo/features/play/view/pages/game_overview/add_players_page.dart';
 import 'package:playo/features/play/view/pages/game_overview/manage_players_page.dart';
@@ -10,6 +11,8 @@ import 'package:playo/init_dependecies.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:playo/core/models/game.dart' as core_game;
 import 'package:playo/features/play/view/pages/update_game_page.dart';
+import 'package:playo/features/play/view/widgets/menu_overlay.dart';
+import 'package:playo/features/play/model/menu_action.dart';
 
 class GameOverviewPage extends StatefulWidget {
   final Game game;
@@ -145,7 +148,7 @@ class _GameOverviewPageState extends State<GameOverviewPage> {
           const SizedBox(width: 4),
           IconButton(
             onPressed: _showMoreMenu,
-            icon: const Icon(Icons.more_vert, size: 18),
+            icon: const Icon(Icons.more_vert, size: 28),
             tooltip: 'More',
           ),
           const SizedBox(width: 8),
@@ -332,7 +335,7 @@ class _GameOverviewPageState extends State<GameOverviewPage> {
                                 onTap: () {
                                   if (_game.isPublic) {
                                     setState(() {
-                                      _game = _game.copyWith(isPublic: false);
+                                      _game.gameAccessType = 'Invite Only';
                                     });
                                     widget.onGameUpdated?.call(_game);
                                   }
@@ -347,7 +350,7 @@ class _GameOverviewPageState extends State<GameOverviewPage> {
                                 onTap: () {
                                   if (!_game.isPublic) {
                                     setState(() {
-                                      _game = _game.copyWith(isPublic: true);
+                                      _game.gameAccessType = 'Public';
                                     });
                                     widget.onGameUpdated?.call(_game);
                                   }
@@ -555,70 +558,56 @@ class _GameOverviewPageState extends State<GameOverviewPage> {
     );
   }
 
-  Future<void> _showMoreMenu() async {
-    final cs = Theme.of(context).colorScheme;
-    final result = await showDialog<String>(
-      context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.black54,
-      builder: (ctx) {
-        return Dialog(
-          insetPadding: const EdgeInsets.only(top: 70, right: 12),
-          alignment: Alignment.topRight,
-          backgroundColor: cs.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 220),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.event_available_outlined),
-                  title: const Text('Add to Calendar'),
-                  onTap: () => Navigator.pop(ctx, 'calendar'),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.notifications_off_outlined),
-                  title: const Text('Mute Notifications'),
-                  onTap: () => Navigator.pop(ctx, 'mute'),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.edit_outlined),
-                  title: const Text('Edit Game Details'),
-                  onTap: () => Navigator.pop(ctx, 'edit'),
-                ),
-              ],
-            ),
-          ),
-        );
+  OverlayEntry? _moreMenuOverlay;
+
+  void _showMoreMenu() {
+    _moreMenuOverlay?.remove();
+    final media = MediaQuery.of(context);
+    final top = kToolbarHeight + media.padding.top + 8;
+    _moreMenuOverlay = MenuOverlay.build(
+      top: top,
+      right: 12,
+      actions: const [
+        MenuAction(
+          Icons.event_available_outlined,
+          'Add to Calendar',
+          id: 'calendar',
+        ),
+        MenuAction(
+          Icons.notifications_off_outlined,
+          'Mute Notifications',
+          id: 'mute',
+        ),
+        MenuAction(Icons.edit_outlined, 'Edit Game Details', id: 'edit'),
+      ],
+      onClose: () {
+        _moreMenuOverlay?.remove();
+        _moreMenuOverlay = null;
+      },
+      onActionTap: (action) async {
+        switch (action.id) {
+          case 'calendar':
+            // TODO: implement calendar integration
+            break;
+          case 'mute':
+            // TODO: implement mute notifications toggle
+            break;
+          case 'edit':
+            final r = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => _UpdateGameRouteProxy(gameId: _game.id),
+              ),
+            );
+            if (r == 'deleted') {
+              if (!mounted) return;
+              Navigator.pop(context, 'deleted');
+            }
+            break;
+        }
       },
     );
-
-    if (!mounted) return;
-    switch (result) {
-      case 'calendar':
-        // TODO: implement calendar integration
-        break;
-      case 'mute':
-        // TODO: implement mute notifications toggle
-        break;
-      case 'edit':
-        final r = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => _UpdateGameRouteProxy(gameId: _game.id),
-          ),
-        );
-        if (r == 'deleted') {
-          if (!mounted) return;
-          Navigator.pop(context, 'deleted');
-        }
-        break;
-      default:
-        break;
-    }
+    Overlay.of(context).insert(_moreMenuOverlay!);
   }
 }
 

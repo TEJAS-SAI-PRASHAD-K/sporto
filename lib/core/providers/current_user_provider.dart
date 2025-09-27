@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:playo/core/models/user.dart';
@@ -333,6 +334,16 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
       // Clear local cache before signing out
       if (state?.userId != null) {
         _removeUserFromCache(state!.userId);
+      }
+      // Also attempt to sign out from GoogleSignIn to avoid stale sessions.
+      // This prevents the google_sign_in instance from returning an already
+      // authenticated account when the user expects to re-authenticate.
+      try {
+        if (!kIsWeb) {
+          await GoogleSignIn().signOut();
+        }
+      } catch (e) {
+        debugPrint('GoogleSignIn signOut failed: $e');
       }
 
       await _supabase.auth.signOut();

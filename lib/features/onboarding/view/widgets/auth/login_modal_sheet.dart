@@ -7,7 +7,12 @@ import 'package:playo/core/common/widgets/loader.dart';
 import 'package:playo/core/utils/show_snackbar.dart';
 import 'package:playo/features/onboarding/providers/auth_state_provider.dart';
 import 'package:playo/features/onboarding/viewmodel/auth_view_model.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
+import 'package:playo/features/onboarding/view/pages/complete_your_profile_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
+import 'package:playo/init_dependecies.dart';
+import 'package:playo/core/providers/current_user_provider.dart';
 const double _pagePadding = 16.0;
 const double _buttonHeight = 48.0;
 
@@ -33,13 +38,140 @@ class LoginPageContent extends ConsumerStatefulWidget {
 
 class _LoginPageContentState extends ConsumerState<LoginPageContent> {
   final TextEditingController _mobileController = TextEditingController();
+  bool _isSigningIn = false;
 
   void _handleEmailLogin() {
     WoltModalSheet.of(context).showAtIndex(1); // Navigate to email input page
   }
 
   void _handleGoogleLogin() {
-    // TODO: Implement Google login logic
+    _signInWithGoogle();
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isSigningIn = true;
+    });
+
+    try {
+      // Use provided web client id for web builds; other platforms pick from
+      // platform files (google-services.json / GoogleService-Info.plist).
+      const webClientId =
+          '907897828805-j5p2gl8a45fdpien3qjq18rvtbdag7gn.apps.googleusercontent.com';
+
+      final googleSignIn = GoogleSignIn(
+        clientId: kIsWeb ? webClientId : null,
+      );
+
+      // Clear any cached Google session to avoid silent re-auth.
+      try {
+        await googleSignIn.signOut();
+      } catch (e) {
+        debugPrint('GoogleSignIn.preSignOut failed: $e');
+      }
+
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        // user cancelled
+        try {
+          await googleSignIn.signOut();
+        } catch (_) {}
+        return;
+      }
+
+      final googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
+      final accessToken = googleAuth.accessToken;
+
+      if (idToken == null) {
+        showSnackBar(
+          context,
+          'Google sign-in failed: missing id token',
+          SnackBarType.error,
+        );
+        return;
+      }
+
+      final supabase = serviceLocator<SupabaseClient>();
+
+      final res = await supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+
+      if (res.user == null) {
+        showSnackBar(context, 'Google sign-in failed', SnackBarType.error);
+        return;
+      }
+
+      // Extract profile info and derive names if missing
+      final email = res.user!.email ?? '';
+      String firstName = res.user!.userMetadata?['given_name'] as String? ?? '';
+      String? lastName = res.user!.userMetadata?['family_name'] as String?;
+      final avatar = res.user!.userMetadata?['picture'] as String?;
+
+      if (firstName.isEmpty && email.isNotEmpty) {
+        final local = email.split('@').first;
+        final parts = local.split(RegExp(r'[._\\-]'));
+        if (parts.isNotEmpty) {
+          firstName = _capitalize(parts[0]);
+          if (parts.length > 1) lastName = _capitalize(parts.sublist(1).join(' '));
+        }
+      }
+
+      final currentUserNotifier = ref.read(currentUserNotifierProvider.notifier);
+
+      // Upsert the app-level user after Supabase session is active
+      await currentUserNotifier.createOrUpdateUser(
+        emailAddress: email,
+        firstName: firstName,
+        lastName: lastName,
+        avatarUrl: avatar,
+      );
+
+      if (!mounted) return;
+
+      // Read provider state to decide navigation
+      final currentUser = ref.read(currentUserNotifierProvider);
+      if (currentUser == null) {
+        showSnackBar(context, 'Signed in but failed to load profile', SnackBarType.error);
+        return;
+      }
+
+      if (currentUser.firstName.isEmpty) {
+        Navigator.of(context).pop();
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CompleteYourProfile(
+              initialFirstName: firstName,
+              initialLastName: lastName,
+            ),
+          ),
+        );
+      } else {
+        showSnackBar(context, 'Signed in with Google', SnackBarType.success);
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      debugPrint('Error during Google sign-in: $e');
+      showSnackBar(
+        context,
+        'Error signing in with Google: $e',
+        SnackBarType.error,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSigningIn = false;
+        });
+      }
+    }
+  }
+
+  String _capitalize(String input) {
+    if (input.isEmpty) return input;
+    return input[0].toUpperCase() + input.substring(1);
   }
 
   Future<void> _handleSendOtp() async {
@@ -75,7 +207,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
           authViewModelProvider.select((val) => val?.isLoading == true),
         );
 
-        // Listen to auth state changes
+        // Listen to auth view model changes (example: when OTP sent)
         ref.listen(authViewModelProvider, (_, next) {
           next?.when(
             data: (_) {
@@ -92,7 +224,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             const Text(
               'You\'re almost there!',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -113,7 +245,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
                   borderRadius: BorderRadius.all(Radius.circular(9.0)),
                 ),
                 labelText: 'Mobile Number',
-                prefixIcon: Icon(Iconsax.call_bold),
+                // prefixIcon: Icon(Iconsax.call_bold),
               ),
             ),
             const SizedBox(height: 16),
@@ -139,7 +271,6 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Checkbox.adaptive(
                   value: authState.receiveWhatsappUpdates,
@@ -164,7 +295,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: 'By signing up, you agree to the\n',
+                      text: 'By signing up, you agree to the\\n',
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.inverseSurface,
                       ),
@@ -231,19 +362,31 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                IconButton(
-                  onPressed: _handleGoogleLogin,
-                  icon: Image.asset(
-                    "assets/logos/google_light.png",
-                    height: 80,
-                  ),
-                  style: IconButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    maximumSize: const Size(50, 50),
-                    minimumSize: const Size(28, 28),
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.white,
-                  ),
+                SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: _isSigningIn
+                      ? const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: Loader(),
+                          ),
+                        )
+                      : IconButton(
+                          onPressed: _handleGoogleLogin,
+                          icon: Image.asset(
+                            "assets/logos/google_light.png",
+                            height: 80,
+                          ),
+                          style: IconButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            maximumSize: const Size(50, 50),
+                            minimumSize: const Size(28, 28),
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.white,
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -254,3 +397,4 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
     );
   }
 }
+

@@ -9,6 +9,7 @@ import 'package:playo/core/models/sport.dart';
 import 'package:playo/features/play/viewmodel/create_game_view_model.dart';
 import 'package:playo/core/models/game.dart' as core_game;
 import 'package:playo/features/play/model/game_ui_extensions.dart';
+import 'package:playo/core/services/geo_location_service.dart';
 
 class CreateGamePage extends StatefulWidget {
   // When provided, form will be pre-filled using this game's details
@@ -920,6 +921,7 @@ class _AreaSearchSheetState extends State<AreaSearchSheet> {
   String _query = '';
   List<String> _results = [];
   bool _loading = false;
+  bool _locating = false;
   Timer? _debounce;
 
   @override
@@ -1021,6 +1023,52 @@ class _AreaSearchSheetState extends State<AreaSearchSheet> {
                 },
               ),
             ),
+            const SizedBox(height: 4),
+            // Use Current Location option
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: ListTile(
+                leading: Icon(Icons.my_location, color: scheme.primary),
+                title: const Text('Use Current Location'),
+                subtitle: const Text('Detect location automatically'),
+                trailing: _locating
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2.2),
+                      )
+                    : Icon(Icons.gps_fixed, color: scheme.primary),
+                onTap: () async {
+                  setState(() => _locating = true);
+                  try {
+                    final pos = await GeoLocationService.determinePosition();
+                    final placemarks =
+                        await GeoLocationService.getPlacemarkFromCoordinates(
+                          pos.latitude,
+                          pos.longitude,
+                        );
+                    final place = placemarks.first;
+                    final area = (place.subLocality?.trim().isNotEmpty ?? false)
+                        ? place.subLocality
+                        : (place.street?.trim().isNotEmpty ?? false)
+                        ? place.street
+                        : (place.name?.trim().isNotEmpty ?? false)
+                        ? place.name
+                        : null;
+                    final areaLabel =
+                        "${area ?? 'N/A'}, ${place.locality ?? ''}";
+                    if (mounted) Navigator.pop(context, areaLabel);
+                  } catch (e) {
+                    if (!mounted) return;
+                    setState(() => _locating = false);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to get location')),
+                    );
+                  }
+                },
+              ),
+            ),
+            const Divider(height: 0),
             const SizedBox(height: 8),
             Expanded(child: _buildResults(scheme)),
           ],

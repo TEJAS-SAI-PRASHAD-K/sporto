@@ -237,7 +237,8 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
         latitude: latitude,
         longitude: longitude,
         locationArea: locationArea,
-        favoriteSports: favoriteSports ?? const [],
+        // Preserve existing favorites if not explicitly provided
+        favoriteSports: favoriteSports ?? state?.favoriteSports,
         userRole: userRole ?? UserRole.user,
         isEmailVerified: false,
         isMobileVerified: false,
@@ -299,6 +300,7 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
         country: country ?? currentUser.country,
         latitude: latitude ?? currentUser.latitude,
         longitude: longitude ?? currentUser.longitude,
+        // Preserve favorites unless explicitly set
         favoriteSports: favoriteSports ?? currentUser.favoriteSports,
         isEmailVerified: currentUser.isEmailVerified,
         isMobileVerified: currentUser.isMobileVerified,
@@ -323,6 +325,58 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
       );
     } catch (e) {
       debugPrint('Error updating user profile: $e');
+      rethrow;
+    }
+  }
+
+  // Update only favorite sports permanently in Supabase, accepting UUIDs or names
+  Future<void> updateFavoriteSports(List<String> favorites) async {
+    try {
+      final authUser = _supabase.auth.currentUser;
+      if (authUser == null) {
+        throw Exception('No authenticated user found');
+      }
+      // Load sports map for name->id resolution
+      final sportsResp = await _supabase
+          .from('sports')
+          .select('sport_id, sport_name')
+          .eq('is_sport_active', true);
+      final sportNames = <String, String>{
+        for (final row in (sportsResp as List))
+          (row['sport_name'] as String).toLowerCase():
+              row['sport_id'] as String,
+      };
+      String? _mapToId(String v) {
+        final s = v.trim();
+        if (s.isEmpty) return null;
+        // UUID check
+        final re = RegExp(
+          r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12} ?$',
+        );
+        if (re.hasMatch(s)) return s;
+        return sportNames[s.toLowerCase()];
+      }
+
+      final normalized = <String>{
+        for (final v in favorites)
+          if (_mapToId(v) != null) _mapToId(v)!,
+      }.toList();
+      // Persist only the favorite_sports field
+      final response = await _supabase
+          .from('users')
+          .update({
+            'favorite_sports': normalized,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('user_id', authUser.id)
+          .select()
+          .single();
+
+      final updated = User.fromJson(response);
+      state = updated;
+      await _saveUserToCache(updated);
+    } catch (e) {
+      debugPrint('Error updating favorite sports: $e');
       rethrow;
     }
   }

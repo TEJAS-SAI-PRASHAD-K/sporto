@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:playo/features/play/model/menu_action.dart';
 import 'package:playo/features/play/model/sub_tab.dart';
@@ -51,6 +52,8 @@ class PlayPageViewModel extends ChangeNotifier {
   List<Game>? _cachedPastUserCreatedGames;
   Map<String, String> _sportNames = const {}; // sport_id -> sport_name
   Map<String, String> _sportImages = const {}; // sport_id -> image_url
+  List<SubTab> _mySportsTabs = const [];
+  List<SubTab> _otherSportsTabs = const [];
 
   // Getters
   int get tabIndex => _tabIndex;
@@ -64,8 +67,9 @@ class PlayPageViewModel extends ChangeNotifier {
       _tabIndex = value;
       // Reset sub tab selection when switching main tab
       _subTabIndex = 0;
-      // Load sport-specific games when entering My Sports
-      if (_tabIndex == 1) {
+      // Load sub-tabs (favorites/others) and sport-specific games when entering My Sports or Other Sports
+      if (_tabIndex != 0) {
+        unawaited(_refreshSubTabs());
         unawaited(refreshCurrentSportGames());
       }
       // Ensure Calendar lists are up-to-date when switching to Calendar
@@ -77,13 +81,16 @@ class PlayPageViewModel extends ChangeNotifier {
   }
 
   void setSubTabIndex(int value) {
+    // Bound check based on current tab's items
+    final items = subTabs;
+    if (value < 0 || value >= items.length) return;
     if (_subTabIndex != value) {
       _subTabIndex = value;
       // Keep Calendar sub-tabs fresh (Upcoming/Past) when switching
       if (_tabIndex == 0) {
         unawaited(refreshUpcoming());
-      } else if (_tabIndex == 1) {
-        // When switching sports within My Sports, refresh that sport's games
+      } else {
+        // When switching sports within My Sports/Other Sports, refresh that sport's games
         unawaited(refreshCurrentSportGames());
       }
       notifyListeners();
@@ -105,7 +112,7 @@ class PlayPageViewModel extends ChangeNotifier {
       // Refresh current lists affected by city
       if (_tabIndex == 0) {
         unawaited(refreshUpcoming());
-      } else if (_tabIndex == 1) {
+      } else {
         unawaited(refreshCurrentSportGames());
       }
     }
@@ -125,27 +132,9 @@ class PlayPageViewModel extends ChangeNotifier {
           SubTab(id: 'past', label: 'Past'),
         ];
       case 1: // My Sports
-        return const [
-          SubTab(
-            id: 'badminton',
-            label: 'Badminton',
-            icon: Icons.sports_tennis,
-          ),
-          SubTab(id: 'swimming', label: 'Swimming', icon: Icons.pool),
-          SubTab(id: 'running', label: 'Running', icon: Icons.directions_run),
-          SubTab(id: 'cycling', label: 'Cycling', icon: Icons.directions_bike),
-          SubTab(
-            id: 'volleyball',
-            label: 'Volleyball',
-            icon: Icons.sports_volleyball,
-          ),
-        ];
+        return _mySportsTabs;
       default: // Other Sports
-        return const [
-          SubTab(id: 'tennis', label: 'Tennis'),
-          SubTab(id: 'football', label: 'Football'),
-          SubTab(id: 'golf', label: 'Golf'),
-        ];
+        return _otherSportsTabs;
     }
   }
 
@@ -154,6 +143,10 @@ class PlayPageViewModel extends ChangeNotifier {
       return _subTabIndex == 0 ? 'No Upcoming Games' : 'No Past Games';
     }
     // For other tabs, show sport specific empty text
+    // Guard against empty sub-tabs list while async loading favorites/others
+    if (subTabs.isEmpty) {
+      return 'No games nearby';
+    }
     final sportLabel = subTabs[_subTabIndex].label;
     return 'No $sportLabel games nearby';
   }
@@ -197,7 +190,8 @@ class PlayPageViewModel extends ChangeNotifier {
 
   // Public getter for games shown under My Sports for the selected sport
   List<Game> get currentSportGames {
-    if (_tabIndex != 1) return const [];
+    if (_tabIndex == 0) return const [];
+    if (subTabs.isEmpty) return const [];
     final sportId = subTabs[_subTabIndex].id;
     return _gamesBySport.putIfAbsent(sportId, () => <Game>[]);
   }
@@ -230,13 +224,14 @@ class PlayPageViewModel extends ChangeNotifier {
 
   // Fetch and cache public games for the current sport tab (My Sports)
   Future<void> refreshCurrentSportGames() async {
-    if (_tabIndex != 1) return;
+    if (_tabIndex == 0) return;
     try {
       await _ensureSportsLoaded();
       final repo = GamesRemoteRepository(getItSupabase());
       final supabase = getItSupabase();
       final currentUserId = supabase.auth.currentUser?.id;
-      final sportTabKey = subTabs[_subTabIndex].id; // e.g., 'badminton'
+      if (subTabs.isEmpty) return;
+      final sportTabKey = subTabs[_subTabIndex].id; // current sport key
       final resolvedSportId = _resolveSportIdForCurrentSubTab();
       // If we cannot resolve any sport mapping yet, clear list and show empty state
       if (resolvedSportId.isEmpty && _sportNames.isEmpty) {
@@ -246,8 +241,8 @@ class PlayPageViewModel extends ChangeNotifier {
       }
       final sportIdForQuery =
           (resolvedSportId.isNotEmpty && _isUuid(resolvedSportId))
-              ? resolvedSportId
-              : null;
+          ? resolvedSportId
+          : null;
       final now = DateTime.now();
       final res = await repo.listGames(
         sportId: sportIdForQuery,
@@ -308,7 +303,8 @@ class PlayPageViewModel extends ChangeNotifier {
 
   bool _isUuid(String s) {
     final re = RegExp(
-        r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12} ?$');
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12} ?$',
+    );
     return re.hasMatch(s);
   }
 
@@ -412,5 +408,99 @@ class PlayPageViewModel extends ChangeNotifier {
       _sportNames = const {};
       _sportImages = const {};
     }
+  }
+
+  Future<void> _refreshSubTabs() async {
+    try {
+      await _ensureSportsLoaded();
+      final supabase = getItSupabase();
+      final userId = supabase.auth.currentUser?.id;
+      List<String> favoriteIds = const [];
+      if (userId != null) {
+        try {
+          final resp = await supabase
+              .from('users')
+              .select('favorite_sports')
+              .eq('user_id', userId)
+              .single();
+          final fav = resp['favorite_sports'];
+          // Accept array, JSON string, or comma-separated string
+          List<String> rawValues = const [];
+          if (fav is List) {
+            rawValues = fav
+                .cast<dynamic>()
+                .map((e) => e?.toString() ?? '')
+                .where((e) => e.isNotEmpty)
+                .toList();
+          } else if (fav is String) {
+            final s = fav.trim();
+            if (s.startsWith('[') && s.endsWith(']')) {
+              try {
+                final decoded = (jsonDecode(s) as List)
+                    .map((e) => e?.toString() ?? '')
+                    .where((e) => e.isNotEmpty)
+                    .toList();
+                rawValues = decoded;
+              } catch (_) {
+                rawValues = s
+                    .split(',')
+                    .map((e) => e.trim())
+                    .where((e) => e.isNotEmpty)
+                    .toList();
+              }
+            } else {
+              rawValues = s
+                  .split(',')
+                  .map((e) => e.trim())
+                  .where((e) => e.isNotEmpty)
+                  .toList();
+            }
+          }
+          // Normalize entries: accept sport UUIDs or sport names -> map to UUIDs
+          if (rawValues.isNotEmpty) {
+            final nameToId = <String, String>{
+              for (final entry in _sportNames.entries)
+                entry.value.toLowerCase(): entry.key,
+            };
+            final normalized = <String>{};
+            for (final v in rawValues) {
+              final val = v.trim();
+              if (val.isEmpty) continue;
+              if (_sportNames.containsKey(val)) {
+                normalized.add(val);
+              } else {
+                final mapped = nameToId[val.toLowerCase()];
+                if (mapped != null) normalized.add(mapped);
+              }
+            }
+            favoriteIds = normalized.toList();
+          }
+        } catch (_) {}
+      }
+      // Build all active sports sorted by name
+      final all =
+          _sportNames.entries.map((e) => MapEntry(e.key, e.value)).toList()
+            ..sort(
+              (a, b) => a.value.toLowerCase().compareTo(b.value.toLowerCase()),
+            );
+      final favSet = favoriteIds.toSet();
+      final my = all.where((e) => favSet.contains(e.key)).toList();
+      final others = all.where((e) => !favSet.contains(e.key)).toList();
+      _mySportsTabs = [for (final e in my) SubTab(id: e.key, label: e.value)];
+      _otherSportsTabs = [
+        for (final e in others) SubTab(id: e.key, label: e.value),
+      ];
+      // Keep subTabIndex valid for current tab
+      if (subTabs.isEmpty) {
+        _subTabIndex = 0;
+      } else if (_subTabIndex >= subTabs.length) {
+        _subTabIndex = 0;
+      }
+      notifyListeners();
+      // If we're on a sports tab and items are now present, fetch games for the current sub-tab
+      if (_tabIndex != 0 && subTabs.isNotEmpty) {
+        unawaited(refreshCurrentSportGames());
+      }
+    } catch (_) {}
   }
 }

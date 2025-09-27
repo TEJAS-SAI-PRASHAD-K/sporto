@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/play/model/game.dart';
+import 'package:playo/core/models/game.dart';
+import 'package:playo/features/play/model/game_ui_extensions.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
@@ -53,8 +54,34 @@ class GameCard extends StatelessWidget {
             children: [
               Row(
                 children: [
+                  Icon(
+                    game.isPublic ? Icons.public : Icons.lock_outline,
+                    size: 16,
+                    color: cs.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 4),
                   Text(
-                    game.type.split('•').last.trim(),
+                    game.isPublic ? 'Public' : 'Invite Only',
+                    style: TextStyle(color: cs.onSurfaceVariant),
+                  ),
+                  const SizedBox(width: 8),
+                  _dot(cs),
+                  Text(
+                    _typeLabel(game),
+                    style: TextStyle(color: cs.onSurfaceVariant),
+                  ),
+                  const SizedBox(width: 8),
+                  if (game.payAndJoin) ...[
+                    _dot(cs),
+                    Text(
+                      'Pay & join',
+                      style: TextStyle(color: cs.onSurfaceVariant),
+                    ),
+                  ],
+                  const SizedBox(width: 8),
+                  _dot(cs),
+                  Text(
+                    game.levelLabel,
                     style: TextStyle(color: cs.onSurfaceVariant),
                   ),
                   const Spacer(),
@@ -184,4 +211,19 @@ class GameCard extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _dot(ColorScheme cs) => Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 4),
+  child: Text('•', style: TextStyle(color: cs.onSurfaceVariant)),
+);
+
+String _typeLabel(Game game) {
+  final t = (game.type).trim();
+  if (t.isEmpty) return 'Regular';
+  final l = t.toLowerCase();
+  if (l.contains('tournament')) return 'Tournament';
+  if (l.contains('coach')) return 'Coaching';
+  if (l.contains('regular')) return 'Regular';
+  return t[0].toUpperCase() + t.substring(1);
 }

@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 class EmptyGamesWidget extends StatelessWidget {
   final String title;
-  final String buttonText;
   final String selectedCity;
 
   const EmptyGamesWidget({
     super.key,
     required this.title,
-    required this.buttonText,
     required this.selectedCity,
   });
 
@@ -45,39 +43,6 @@ class EmptyGamesWidget extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                if (buttonText.isNotEmpty) ...[
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-
-                        foregroundColor: Theme.of(
-                          context,
-                        ).colorScheme.onPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Looking for games in $selectedCity'),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        buttonText,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
               ],
             ),
           ),

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:playo/core/models/game.dart' as core_game;
-import 'package:playo/features/play/model/game.dart' as ui_game;
 import 'package:playo/features/play/repository/games_remote_repository.dart';
 import 'package:playo/init_dependecies.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -11,7 +10,7 @@ class CreateGameViewModel {
   final SupabaseClient _supabase = serviceLocator<SupabaseClient>();
   late final GamesRemoteRepository _repo = GamesRemoteRepository(_supabase);
 
-  Future<ui_game.Game> createGame({
+  Future<core_game.Game> createGame({
     required String sportName,
     required String sportId,
     required String? selectedArea,
@@ -41,13 +40,7 @@ class CreateGameViewModel {
       selectedTime.hour,
       selectedTime.minute,
     );
-    final DateTime end = DateTime(
-      selectedDate.year,
-      selectedDate.month,
-      selectedDate.day,
-      selectedEndTime.hour,
-      selectedEndTime.minute,
-    );
+    // End time isn't stored in DB; only used by UI layers derived from rules
 
     // Build core game entity matching DB columns
     final gameId = const Uuid().v4();
@@ -90,30 +83,7 @@ class CreateGameViewModel {
     final result = await _repo.createGame(dbGame);
     return result.match(
       (f) => throw Exception('Failed to create game: ${f.message}'),
-      (saved) => ui_game.Game(
-        id: saved.gameId,
-        sport: sportName,
-        type: gameType,
-        organizerName: 'You',
-        startTime: start,
-        endTime: end,
-        venue: selectedArea?.trim() ?? '',
-        distanceKm: 0.0,
-        goingCount: 1,
-        capacity: totalPlayers ?? 8,
-        levelLabel: gameSkill ? 'Skill Required' : 'All Levels',
-        mustHaveSkill: gameSkill,
-        booked: false,
-        isPublic: isPublic,
-        payAndJoin: payAndJoin,
-        costPerPlayer: costPerPlayer,
-        totalPlayers: totalPlayers,
-        costShared: costShared,
-        bringYourOwnEquipment: bringYourOwnEquipment,
-        instructionsNote: instructions.trim().isEmpty
-            ? null
-            : instructions.trim(),
-      ),
+      (saved) => saved,
     );
   }
 

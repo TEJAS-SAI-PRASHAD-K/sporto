@@ -4,7 +4,6 @@ import 'package:playo/core/common/widgets/main_app_bar.dart';
 import 'package:playo/core/models/venue.dart';
 import 'package:playo/features/book/viewmodel/venue_view_model.dart';
 import 'package:playo/features/book/model/tab_item.dart';
-
 import '../widgets/book_search_bar.dart';
 import '../widgets/promotional_banner.dart';
 import '../widgets/filter_section.dart';
@@ -75,7 +74,7 @@ class _BookPageState extends ConsumerState<BookPage> {
       );
     });
 
-    final venueCount = venueState?.valueOrNull?.data.length ?? 0;
+    final venueCount = venueState.valueOrNull?.data.length ?? 0;
     final currentSelection = _tabs.indexWhere((t) => t.isSelected == true);
 
     _tabs = [
@@ -119,11 +118,6 @@ class _BookPageState extends ConsumerState<BookPage> {
               builder: (context) {
                 if (_selectedTabIndex == 0) {
                   // VENUES
-                  if (venueState == null) {
-                    return const Center(
-                      child: Text("No data yet. Tap to load."),
-                    );
-                  }
                   return venueState.when(
                     data: (venues) {
                       if (venues.data.isEmpty) {
@@ -152,7 +146,15 @@ class _BookPageState extends ConsumerState<BookPage> {
                   );
                 } else {
                   //DEALS
-                  return const Center(child: Text("No deals available"));
+                  return const Center(
+                    child: Text(
+                      "No Deals available",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
                 }
               },
             ),

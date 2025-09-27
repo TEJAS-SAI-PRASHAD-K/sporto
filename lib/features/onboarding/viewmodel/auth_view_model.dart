@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
@@ -93,19 +94,17 @@ class AuthViewModel extends _$AuthViewModel {
       if (user != null) {
         // Determine if it's email or phone
         final isEmail = emailOrPhone.contains('@');
+        debugPrint(user.userMetadata.toString());
+        debugPrint(authResponse.user?.toJson().toString());
 
         await _currentUserNotifier.createOrUpdateUser(
           emailAddress: isEmail ? emailOrPhone : (user.email ?? ''),
-          firstName:
-              user.userMetadata?['firstName'] ??
-              user.userMetadata?['name'] ??
-              'User',
           mobileNumber: !isEmail ? emailOrPhone : user.phone,
         );
       }
     } catch (e) {
       // Log error but don't fail the authentication
-      print('Error creating user profile: $e');
+      debugPrint('Error creating user profile: $e');
     }
   }
 

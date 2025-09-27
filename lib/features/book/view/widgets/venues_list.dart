@@ -48,7 +48,6 @@ class VenuesList extends StatelessWidget {
             : (v.images.isNotEmpty ? v.images.first : '');
         final rating = v.rating;
         final distanceKm = 0.0;
-        final totalGames = courts.isNotEmpty ? courts.length : v.totalBookings;
 
         return VenueCard(
           name: name,

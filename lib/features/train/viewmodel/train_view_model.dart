@@ -1,9 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:playo/features/train/model/service_category.dart';
-import 'package:playo/features/train/model/trainer.dart';
+import 'dart:ui';
 
-/// Simple MVVM ChangeNotifier for static demo data and interactions
-class TrainViewModel extends ChangeNotifier {
+import 'package:playo/core/models/trainer.dart';
+import 'package:playo/features/train/model/service_category.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:playo/features/train/repository/trainer_remote_repository.dart';
+
+part 'train_view_model.g.dart';
+
+@riverpod
+class TrainViewModel extends _$TrainViewModel {
+  late TrainerRemoteRepository _trainerRemoteRepository;
   final List<ServiceCategory> _categories = [
     ServiceCategory(
       id: 'badminton',
@@ -67,91 +73,28 @@ class TrainViewModel extends ChangeNotifier {
     ),
   ];
 
-  final List<Trainer> _trainers = [
-    Trainer(
-      id: 't1',
-      name: 'Nithin K',
-      title: 'Swimming Coach',
-      city: 'Bengaluru',
-      location: 'Basavanagudi',
-      audiences: const ['Adults', 'Kids'],
-      rating: null,
-      ratingCount: null,
-      interestedCount: 15,
-      tags: const ['TRAINER'],
-      avatarAsset: 'assets/images/boy_7.png',
-      bannerAsset: 'assets/images/swimming_pool.jpg',
-      servicesIcons: const ['assets/images/tennis_court.png'],
-      about:
-          'Certified coach with 8+ years. Strength, endurance and fear-of-water programs.',
-    ),
-    Trainer(
-      id: 't2',
-      name: 'Mukesh Mahto',
-      title: 'Fitness Coach',
-      city: 'Bengaluru',
-      location: 'Kanakapura Road',
-      audiences: const ['Adults'],
-      rating: null,
-      ratingCount: null,
-      interestedCount: 9,
-      tags: const ['TRAINER'],
-      avatarAsset: 'assets/images/boy_3.png',
-      bannerAsset: 'assets/images/golf-club.jpg',
-      servicesIcons: const ['assets/images/tennis_court.png'],
-      about: 'Strength training, weight loss and functional fitness coaching.',
-    ),
-    Trainer(
-      id: 't3',
-      name: 'Richa Rawal',
-      title: 'Fitness & Mobility',
-      city: 'Bengaluru',
-      location: 'Bengaluru',
-      audiences: const ['Adults'],
-      rating: null,
-      ratingCount: null,
-      interestedCount: 21,
-      tags: const ['TRAINER'],
-      avatarAsset: 'assets/images/girl_7.png',
-      bannerAsset: 'assets/images/abstract_map.jpg',
-      servicesIcons: const ['assets/images/tennis_court.png'],
-      about: 'Mobility, injury prevention and personal training plans.',
-    ),
-    Trainer(
-      id: 't4',
-      name: 'Fix Health',
-      title: 'Physiotherapy Academy',
-      city: 'Bengaluru',
-      location: 'Bengaluru',
-      audiences: const ['Adults', 'Kids'],
-      rating: 5.0,
-      ratingCount: 1,
-      interestedCount: 6,
-      tags: const ['ACADEMY'],
-      avatarAsset: 'assets/images/default.png',
-      bannerAsset: 'assets/images/tennis_court.png',
-      servicesIcons: const ['assets/images/tennis_court.png'],
-      about: 'Online physiotherapy with personalized plans and rehab.',
-    ),
-  ];
-
-  String? _selectedFilter;
-
+  // Public read-only view of the built-in service categories used by the UI
   List<ServiceCategory> get categories => List.unmodifiable(_categories);
-  List<Trainer> get trainers => List.unmodifiable(_trainers);
-  String get selectedFilter => _selectedFilter ?? '';
 
-  void selectFilter(String filter) {
-    if (_selectedFilter == filter) {
-      _selectedFilter = null;
-    } else {
-      _selectedFilter = filter;
-    }
-    notifyListeners();
+  @override
+  AsyncValue<Trainer>? build() {
+    _trainerRemoteRepository = ref.watch(trainerRemoteRepositoryProvider);
+    return null;
   }
 
-  List<Trainer> filteredByCategory(String? categoryId) {
-    // Static demo: return all. In a real app, filter by category.
-    return trainers;
+  Future<void> fetchTrainers() async {
+    state = const AsyncValue.loading();
+
+    final res = await _trainerRemoteRepository.fetchTrainerModels();
+
+    state = res.fold(
+      (failure) => AsyncValue.error(failure.message, StackTrace.current),
+      (trainer) => AsyncValue.data(trainer),
+    );
+  }
+
+  // Helper getter to access trainer data list
+  List<Datum> get trainers {
+    return state?.value?.data ?? [];
   }
 }

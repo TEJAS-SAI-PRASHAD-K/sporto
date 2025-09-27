@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:playo/core/models/venue.dart' as model;
+import 'package:playo/features/book/view/pages/book_slot_page.dart';
 import 'package:playo/features/book/view/widgets/rectangle_outlined_container.dart';
 import 'package:playo/features/book/view/widgets/circle_icon_button.dart';
 import 'package:playo/features/book/view/widgets/info_row.dart';
@@ -36,6 +37,8 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
     final rating = venue.rating;
     final totalReviews = venue.totalReviews;
     final totalGames = courts.length;
+    final amenities = venue.amenities;
+    final sports = venue.sportIds;
 
     return Scaffold(
       body: CustomScrollView(
@@ -154,7 +157,7 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                       ),
                       const SizedBox(width: 6),
                       Padding(
-                        padding: const EdgeInsets.only(right: 8),
+                        padding: const EdgeInsets.only(right: 52),
                         child: Text(
                           '(${_formatCount(totalReviews)} ratings)',
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -162,19 +165,11 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 16,
-                        child: VerticalDivider(
-                          width: 4,
-                          thickness: 1,
-                          color: theme.dividerColor,
-                        ),
-                      ),
                       const SizedBox(width: 24),
                       const Icon(Icons.sports_tennis, size: 20),
                       const SizedBox(width: 6),
                       Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
+                        padding: const EdgeInsets.only(right: 16.0),
                         child: Text(
                           '${_formatCount(totalGames)} Total Games',
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -238,14 +233,12 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                   height: 90,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
-                    children: const [
-                      SportCard(label: 'Badminton', icon: Icons.sports_tennis),
-                      SportCard(label: 'Football', icon: Icons.sports_soccer),
-                      SportCard(label: 'Cricket', icon: Icons.sports_cricket),
-                    ],
+                    children: List.generate(
+                      sports.length,
+                      (index) => SportCard(sport: sports[index]),
+                    ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
 
                 // Amenities (hardcoded)
@@ -256,40 +249,40 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: const [
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Lockers'),
-                    ),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Parking'),
-                    ),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Washroom'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: const [
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Drinking water'),
-                    ),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Rent rackets'),
-                    ),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: RectangleOutlinedContainer(text: 'Rent shoes'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                const RectangleOutlinedContainer(text: 'Pro shop'),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true, // important
+                    physics: const NeverScrollableScrollPhysics(),
 
+                    padding: const EdgeInsets.all(8),
+                    itemCount: (amenities.length / 3).ceil(), // number of rows
+                    itemBuilder: (context, rowIndex) {
+                      int startIndex = rowIndex * 3;
+
+                      return Row(
+                        children: List.generate(3, (colIndex) {
+                          int amenitiesIndex = startIndex + colIndex;
+
+                          // check if facility exists (for last incomplete row)
+                          if (amenitiesIndex >= amenities.length) {
+                            return const Expanded(
+                              child: SizedBox(),
+                            ); // filler space
+                          }
+
+                          return Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: RectangleOutlinedContainer(
+                                text: amenities[amenitiesIndex],
+                              ),
+                            ),
+                          );
+                        }),
+                      );
+                    },
+                  ),
+                ),
                 const SizedBox(height: 20),
 
                 // Games section
@@ -362,7 +355,17 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
               const SizedBox(width: 12),
               Expanded(
                 child: FilledButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BookSlotPage(
+                          venueId: widget.datum.venue.id,
+                          sportName: 'Sports', // Default sport
+                        ),
+                      ),
+                    );
+                  },
                   style: FilledButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(9),

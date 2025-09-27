@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/train/model/trainer.dart';
+import 'package:playo/core/models/trainer.dart' as model;
 
 class TrainerDetailsPage extends StatelessWidget {
-  final Trainer trainer;
-  const TrainerDetailsPage({super.key, required this.trainer});
+  final model.Datum datum;
+  const TrainerDetailsPage({super.key, required this.datum});
 
   @override
   Widget build(BuildContext context) {
+    final t = datum.trainer;
+    final tReviews = datum.trainerReview;
+    final avatarUrl = t.avatar.isNotEmpty ? t.avatar.first : null;
+
     return Scaffold(
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
@@ -43,8 +47,8 @@ class TrainerDetailsPage extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   Hero(
-                    tag: 'trainer-banner-${trainer.id}',
-                    child: Image.asset(trainer.bannerAsset, fit: BoxFit.cover),
+                    tag: 'trainer-banner-${t.id}',
+                    child: Image.network(avatarUrl!, fit: BoxFit.cover),
                   ),
                   Container(
                     decoration: BoxDecoration(
@@ -84,7 +88,7 @@ class TrainerDetailsPage extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  '${trainer.interestedCount} People Interested',
+                  '${t.completedSessions} People Interested',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -111,10 +115,10 @@ class TrainerDetailsPage extends StatelessWidget {
                     Row(
                       children: [
                         Hero(
-                          tag: 'trainer-avatar-${trainer.id}',
+                          tag: 'trainer-avatar-${t.id}',
                           child: CircleAvatar(
                             radius: 35,
-                            backgroundImage: AssetImage(trainer.avatarAsset),
+                            backgroundImage: NetworkImage(avatarUrl),
                           ),
                         ),
                         const SizedBox(width: 20),
@@ -123,13 +127,13 @@ class TrainerDetailsPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                trainer.name,
+                                '${t.firstName} ${t.lastName}',
                                 style: Theme.of(context).textTheme.headlineSmall
                                     ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                trainer.title,
+                                t.bio,
                                 style: Theme.of(context).textTheme.titleMedium
                                     ?.copyWith(
                                       fontWeight: FontWeight.w600,
@@ -150,17 +154,15 @@ class TrainerDetailsPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          trainer.rating != null
-                              ? Icons.star
-                              : Icons.star_border,
+                          tReviews.rating > 0 ? Icons.star : Icons.star_border,
                           size: 24,
-                          color: trainer.rating != null
+                          color: tReviews.rating > 0
                               ? Theme.of(context).colorScheme.primary
                               : Theme.of(context).colorScheme.outline,
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          trainer.rating != null ? '${trainer.rating}' : '--',
+                          tReviews.rating > 0 ? '${tReviews.rating}' : '--',
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
@@ -182,7 +184,7 @@ class TrainerDetailsPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        trainer.tags.join(' • '),
+                        t.specializations.join(' • '),
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -201,7 +203,7 @@ class TrainerDetailsPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
             sliver: SliverToBoxAdapter(
               child: Text(
-                'About ${trainer.name}',
+                'About ${t.firstName} ${t.lastName}',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -213,7 +215,7 @@ class TrainerDetailsPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             sliver: SliverToBoxAdapter(
               child: Text(
-                trainer.about,
+                t.bio,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(height: 1.6),
@@ -251,7 +253,7 @@ class TrainerDetailsPage extends StatelessWidget {
                     _buildSessionRow(
                       context,
                       Icons.calendar_today,
-                      'Monday, Tuesday, Wednesday, Thursday,\nFriday, Saturday, Sunday',
+                      t.schedule.join(', '),
                     ),
                     const SizedBox(height: 20),
 
@@ -259,7 +261,7 @@ class TrainerDetailsPage extends StatelessWidget {
                     _buildSessionRow(
                       context,
                       Icons.people,
-                      trainer.audiences.join(', '),
+                      t.audienceTypes.join(', '),
                     ),
                     const SizedBox(height: 20),
 
@@ -267,7 +269,7 @@ class TrainerDetailsPage extends StatelessWidget {
                     _buildSessionRow(
                       context,
                       Icons.school,
-                      '1-on-1 Classes, Group Classes, Online Classes',
+                      t.sessionTypes.join(','),
                     ),
                     const SizedBox(height: 20),
 
@@ -275,7 +277,7 @@ class TrainerDetailsPage extends StatelessWidget {
                     _buildSessionRow(
                       context,
                       Icons.location_on,
-                      '${trainer.location}, ${trainer.city}, India',
+                      t.serviceAreas.join(', '),
                     ),
                   ],
                 ),
@@ -307,7 +309,7 @@ class TrainerDetailsPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '₹800/Per Session for Home Visit',
+                  '₹${t.hourlyRate}/Per Session for Home Visit',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,

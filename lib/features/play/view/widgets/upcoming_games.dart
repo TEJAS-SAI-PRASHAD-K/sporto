@@ -4,6 +4,7 @@ import 'package:playo/features/play/model/game_ui_extensions.dart';
 import 'package:playo/init_dependecies.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+
 class UpcomingGames extends StatefulWidget {
   final List<Game> userCreatedGames;
   // When showing Upcoming tab, we also render nearby games. For Past tab, pass empty.
@@ -34,6 +35,27 @@ class UpcomingGames extends StatefulWidget {
 }
 
 class _UpcomingGamesState extends State<UpcomingGames> {
+  @override
+  void initState() {
+    super.initState();
+    _triggerUpcomingReminders();
+  }
+
+  void _triggerUpcomingReminders() {
+    final now = DateTime.now();
+    final games = widget.userCreatedGames.where((g) {
+      final diff = g.startTime.difference(now).inMinutes;
+      return diff > 0 && diff <= 30;
+    }).toList();
+    for (final game in games) {
+      NotificationService().showNotification(
+        4,
+        'Game Reminder',
+        'Your ${game.sport} game at ${game.venue} starts at ${_formatTimeRange(game.startTime, game.endTime)}.',
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

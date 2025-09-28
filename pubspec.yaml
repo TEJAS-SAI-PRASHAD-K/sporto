@@ -44,8 +44,8 @@ dependencies:
   flutter_dotenv: ^6.0.0
 
   # Authentication & Backend
-  supabase_flutter: ^2.9.1
-  google_sign_in: ^6.2.1
+  supabase_flutter: ^2.10.1
+  google_sign_in: ^6.3.0
   sign_in_with_apple: ^6.1.4
 
   # Database & Storage
@@ -67,6 +67,7 @@ dependencies:
   geolocator: ^14.0.2
   geocoding: ^4.0.0
   http: ^1.5.0
+  flutter_local_notifications: ^19.4.2
 
 dev_dependencies:
   flutter_test:

@@ -48,6 +48,30 @@ class UserRepository {
     }
   }
 
+  Future<Either<Failure, app_user.User>> getUserByEmail(String email) async {
+    try {
+      final response = await supabase
+          .from('users')
+          .select()
+          .eq('email_address', email)
+          .single();
+
+      final user = app_user.User.fromJson(response);
+      return Right(user);
+    } on SocketException {
+      return Left(Failure("No internet connection"));
+    } on PostgrestException catch (e) {
+      debugPrint('Supabase error: ${e.message}');
+      if (e.code == 'PGRST116') {
+        return Left(Failure("User not found"));
+      }
+      return Left(Failure("Database error: ${e.message}"));
+    } catch (e) {
+      debugPrint('Unexpected error: $e');
+      return Left(Failure("Unexpected error: ${e.toString()}"));
+    }
+  }
+
   Future<Either<Failure, app_user.User>> createOrUpdateUser(
     app_user.User user,
   ) async {
@@ -249,6 +273,31 @@ class UserRepository {
         'updated_at': DateTime.now().toIso8601String(),
       };
       await supabase.from('users').update(updateData).eq('user_id', userId);
+
+      return Right(null);
+    } on SocketException {
+      return Left(Failure("No internet connection"));
+    } on PostgrestException catch (e) {
+      debugPrint('Supabase error: ${e.message}');
+      return Left(Failure("Database error: ${e.message}"));
+    } catch (e) {
+      debugPrint('Unexpected error: $e');
+      return Left(Failure("Unexpected error: ${e.toString()}"));
+    }
+  }
+
+  /// Update an existing user's user_id to a new auth user id. This is used
+  /// when an email-based row exists but the auth provider returned a different
+  /// GoTrue user id for the same email (e.g., different provider identities).
+  Future<Either<Failure, void>> updateUserId({
+    required String oldUserId,
+    required String newUserId,
+  }) async {
+    try {
+      await supabase
+          .from('users')
+          .update({'user_id': newUserId})
+          .eq('user_id', oldUserId);
 
       return Right(null);
     } on SocketException {

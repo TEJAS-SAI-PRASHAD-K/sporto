@@ -4,7 +4,14 @@ import 'package:playo/features/onboarding/view/pages/avatar_selection_page.dart'
 import 'package:playo/features/onboarding/viewmodel/auth_view_model.dart';
 
 class CompleteYourProfile extends ConsumerStatefulWidget {
-  const CompleteYourProfile({super.key});
+  final String? initialFirstName;
+  final String? initialLastName;
+
+  const CompleteYourProfile({
+    super.key,
+    this.initialFirstName,
+    this.initialLastName,
+  });
 
   @override
   ConsumerState<CompleteYourProfile> createState() =>
@@ -15,6 +22,13 @@ class _CompleteYourProfileState extends ConsumerState<CompleteYourProfile> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _firstNameController.text = widget.initialFirstName ?? '';
+    _lastNameController.text = widget.initialLastName ?? '';
+  }
 
   @override
   Future<void> dispose() async {

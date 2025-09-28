@@ -34,14 +34,11 @@ Future<void> _initDatabase() async {
 /// Initialize core services
 Future<void> _initServices() async {
   serviceLocator.registerSingleton<http.Client>(Client());
-  // Services will be registered here
-  // serviceLocator.registerLazySingleton<AuthService>(() => AuthService());
-  // serviceLocator.registerLazySingleton<UserService>(() => UserService());
-  // serviceLocator.registerLazySingleton<GameService>(() => GameService());
-  // serviceLocator.registerLazySingleton<VenueService>(() => VenueService());
-  // serviceLocator.registerLazySingleton<TrainerService>(() => TrainerService());
-  // serviceLocator.registerLazySingleton<NotificationService>(() => NotificationService());
-  // serviceLocator.registerLazySingleton<PaymentService>(() => PaymentService());
+  // Register NotificationService and initialize
+  final notificationService = NotificationService();
+  await notificationService.init();
+  serviceLocator.registerSingleton<NotificationService>(notificationService);
+  // You can register other services here as needed
 }
 
 /// Initialize repositories

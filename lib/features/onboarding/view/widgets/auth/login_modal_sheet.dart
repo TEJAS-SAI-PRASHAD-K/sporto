@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:playo/core/widgets/bottom_navigation_bar.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 import 'package:playo/core/common/widgets/loader.dart';
 import 'package:playo/core/utils/show_snackbar.dart';
@@ -62,7 +63,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
 
       final googleSignIn = GoogleSignIn(clientId: kIsWeb ? webClientId : null);
 
-      // Clear any cached Google session to avoid silent re-auth.
+      // Always sign out before sign-in to avoid stale sessions (all platforms)
       try {
         await googleSignIn.signOut();
       } catch (e) {
@@ -99,8 +100,12 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
         accessToken: accessToken,
       );
 
-      if (res.user == null) {
+      if (res.user == null || supabase.auth.currentSession == null) {
         showSnackBar(context, 'Google sign-in failed', SnackBarType.error);
+        // Extra: sign out from Google to clear any partial session
+        try {
+          await googleSignIn.signOut();
+        } catch (_) {}
         return;
       }
 
@@ -156,8 +161,10 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
           ),
         );
       } else {
-        showSnackBar(context, 'Signed in with Google', SnackBarType.success);
-        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => BottomNavBar()),
+        );
       }
     } catch (e) {
       debugPrint('Error during Google sign-in: $e');

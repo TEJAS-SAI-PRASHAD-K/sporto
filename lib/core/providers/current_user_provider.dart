@@ -339,9 +339,7 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
       // This prevents the google_sign_in instance from returning an already
       // authenticated account when the user expects to re-authenticate.
       try {
-        if (!kIsWeb) {
-          await GoogleSignIn().signOut();
-        }
+        await GoogleSignIn().signOut(); // Always sign out, all platforms
       } catch (e) {
         debugPrint('GoogleSignIn signOut failed: $e');
       }

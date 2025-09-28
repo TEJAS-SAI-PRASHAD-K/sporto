@@ -134,8 +134,12 @@ class AuthViewModel extends _$AuthViewModel {
 
   Future<void> updateUserSports({required List<String> preferredSports}) async {
     try {
-      // Persist favorite_sports to Supabase with normalization (UUIDs or names)
-      await _currentUserNotifier.updateFavoriteSports(preferredSports);
+      // Persist favorite_sports using the central createOrUpdateUser method
+      // which will create or update the user record and persist favorites.
+      await _currentUserNotifier.createOrUpdateUser(
+        emailAddress: _currentUserNotifier.userEmail ?? '',
+        favoriteSports: preferredSports,
+      );
     } catch (e) {
       rethrow;
     }

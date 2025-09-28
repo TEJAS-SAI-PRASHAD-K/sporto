@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:playo/features/play/model/game.dart';
+import 'package:playo/core/models/game.dart';
+import 'package:playo/features/play/model/game_ui_extensions.dart';
 
 class GameDetailsPage extends StatelessWidget {
   final Game game;

@@ -134,7 +134,10 @@ class AuthViewModel extends _$AuthViewModel {
 
   Future<void> updateUserSports({required List<String> preferredSports}) async {
     try {
-      await _currentUserNotifier.updateUserProfile(
+      // Persist favorite_sports using the central createOrUpdateUser method
+      // which will create or update the user record and persist favorites.
+      await _currentUserNotifier.createOrUpdateUser(
+        emailAddress: _currentUserNotifier.userEmail ?? '',
         favoriteSports: preferredSports,
       );
     } catch (e) {

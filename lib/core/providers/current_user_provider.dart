@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:playo/core/models/sport.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:playo/core/models/user.dart';

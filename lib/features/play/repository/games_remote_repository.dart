@@ -81,12 +81,18 @@ class GamesRemoteRepository {
         query = query.eq('organiser_user_id', organiserUserId);
       }
       if (fromDate != null) {
-        query = query.gte('game_date', fromDate.toIso8601String());
+        // game_date is a DATE in DB; filter using YYYY-MM-DD to avoid timezone issues
+        final dateOnly = fromDate.toIso8601String().split('T').first;
+        query = query.gte('game_date', dateOnly);
       }
+      // Order by date/time so upcoming appear first
+      final ordered = query
+          .order('game_date', ascending: true)
+          .order('game_time', ascending: true);
 
       final result = await (offset > 0
-          ? query.limit(limit).range(offset, offset + limit - 1)
-          : query.limit(limit));
+          ? ordered.limit(limit).range(offset, offset + limit - 1)
+          : ordered.limit(limit));
 
       final items = (result as List)
           .map((e) => Game.fromJson(e as Map<String, dynamic>))

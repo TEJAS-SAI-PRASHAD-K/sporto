@@ -4,9 +4,15 @@ import 'package:playo/core/common/widgets/see_reputation_page.dart';
 import 'package:playo/core/common/widgets/retire_bottom_sheet.dart';
 import 'package:playo/features/play/view/widgets/player_card.dart';
 import 'package:playo/features/play/view/widgets/game_sub_tab_bar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:playo/init_dependecies.dart';
+import 'package:playo/features/play/repository/game_participation_remote_repository.dart';
+import 'package:playo/features/play/repository/games_remote_repository.dart';
+import 'package:playo/core/models/game.dart';
 
 class ManagePlayersPage extends StatefulWidget {
-  const ManagePlayersPage({super.key});
+  final Game? game; // optional: pass current game to scope queries
+  const ManagePlayersPage({super.key, this.game});
 
   @override
   State<ManagePlayersPage> createState() => _ManagePlayersPageState();
@@ -14,38 +20,79 @@ class ManagePlayersPage extends StatefulWidget {
 
 class _ManagePlayersPageState extends State<ManagePlayersPage> {
   bool _matchFull = false;
-
-  final List<_Player> _requests = [
-    _Player(
-      name: 'ASISH DALAI',
-      skill: 'INTERMEDIATE',
-      updatedAt: DateTime.now().subtract(const Duration(hours: 14)),
-      lastFive: const ['X', 'X', 'X', 'X', 'X'],
-      message: 'Where can we play?',
-      noShows: 0,
-    ),
-  ];
-
-  final List<_Player> _invited = [
-    _Player(
-      name: 'W Aditya',
-      skill: 'NO SKILL',
-      updatedAt: DateTime.now().subtract(const Duration(minutes: 2)),
-      noShows: 0,
-    ),
-  ];
-
-  final List<_Player> _playing = [
-    _Player(
-      name: 'Ponsriram  O  R',
-      role: 'HOST',
-      skill: 'PROFESSIONAL',
-      updatedAt: DateTime.now(),
-      noShows: 0,
-    ),
-  ];
-
+  final List<_Player> _requests = [];
+  final List<_Player> _invited = [];
+  final List<_Player> _playing = [];
   final List<_Player> _retired = [];
+
+  SupabaseClient get _supabase => serviceLocator<SupabaseClient>();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final g = widget.game;
+    if (g == null) return;
+    // Requests from participation table (Pending)
+    try {
+      final rows = await _supabase
+          .from('games_participants')
+          .select('user_id, joined_at')
+          .eq('game_id', g.gameId)
+          .eq('participation_status', 'Pending')
+          .order('joined_at');
+      setState(() {
+        _requests
+          ..clear()
+          ..addAll(
+            rows.map(
+              (r) => _Player(
+                name:
+                    r['user_id']
+                        as String, // replace with actual name lookup later
+                skill: 'NO SKILL',
+                updatedAt:
+                    DateTime.tryParse(r['joined_at']?.toString() ?? '') ??
+                    DateTime.now(),
+                role: null,
+                lastFive: const [],
+                message: null,
+                noShows: 0,
+              ),
+            ),
+          );
+      });
+    } catch (_) {}
+
+    // Playing from game's player_ids
+    try {
+      final gameRes = await GamesRemoteRepository(
+        _supabase,
+      ).getGameById(g.gameId);
+      gameRes.match((_) {}, (game) {
+        setState(() {
+          _playing
+            ..clear()
+            ..addAll(
+              (game.playerIds ?? const []).map(
+                (uid) => _Player(
+                  name: uid, // replace with profile name if available
+                  skill: 'NO SKILL',
+                  updatedAt: game.updatedAt ?? DateTime.now(),
+                  role: null,
+                  lastFive: const [],
+                  message: null,
+                  noShows: 0,
+                ),
+              ),
+            );
+        });
+      });
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -277,12 +324,32 @@ class _ManagePlayersPageState extends State<ManagePlayersPage> {
     );
   }
 
-  void _acceptRequest(int index) {
-    final p = _requests.removeAt(index);
-    setState(() {
-      _playing.add(p);
-    });
-    _snack('Accepted ${p.name}');
+  Future<void> _acceptRequest(int index) async {
+    final g = widget.game;
+    if (g == null) return;
+    // Assuming player name is actually user_id for now; in real code map to id
+    final userId = _requests[index].name;
+    try {
+      // Find the participation row id for this user
+      final rows = await _supabase
+          .from('games_participants')
+          .select('participation_id')
+          .eq('game_id', g.gameId)
+          .eq('user_id', userId)
+          .eq('participation_status', 'Pending')
+          .limit(1);
+      if (rows.isEmpty) return;
+      final participationId = rows.first['participation_id'] as String;
+      final repo = GameParticipationRemoteRepository(_supabase);
+      await repo.acceptJoinRequest(participationId: participationId);
+      setState(() {
+        final p = _requests.removeAt(index);
+        _playing.add(p);
+      });
+      _snack('Accepted $userId');
+    } catch (e) {
+      _snack('Failed to accept');
+    }
   }
 
   void _retireFrom(List<_Player> list, int index) {

@@ -16,7 +16,7 @@ class NotificationService {
     // Initialization settings for Android
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings(
-          '@drawable/ic_launcher',
+          'ic_launcher',
         ); // Use default launcher icon
 
     // Initialization settings for iOS

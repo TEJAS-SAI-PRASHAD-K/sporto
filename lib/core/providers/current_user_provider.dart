@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:playo/core/models/sport.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:playo/core/models/user.dart';
@@ -301,7 +301,6 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
         country: country ?? currentUser.country,
         latitude: latitude ?? currentUser.latitude,
         longitude: longitude ?? currentUser.longitude,
-        // Preserve favorites unless explicitly set
         favoriteSports: favoriteSports ?? currentUser.favoriteSports,
         isEmailVerified: currentUser.isEmailVerified,
         isMobileVerified: currentUser.isMobileVerified,
@@ -330,12 +329,19 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
     }
   }
 
-  // Update only favorite sports permanently in Supabase, accepting UUIDs or names
   Future<void> logout() async {
     try {
       // Clear local cache before signing out
       if (state?.userId != null) {
         _removeUserFromCache(state!.userId);
+      }
+      // Also attempt to sign out from GoogleSignIn to avoid stale sessions.
+      // This prevents the google_sign_in instance from returning an already
+      // authenticated account when the user expects to re-authenticate.
+      try {
+        await GoogleSignIn().signOut(); // Always sign out, all platforms
+      } catch (e) {
+        debugPrint('GoogleSignIn signOut failed: $e');
       }
 
       await _supabase.auth.signOut();
@@ -344,6 +350,42 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
     } catch (e) {
       debugPrint('Error during logout: $e');
       throw Exception('Logout failed: $e');
+    }
+  }
+
+  /// Delete the current user's account and associated data.
+  /// This will attempt to delete the user's row from the `users` table,
+  /// remove local cache, and remove the auth user from Supabase if possible.
+  Future<void> deleteAccount() async {
+    try {
+      final authUser = _supabase.auth.currentUser;
+      if (authUser == null) throw Exception('No authenticated user found');
+
+      final userId = authUser.id;
+
+      // Attempt to delete user row from database via repository
+      final deleteResult = await _userRepository.deleteUser(userId);
+      deleteResult.match(
+        (failure) =>
+            throw Exception('Failed to delete user data: ${failure.message}'),
+        (_) => debugPrint('User row deleted from Supabase'),
+      );
+
+      // Remove local cache
+      await _removeUserFromCache(userId);
+
+      // Deleting the actual auth user (from GoTrue) requires a service_role key
+      // and should be done server-side. Here we remove the user's data row,
+      // clear local cache, and sign the user out locally.
+      try {
+        await _supabase.auth.signOut();
+      } catch (_) {}
+
+      // Clear state
+      state = null;
+    } catch (e) {
+      debugPrint('Error deleting account: $e');
+      rethrow;
     }
   }
 

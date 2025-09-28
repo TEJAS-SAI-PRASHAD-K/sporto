@@ -17,8 +17,11 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeModeNotifierProvider);
-    final currentUserNotifier = ref.watch(currentUserNotifierProvider.notifier);
-    final isAuthed = currentUserNotifier.isAuthenticated;
+    // Watch the provider state (the current user). Watching the notifier
+    // won't rebuild when the authentication changes; we must watch the
+    // provider itself so the app reacts to sign-in / sign-out events.
+    final currentUser = ref.watch(currentUserNotifierProvider);
+    final isAuthed = currentUser != null;
 
     return MaterialApp(
       title: 'Sporto',

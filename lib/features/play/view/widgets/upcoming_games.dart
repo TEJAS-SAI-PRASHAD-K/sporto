@@ -43,7 +43,7 @@ class _UpcomingGamesState extends State<UpcomingGames> {
     final now = DateTime.now();
     final games = widget.userCreatedGames.where((g) {
       final diff = g.startTime.difference(now).inMinutes;
-      return diff > 0 && diff <= 60;
+      return diff > 0 && diff <= 30;
     }).toList();
     for (final game in games) {
       NotificationService().showNotification(

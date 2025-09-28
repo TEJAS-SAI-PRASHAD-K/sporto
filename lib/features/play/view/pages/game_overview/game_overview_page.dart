@@ -461,7 +461,8 @@ class _GameOverviewPageState extends State<GameOverviewPage> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => const ManagePlayersPage(),
+                                  builder: (_) =>
+                                      ManagePlayersPage(game: _game),
                                 ),
                               );
                             },

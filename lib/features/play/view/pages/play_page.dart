@@ -12,10 +12,10 @@ import 'package:playo/core/models/game.dart';
 import 'package:playo/features/play/model/game_ui_extensions.dart';
 import 'package:playo/features/play/view/widgets/game_card.dart';
 import 'package:playo/features/play/view/pages/game_overview/game_overview_page.dart';
+import 'package:playo/features/play/view/pages/public_game_details_page.dart';
 import 'package:playo/features/play/view/pages/game_board_page.dart';
 import 'package:playo/features/play/view/pages/game_overview/add_players_page.dart';
 import 'package:playo/features/play/view/widgets/upcoming_games.dart';
-import 'package:playo/features/play/repository/games_remote_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:playo/init_dependecies.dart';
 import 'package:share_plus/share_plus.dart';
@@ -110,32 +110,6 @@ class _PlayPageBodyState extends State<PlayPageBody> {
         );
       });
     }
-  }
-
-  Future<void> _joinPublicGame(Game game) async {
-    try {
-      final supabase = serviceLocator<SupabaseClient>();
-      final userId = supabase.auth.currentUser?.id;
-      if (userId == null) return;
-      final repo = GamesRemoteRepository(supabase);
-      final res = await repo.addPlayer(game.id, userId);
-      res.match(
-        (_) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Failed to join game')));
-        },
-        (_) async {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Joined game')));
-          // Refresh upcoming to reflect updated counts
-          final vm = Provider.of<PlayPageViewModel>(context, listen: false);
-          await vm.refreshUpcoming();
-          setState(() {});
-        },
-      );
-    } catch (_) {}
   }
 
   void _showMenu(BuildContext ctx, PlayPageViewModel vm) {
@@ -376,33 +350,48 @@ class _PlayPageBodyState extends State<PlayPageBody> {
                                 _openCreateGame();
                               },
                               onGameTap: (game) async {
-                                final result = await Navigator.of(context)
-                                    .push<String>(
-                                      MaterialPageRoute(
-                                        builder: (_) => GameOverviewPage(
-                                          game: game,
-                                          onGameUpdated: _onGameUpdated,
+                                // If organiser is me open overview else open public details
+                                final supabase =
+                                    serviceLocator<SupabaseClient>();
+                                final currentUserId =
+                                    supabase.auth.currentUser?.id;
+                                final isMine =
+                                    game.organiserUserId == currentUserId;
+                                if (isMine) {
+                                  final result = await Navigator.of(context)
+                                      .push<String>(
+                                        MaterialPageRoute(
+                                          builder: (_) => GameOverviewPage(
+                                            game: game,
+                                            onGameUpdated: _onGameUpdated,
+                                          ),
                                         ),
-                                      ),
+                                      );
+                                  if (result == 'deleted' && mounted) {
+                                    final vm = Provider.of<PlayPageViewModel>(
+                                      context,
+                                      listen: false,
                                     );
-                                if (result == 'deleted' && mounted) {
-                                  final vm = Provider.of<PlayPageViewModel>(
-                                    context,
-                                    listen: false,
+                                    setState(() {
+                                      _localUserCreated.removeWhere(
+                                        (g) => g.id == game.id,
+                                      );
+                                      vm.userCreatedGames.removeWhere(
+                                        (g) => g.id == game.id,
+                                      );
+                                      vm.currentSportGames.removeWhere(
+                                        (g) => g.id == game.id,
+                                      );
+                                    });
+                                    await vm.refreshUpcoming();
+                                  }
+                                } else {
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          PublicGameDetailsPage(game: game),
+                                    ),
                                   );
-                                  setState(() {
-                                    _localUserCreated.removeWhere(
-                                      (g) => g.id == game.id,
-                                    );
-                                    vm.userCreatedGames.removeWhere(
-                                      (g) => g.id == game.id,
-                                    );
-                                    vm.currentSportGames.removeWhere(
-                                      (g) => g.id == game.id,
-                                    );
-                                  });
-                                  // Also refresh from Supabase to stay in sync
-                                  await vm.refreshUpcoming();
                                 }
                               },
                               onGameBoardTap: (game) {
@@ -446,7 +435,7 @@ class _PlayPageBodyState extends State<PlayPageBody> {
                                   });
                                 }
                               },
-                              onJoinTap: (g) => _joinPublicGame(g),
+                              onJoinTap: null,
                             )
                           : // Past sub-tab
                             UpcomingGames(
@@ -455,32 +444,47 @@ class _PlayPageBodyState extends State<PlayPageBody> {
                               onCreateGame: _openCreateGame,
                               isPastMode: true,
                               onGameTap: (game) async {
-                                final result = await Navigator.of(context)
-                                    .push<String>(
-                                      MaterialPageRoute(
-                                        builder: (_) => GameOverviewPage(
-                                          game: game,
-                                          onGameUpdated: _onGameUpdated,
+                                final supabase =
+                                    serviceLocator<SupabaseClient>();
+                                final currentUserId =
+                                    supabase.auth.currentUser?.id;
+                                final isMine =
+                                    game.organiserUserId == currentUserId;
+                                if (isMine) {
+                                  final result = await Navigator.of(context)
+                                      .push<String>(
+                                        MaterialPageRoute(
+                                          builder: (_) => GameOverviewPage(
+                                            game: game,
+                                            onGameUpdated: _onGameUpdated,
+                                          ),
                                         ),
-                                      ),
+                                      );
+                                  if (result == 'deleted' && mounted) {
+                                    final vm = Provider.of<PlayPageViewModel>(
+                                      context,
+                                      listen: false,
                                     );
-                                if (result == 'deleted' && mounted) {
-                                  final vm = Provider.of<PlayPageViewModel>(
-                                    context,
-                                    listen: false,
+                                    setState(() {
+                                      _localUserCreated.removeWhere(
+                                        (g) => g.id == game.id,
+                                      );
+                                      vm.userCreatedGames.removeWhere(
+                                        (g) => g.id == game.id,
+                                      );
+                                      vm.currentSportGames.removeWhere(
+                                        (g) => g.id == game.id,
+                                      );
+                                    });
+                                    await vm.refreshUpcoming();
+                                  }
+                                } else {
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          PublicGameDetailsPage(game: game),
+                                    ),
                                   );
-                                  setState(() {
-                                    _localUserCreated.removeWhere(
-                                      (g) => g.id == game.id,
-                                    );
-                                    vm.userCreatedGames.removeWhere(
-                                      (g) => g.id == game.id,
-                                    );
-                                    vm.currentSportGames.removeWhere(
-                                      (g) => g.id == game.id,
-                                    );
-                                  });
-                                  await vm.refreshUpcoming();
                                 }
                               },
                               onRehostTap: (game) async {
@@ -525,42 +529,40 @@ class _PlayPageBodyState extends State<PlayPageBody> {
                               return GameCard(
                                 game: g,
                                 onTap: () async {
-                                  final result = await Navigator.of(context)
-                                      .push<String>(
-                                        MaterialPageRoute(
-                                          builder: (_) => GameOverviewPage(
-                                            game: g,
-                                            onGameUpdated: _onGameUpdated,
-                                          ),
-                                        ),
-                                      );
-                                  if (result == 'deleted' && mounted) {
-                                    final vm = Provider.of<PlayPageViewModel>(
-                                      context,
-                                      listen: false,
-                                    );
-                                    setState(() {
-                                      _localUserCreated.removeWhere(
-                                        (x) => x.id == g.id,
-                                      );
-                                      vm.userCreatedGames.removeWhere(
-                                        (x) => x.id == g.id,
-                                      );
-                                      vm.currentSportGames.removeWhere(
-                                        (x) => x.id == g.id,
-                                      );
-                                    });
-                                    await vm.refreshUpcoming();
-                                  }
+                                  // Games in My Sports lists are public games by others
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          PublicGameDetailsPage(game: g),
+                                    ),
+                                  );
                                 },
                               );
                             },
                           ))
                   : // Other Sports tab
-                    EmptyGamesWidget(
-                      title: vm.emptyTitle,
-                      selectedCity: vm.selectedCity,
-                    ),
+                    (vm.currentSportGames.isEmpty
+                        ? EmptyGamesWidget(
+                            title: vm.emptyTitle,
+                            selectedCity: vm.selectedCity,
+                          )
+                        : ListView.builder(
+                            itemCount: vm.currentSportGames.length,
+                            itemBuilder: (context, index) {
+                              final Game g = vm.currentSportGames[index];
+                              return GameCard(
+                                game: g,
+                                onTap: () async {
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          PublicGameDetailsPage(game: g),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          )),
             ),
           ],
         ),

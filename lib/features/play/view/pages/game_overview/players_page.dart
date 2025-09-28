@@ -118,7 +118,7 @@ class PlayersPage extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => const ManagePlayersPage(),
+                            builder: (_) => ManagePlayersPage(game: game),
                           ),
                         );
                       },

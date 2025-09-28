@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:playo/core/models/game.dart';
 import 'package:playo/features/play/model/game_ui_extensions.dart';
-import 'package:playo/core/services/notification_service.dart';
+import 'package:playo/init_dependecies.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 
 class UpcomingGames extends StatefulWidget {
   final List<Game> userCreatedGames;
@@ -569,14 +571,8 @@ class _UpcomingGamesState extends State<UpcomingGames> {
 
               const SizedBox(height: 8),
 
-              // Organizer Name
-              Text(
-                game.organizerName,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
+              // Organizer Name (fetched from users table)
+              _OrganizerNameInline(userId: game.organiserUserId),
 
               const SizedBox(height: 8),
 
@@ -759,8 +755,8 @@ class _UpcomingGamesState extends State<UpcomingGames> {
                 ],
               ),
               const SizedBox(height: 12),
-              // Join CTA for public nearby games
-              if (game.isPublic)
+              // Join CTA only when handler is provided (Calendar can pass null to hide)
+              if (game.isPublic && widget.onJoinTap != null)
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
@@ -872,4 +868,127 @@ class _UpcomingGamesState extends State<UpcomingGames> {
       ..sort((a, b) => a.key.compareTo(b.key));
     return {for (var e in entries) e.key: e.value};
   }
+}
+
+class _OrganizerNameInline extends StatefulWidget {
+  final String userId;
+  const _OrganizerNameInline({required this.userId});
+
+  @override
+  State<_OrganizerNameInline> createState() => _OrganizerNameInlineState();
+}
+
+class _OrganizerNameInlineState extends State<_OrganizerNameInline> {
+  static final Map<String, _OrgInfo> _cache = {};
+  String _name = '';
+  String _avatarUrl = '';
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant _OrganizerNameInline oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.userId != widget.userId) {
+      _name = '';
+      _avatarUrl = '';
+      _loading = true;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final supabase = serviceLocator<SupabaseClient>();
+    final cached = _cache[widget.userId];
+    if (cached != null) {
+      setState(() {
+        _name = cached.name;
+        _avatarUrl = cached.avatarUrl;
+        _loading = false;
+      });
+      return;
+    }
+    try {
+      final resp = await supabase
+          .from('users')
+          .select('first_name,last_name,avatar_url')
+          .eq('user_id', widget.userId)
+          .maybeSingle();
+      String display = '';
+      String avatar = '';
+      if (resp != null) {
+        final first = (resp['first_name'] as String?)?.trim() ?? '';
+        final last = (resp['last_name'] as String?)?.trim() ?? '';
+        avatar = (resp['avatar_url'] as String?)?.trim() ?? '';
+        display = [first, last].where((s) => s.isNotEmpty).join(' ').trim();
+      }
+      _cache[widget.userId] = _OrgInfo(name: display, avatarUrl: avatar);
+      if (mounted)
+        setState(() {
+          _name = display;
+          _avatarUrl = avatar;
+          _loading = false;
+        });
+    } catch (_) {
+      if (mounted)
+        setState(() {
+          _name = '';
+          _avatarUrl = '';
+          _loading = false;
+        });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    if (_loading) return const SizedBox(height: 24);
+    final text = _name.trim();
+    if (text.isEmpty) return const SizedBox.shrink();
+    final initials = text
+        .split(' ')
+        .where((p) => p.isNotEmpty)
+        .take(2)
+        .map((p) => p[0].toUpperCase())
+        .join();
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CircleAvatar(
+          radius: 12,
+          backgroundColor: cs.surfaceContainerHighest,
+          backgroundImage: _avatarUrl.isNotEmpty
+              ? NetworkImage(_avatarUrl)
+              : null,
+          child: _avatarUrl.isEmpty
+              ? Text(
+                  initials,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurface,
+                  ),
+                )
+              : null,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+}
+
+class _OrgInfo {
+  final String name;
+  final String avatarUrl;
+  const _OrgInfo({required this.name, required this.avatarUrl});
 }

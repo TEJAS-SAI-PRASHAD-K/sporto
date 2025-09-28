@@ -249,7 +249,7 @@ class PlayPageViewModel extends ChangeNotifier {
         fromDate: DateTime(now.year, now.month, now.day),
         limit: 100,
       );
-      res.match((_) {}, (list) {
+      res.match((_) {}, (list) async {
         final cityLower = _selectedCity.toLowerCase();
         final labelLc = subTabs[_subTabIndex].label.toLowerCase();
         final filtered = list.where((g) {
@@ -261,12 +261,17 @@ class PlayPageViewModel extends ChangeNotifier {
             final sportName = SportRegistry.nameFor(g.sportId).toLowerCase();
             if (sportName != labelLc) return false;
           }
-          // city/area match
+          // City/area match – relax this to avoid over-filtering by text
+          // If your schema has a city column, prefer filtering in SQL.
+          // Here we only exclude if a different city name is explicitly present.
           final place = ((g.venueAddress ?? g.venueName ?? g.areaOfGame) ?? '')
               .toString()
               .toLowerCase();
-          if (cityLower.isNotEmpty && !place.contains(cityLower)) {
-            return false;
+          if (place.isNotEmpty && cityLower.isNotEmpty) {
+            final hasSomeCity = _availableCities
+                .map((e) => e.toLowerCase())
+                .any((c) => place.contains(c));
+            if (hasSomeCity && !place.contains(cityLower)) return false;
           }
           // upcoming only
           if (g.endTime.isBefore(now)) return false;
@@ -325,8 +330,11 @@ class PlayPageViewModel extends ChangeNotifier {
       final repo = GamesRemoteRepository(getItSupabase());
       await _ensureSportsLoaded();
       // Fetch all games and partition locally into upcoming vs past
-      final res = await repo.listGames();
-      res.match((_) {}, (list) {
+      final today = DateTime.now();
+      final res = await repo.listGames(
+        fromDate: DateTime(today.year, today.month, today.day),
+      );
+      await res.match((_) async {}, (list) async {
         final supabase = getItSupabase();
         final currentUserId = supabase.auth.currentUser?.id;
         // Partition: user-created vs public nearby (others)
@@ -352,14 +360,45 @@ class PlayPageViewModel extends ChangeNotifier {
                 ((g.venueAddress ?? g.venueName ?? g.areaOfGame) ?? '')
                     .toString()
                     .toLowerCase();
-            if (place.contains(cityLower) || cityLower.isEmpty) {
+            if (cityLower.isEmpty) {
               publicOthers.add(g);
+            } else {
+              // Relax text city filter similar to sports tabs
+              final hasSomeCity = _availableCities
+                  .map((e) => e.toLowerCase())
+                  .any((c) => place.contains(c));
+              if (!hasSomeCity || place.contains(cityLower)) {
+                publicOthers.add(g);
+              }
             }
           }
         }
         _cachedUserCreatedGames = createdByMeUpcoming;
         _cachedPastUserCreatedGames = createdByMePast;
-        _cachedNearbyGames = publicOthers;
+        // Only show in Calendar's nearby list games where the current user has an accepted participation (Joined)
+        final acceptedGameIds = <String>{};
+        try {
+          if (currentUserId != null && publicOthers.isNotEmpty) {
+            final ids = publicOthers.map((g) => g.gameId).toList();
+            // Build SQL IN list: in.("id1","id2",...)
+            final quoted = ids.map((e) => '"' + e + '"').join(',');
+            final inList = '($quoted)';
+            final rows = await supabase
+                .from('games_participants')
+                .select('game_id, participation_status')
+                .eq('user_id', currentUserId)
+                .filter('game_id', 'in', inList);
+            for (final row in (rows as List)) {
+              if ((row['participation_status'] as String?) == 'Joined') {
+                final gid = row['game_id'] as String?;
+                if (gid != null) acceptedGameIds.add(gid);
+              }
+            }
+          }
+        } catch (_) {}
+        _cachedNearbyGames = publicOthers
+            .where((g) => acceptedGameIds.contains(g.gameId))
+            .toList();
         _scheduleNextRollover(createdByMeUpcoming);
         notifyListeners();
       });

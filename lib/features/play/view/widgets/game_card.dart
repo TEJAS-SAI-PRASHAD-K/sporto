@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:playo/core/models/game.dart';
 import 'package:playo/features/play/model/game_ui_extensions.dart';
+import 'package:playo/init_dependecies.dart';
+import 'package:playo/core/repositories/user_repository.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
@@ -92,11 +94,7 @@ class GameCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 18,
-                    backgroundColor: cs.primary,
-                    child: Icon(Icons.person, size: 18, color: cs.onPrimary),
-                  ),
+                  _OrganizerAvatar(userId: game.organiserUserId, radius: 18),
                   const SizedBox(width: 12),
                   Text(
                     '${game.goingCount}/${game.capacity} Going',
@@ -108,10 +106,7 @@ class GameCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
-                game.organizerName,
-                style: TextStyle(color: cs.onSurfaceVariant),
-              ),
+              _OrganizerInfo(userId: game.organiserUserId),
               const SizedBox(height: 8),
               Text(
                 _timeRange(context),
@@ -226,4 +221,236 @@ String _typeLabel(Game game) {
   if (l.contains('coach')) return 'Coaching';
   if (l.contains('regular')) return 'Regular';
   return t[0].toUpperCase() + t.substring(1);
+}
+
+class _OrganizerInfo extends StatefulWidget {
+  final String userId;
+  const _OrganizerInfo({required this.userId});
+
+  @override
+  State<_OrganizerInfo> createState() => _OrganizerInfoState();
+}
+
+class _OrganizerInfoState extends State<_OrganizerInfo> {
+  static final Map<String, _OrgData> _cache = {};
+  String _name = '';
+  String _avatarUrl = '';
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant _OrganizerInfo oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.userId != widget.userId) {
+      _name = '';
+      _avatarUrl = '';
+      _loading = true;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final cached = _cache[widget.userId];
+    if (cached != null) {
+      setState(() {
+        _name = cached.name;
+        _avatarUrl = cached.avatarUrl;
+        _loading = false;
+      });
+      return;
+    }
+    try {
+      final repo = UserRepository(serviceLocator());
+      final either = await repo.getUserById(widget.userId);
+      either.match(
+        (failure) {
+          if (mounted) {
+            setState(() {
+              _name = '';
+              _avatarUrl = '';
+              _loading = false;
+            });
+          }
+        },
+        (user) {
+          final first = user.firstName.trim();
+          final last = (user.lastName ?? '').trim();
+          final display = [first, last].where((s) => s.isNotEmpty).join(' ');
+          final avatar = (user.avatarUrl ?? '').trim();
+          _cache[widget.userId] = _OrgData(name: display, avatarUrl: avatar);
+          if (mounted) {
+            setState(() {
+              _name = display;
+              _avatarUrl = avatar;
+              _loading = false;
+            });
+          }
+        },
+      );
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _name = '';
+          _avatarUrl = '';
+          _loading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    if (_loading) return const SizedBox(height: 24);
+    if (_name.isEmpty) return const SizedBox.shrink();
+    final initials = _name
+        .split(' ')
+        .where((p) => p.isNotEmpty)
+        .take(2)
+        .map((p) => p[0].toUpperCase())
+        .join();
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 12,
+          backgroundColor: cs.surfaceContainerHighest,
+          backgroundImage: _avatarUrl.isNotEmpty
+              ? NetworkImage(_avatarUrl)
+              : null,
+          child: _avatarUrl.isEmpty
+              ? Text(
+                  initials,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurface,
+                  ),
+                )
+              : null,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            _name,
+            style: TextStyle(color: cs.onSurfaceVariant),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _OrgData {
+  final String name;
+  final String avatarUrl;
+  const _OrgData({required this.name, required this.avatarUrl});
+}
+
+class _OrganizerAvatar extends StatefulWidget {
+  final String userId;
+  final double radius;
+  const _OrganizerAvatar({required this.userId, this.radius = 18});
+
+  @override
+  State<_OrganizerAvatar> createState() => _OrganizerAvatarState();
+}
+
+class _OrganizerAvatarState extends State<_OrganizerAvatar> {
+  static final Map<String, String> _avatarCache = {};
+  String _avatarUrl = '';
+  String _name = '';
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant _OrganizerAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.userId != widget.userId) {
+      _avatarUrl = '';
+      _name = '';
+      _loading = true;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final cached = _avatarCache[widget.userId];
+    if (cached != null) {
+      setState(() {
+        _avatarUrl = cached;
+        _loading = false;
+      });
+      return;
+    }
+    try {
+      final repo = UserRepository(serviceLocator());
+      final either = await repo.getUserById(widget.userId);
+      either.match(
+        (_) {
+          if (mounted) setState(() => _loading = false);
+        },
+        (user) {
+          final url = (user.avatarUrl ?? '').trim();
+          _avatarCache[widget.userId] = url;
+          if (mounted) {
+            setState(() {
+              _avatarUrl = url;
+              _name = [
+                user.firstName.trim(),
+                (user.lastName ?? '').trim(),
+              ].where((s) => s.isNotEmpty).join(' ');
+              _loading = false;
+            });
+          }
+        },
+      );
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    if (_loading) {
+      return CircleAvatar(
+        radius: widget.radius,
+        backgroundColor: cs.primary,
+        child: Icon(Icons.person, size: widget.radius, color: cs.onPrimary),
+      );
+    }
+    final initials = _name
+        .split(' ')
+        .where((p) => p.isNotEmpty)
+        .take(2)
+        .map((p) => p[0].toUpperCase())
+        .join();
+    return CircleAvatar(
+      radius: widget.radius,
+      backgroundColor: cs.primary,
+      backgroundImage: _avatarUrl.isNotEmpty ? NetworkImage(_avatarUrl) : null,
+      child: _avatarUrl.isEmpty
+          ? Text(
+              initials.isEmpty ? '?' : initials,
+              style: TextStyle(
+                fontSize: widget.radius * 0.8,
+                fontWeight: FontWeight.w600,
+                color: cs.onPrimary,
+              ),
+            )
+          : null,
+    );
+  }
 }

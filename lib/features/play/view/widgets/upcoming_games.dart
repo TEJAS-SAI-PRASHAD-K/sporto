@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:playo/core/models/game.dart';
 import 'package:playo/features/play/model/game_ui_extensions.dart';
+import 'package:playo/core/services/notification_service.dart';
 
 class UpcomingGames extends StatefulWidget {
   final List<Game> userCreatedGames;
@@ -32,6 +33,27 @@ class UpcomingGames extends StatefulWidget {
 }
 
 class _UpcomingGamesState extends State<UpcomingGames> {
+  @override
+  void initState() {
+    super.initState();
+    _triggerUpcomingReminders();
+  }
+
+  void _triggerUpcomingReminders() {
+    final now = DateTime.now();
+    final games = widget.userCreatedGames.where((g) {
+      final diff = g.startTime.difference(now).inMinutes;
+      return diff > 0 && diff <= 30;
+    }).toList();
+    for (final game in games) {
+      NotificationService().showNotification(
+        4,
+        'Game Reminder',
+        'Your ${game.sport} game at ${game.venue} starts at ${_formatTimeRange(game.startTime, game.endTime)}.',
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

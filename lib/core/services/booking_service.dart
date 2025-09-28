@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:playo/core/models/venue_booking.dart';
+import 'package:playo/core/services/notification_service.dart';
 
 class BookingService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -12,6 +13,13 @@ class BookingService {
 
       // Then save the associated courts
       await _saveBookingCourts(booking);
+
+      // Trigger local notification after successful booking
+      NotificationService().showNotification(
+        1,
+        'Booking Confirmed',
+        'Your booking at ${booking.venueName} is confirmed for ${booking.bookingDate.toLocal().toString().split(' ')[0]} at ${booking.bookingTime}.',
+      );
 
       return true;
     } catch (e) {
@@ -128,6 +136,19 @@ class BookingService {
             'updated_at': DateTime.now().toIso8601String(),
           })
           .eq('booking_id', bookingId);
+
+      // Show notification for cancellation or status update
+      String title;
+      String body;
+      if (newStatus == BookingStatus.cancelled) {
+        title = 'Booking Cancelled';
+        body = 'Your booking (ID: $bookingId) has been cancelled.';
+      } else {
+        title = 'Booking Updated';
+        body =
+            'Your booking (ID: $bookingId) status has been updated to ${newStatus.name}.';
+      }
+      NotificationService().showNotification(2, title, body);
 
       return true;
     } catch (e) {

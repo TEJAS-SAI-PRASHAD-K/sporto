@@ -5,5 +5,6 @@ import 'package:http/http.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/database/database_helper.dart';
+import 'core/services/notification_service.dart';
 
 part 'init_dependencies.main.dart';

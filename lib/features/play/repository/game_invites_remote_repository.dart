@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:playo/core/error/failure.dart';
 import 'package:playo/core/models/game.dart';
 import 'package:playo/init_dependecies.dart';
+import 'package:playo/core/services/notification_service.dart';
 
 part 'game_invites_remote_repository.g.dart';
 
@@ -30,6 +31,14 @@ class GameInvitesRemoteRepository {
           .insert(invite.toJson())
           .select()
           .single();
+
+      // Trigger local notification for invite
+      NotificationService().showNotification(
+        3,
+        'Game Invite',
+        'You have invited user ${invite.inviteeUserId} to game ${invite.gameId}.',
+      );
+
       return Right(GameInvite.fromJson(response));
     } on SocketException {
       return Left(Failure('No internet connection'));

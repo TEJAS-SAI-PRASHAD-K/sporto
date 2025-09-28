@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:playo/core/services/notification_service.dart';
 
 Future<String?> showMessageBottomSheet(
   BuildContext context, {
@@ -86,6 +87,12 @@ Future<String?> showMessageBottomSheet(
                       onPressed: canSend
                           ? () {
                               result = controller.text.trim();
+                              // Trigger notification for sent message
+                              NotificationService().showNotification(
+                                5,
+                                'Message Sent',
+                                'Your message to $toName was sent.',
+                              );
                               Navigator.of(ctx).pop();
                             }
                           : null,

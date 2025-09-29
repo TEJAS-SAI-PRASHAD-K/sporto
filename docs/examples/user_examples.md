@@ -354,22 +354,7 @@ Future<Map<String, int>> getUserConnectionStats(String userId) async {
 ### Profile Management
 
 ```dart
-// Update user profile
-Future<void> updateUserProfile(String userId, Map<String, dynamic> updates) async {
-  final user = userBox.query(User_.id.equals(userId)).build().findFirst();
-  if (user != null) {
-    if (updates.containsKey('fullName')) user.fullName = updates['fullName'];
-    if (updates.containsKey('bio')) user.bio = updates['bio'];
-    if (updates.containsKey('city')) user.city = updates['city'];
-    if (updates.containsKey('profileImageUrl')) {
-      user.profileImageUrl = updates['profileImageUrl'];
-    }
-    user.updatedAt = DateTime.now();
-    userBox.put(user);
-  }
-}
-
-// Update sport profile
+// Update sport profile (user update: use updateUser(User user))
 Future<void> updateSportProfile(String profileId, {
   String? skillLevel,
   List<String>? achievements,
@@ -390,20 +375,6 @@ Future<void> updateSportProfile(String profileId, {
     profile.updatedAt = DateTime.now();
     userSportProfileBox.put(profile);
   }
-}
-
-// Update user preferences
-Future<void> updateUserPreferences(String userId, UserPreferences prefs) async {
-  prefs.updatedAt = DateTime.now();
-  userPreferencesBox.put(prefs);
-}
-```
-
-## User Lifecycle Examples
-
-### User Registration Flow
-
-```dart
 // Step 1: Create basic user account
 Future<User> createUserAccount({
   required String email,

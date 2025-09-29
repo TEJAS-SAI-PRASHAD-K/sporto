@@ -186,17 +186,16 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
                   // Preserve favorite sports while updating location
                   await ref
                       .read(currentUserProvider.notifier)
-                      .createOrUpdateUser(
-                        emailAddress: user.emailAddress,
-                        firstName: user.firstName,
-                        city: place.locality,
-                        userState: place.administrativeArea,
-                        country: place.country,
-                        latitude: pos.latitude,
-                        longitude: pos.longitude,
-                        locationArea:
-                            "${area ?? 'N/A'}, ${place.locality ?? ''}",
-                        favoriteSports: user.favoriteSports,
+                      .updateUser(
+                        user.copyWith(
+                          city: place.locality,
+                          state: place.administrativeArea,
+                          country: place.country,
+                          latitude: pos.latitude,
+                          longitude: pos.longitude,
+                          locationArea:
+                              "${area ?? 'N/A'}, ${place.locality ?? ''}",
+                        ),
                       );
 
                   Navigator.pop(context);

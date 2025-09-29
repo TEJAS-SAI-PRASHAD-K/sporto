@@ -225,142 +225,70 @@ class CurrentUserNotifier extends _$CurrentUserNotifier {
     return null;
   }
 
-  Future<void> createOrUpdateUser({
-    required String emailAddress,
-    String? firstName,
-    String? lastName,
-    String? mobileNumber,
-    String? avatarUrl,
-    UserRole? userRole,
-    String? bio,
-    String? gender,
-    String? city,
-    String? userState,
-    String? country,
-    String? locationArea,
-    double? latitude,
-    double? longitude,
-    List<String>? favoriteSports,
-  }) async {
+  /// Create a brand new user (or upsert if row already exists) using a full
+  /// [User] object. Ensures the userId matches the authenticated session.
+  Future<void> createUser(User user) async {
     try {
-      // Get current auth user
       final authUser = _supabase.auth.currentUser;
       if (authUser == null) {
         throw Exception('No authenticated user found');
       }
 
-      final user = await _loadUserData(authUser.id);
-
-      debugPrint(user?.toJson().toString() ?? "Loaded User from SPB null");
-
-      // Create user with auth user ID
-      final userToSave = User(
+      final userToSave = user.copyWith(
         userId: authUser.id,
-        firstName: firstName ?? user?.firstName ?? "",
-        lastName: lastName ?? user?.lastName,
-        emailAddress: emailAddress,
-        mobileNumber: mobileNumber,
-        avatarUrl: avatarUrl,
-        gender: gender,
-        bio: bio,
-        city: city,
-        state: userState,
-        country: country,
-        latitude: latitude,
-        longitude: longitude,
-        locationArea: locationArea,
-        favoriteSports: favoriteSports ?? const [],
-        userRole: userRole ?? UserRole.user,
-        isEmailVerified: false,
-        isMobileVerified: false,
+        createdAt: user.createdAt ?? DateTime.now(),
+        updatedAt: user.updatedAt ?? DateTime.now(),
       );
 
       final result = await _userRepository.createOrUpdateUser(userToSave);
-
       result.fold(
         (failure) {
-          debugPrint('Failed to save user data: ${failure.message}');
-          throw Exception('Failed to save user data: ${failure.message}');
+          debugPrint('Failed to create user: ${failure.message}');
+          throw Exception('Failed to create user: ${failure.message}');
         },
         (savedUser) {
           state = savedUser;
+          _saveUserToCache(savedUser);
           debugPrint(
-            'User data saved successfully: ${_composeFullName(savedUser.firstName, savedUser.lastName)}',
+            'User created: ${_composeFullName(savedUser.firstName, savedUser.lastName)}',
           );
         },
       );
     } catch (e) {
-      debugPrint('Error saving user data: $e');
+      debugPrint('Error creating user: $e');
       rethrow;
     }
   }
 
-  Future<void> updateUserProfile({
-    String? firstName,
-    String? lastName,
-    String? avatarUrl,
-    String? bio,
-    String? gender,
-    String? city,
-    String? userState,
-    String? country,
-    double? latitude,
-    double? longitude,
-    List<String>? favoriteSports,
-    String? mobileNumber,
-  }) async {
+  /// Update an existing user. Requires current state and matching userId.
+  Future<void> updateUser(User user) async {
     try {
-      if (state == null) {
-        throw Exception('No current user to update');
+      if (state == null) throw Exception('No current user to update');
+      if (user.userId != state!.userId) {
+        throw Exception('User ID mismatch – cannot update a different user');
       }
 
-      final currentUser = state!;
-
-      final updatedUser = User(
-        userId: currentUser.userId,
-        emailAddress: currentUser.emailAddress,
-        mobileNumber: mobileNumber ?? currentUser.mobileNumber,
-        firstName: firstName ?? currentUser.firstName,
-        lastName: lastName ?? currentUser.lastName,
-        avatarUrl: avatarUrl ?? currentUser.avatarUrl,
-        userRole: currentUser.userRole,
-        bio: bio ?? currentUser.bio,
-        gender: gender ?? currentUser.gender,
-        city: city ?? currentUser.city,
-        state: userState ?? currentUser.state,
-        country: country ?? currentUser.country,
-        latitude: latitude ?? currentUser.latitude,
-        longitude: longitude ?? currentUser.longitude,
-        // Preserve favorites unless explicitly set
-        favoriteSports: favoriteSports ?? currentUser.favoriteSports,
-        isEmailVerified: currentUser.isEmailVerified,
-        isMobileVerified: currentUser.isMobileVerified,
-        createdAt: currentUser.createdAt,
-        updatedAt: DateTime.now(),
-      );
-
-      final result = await _userRepository.updateUser(updatedUser);
-
+      final toUpdate = user.copyWith(updatedAt: DateTime.now());
+      final result = await _userRepository.updateUser(toUpdate);
       result.fold(
         (failure) {
           debugPrint('Failed to update user: ${failure.message}');
           throw Exception('Failed to update user: ${failure.message}');
         },
-        (user) {
-          state = user;
-          _saveUserToCache(user); // Cache the updated user data
+        (updated) {
+          state = updated;
+          _saveUserToCache(updated);
           debugPrint(
-            'User updated successfully: ${_composeFullName(user.firstName, user.lastName)}',
+            'User updated: ${_composeFullName(updated.firstName, updated.lastName)}',
           );
         },
       );
     } catch (e) {
-      debugPrint('Error updating user profile: $e');
+      debugPrint('Error updating user: $e');
       rethrow;
     }
   }
 
-  // Update only favorite sports permanently in Supabase, accepting UUIDs or names
   Future<void> logout() async {
     try {
       // Clear local cache before signing out

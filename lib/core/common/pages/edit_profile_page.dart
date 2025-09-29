@@ -245,34 +245,32 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                           setState(() => _isSaving = true);
                           final user = ref.watch(currentUserProvider);
                           try {
-                            await ref
-                                .read(currentUserProvider.notifier)
-                                .updateUserProfile(
-                                  firstName:
-                                      _firstNameController.text.trim() !=
-                                          (user?.firstName ?? "")
-                                      ? _firstNameController.text.trim()
-                                      : null,
-                                  lastName:
-                                      _lastNameController.text.trim() !=
-                                          (user?.lastName ?? "")
-                                      ? _lastNameController.text.trim()
-                                      : null,
-                                  mobileNumber:
-                                      _phoneController.text.trim() !=
-                                          (user?.mobileNumber ?? "")
-                                      ? _phoneController.text.trim()
-                                      : null,
-                                  avatarUrl: _selectedAvatarIndex != null
-                                      ? avatarImages[_selectedAvatarIndex!]
-                                      : null,
-                                  gender: _gender,
-                                  bio:
-                                      _bioController.text.trim() !=
-                                          (user?.bio ?? "")
-                                      ? _bioController.text.trim()
-                                      : null,
-                                );
+                            if (user != null) {
+                              final updated = user.copyWith(
+                                firstName:
+                                    _firstNameController.text.trim().isNotEmpty
+                                    ? _firstNameController.text.trim()
+                                    : user.firstName,
+                                lastName:
+                                    _lastNameController.text.trim().isNotEmpty
+                                    ? _lastNameController.text.trim()
+                                    : user.lastName,
+                                mobileNumber:
+                                    _phoneController.text.trim().isNotEmpty
+                                    ? _phoneController.text.trim()
+                                    : user.mobileNumber,
+                                avatarUrl: _selectedAvatarIndex != null
+                                    ? avatarImages[_selectedAvatarIndex!]
+                                    : user.avatarUrl,
+                                gender: _gender ?? user.gender,
+                                bio: _bioController.text.trim().isNotEmpty
+                                    ? _bioController.text.trim()
+                                    : user.bio,
+                              );
+                              await ref
+                                  .read(currentUserProvider.notifier)
+                                  .updateUser(updated);
+                            }
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

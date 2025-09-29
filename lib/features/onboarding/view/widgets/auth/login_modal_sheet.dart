@@ -14,6 +14,7 @@ import 'package:playo/features/onboarding/view/pages/complete_your_profile_page.
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:playo/init_dependecies.dart';
 import 'package:playo/core/providers/current_user_provider.dart';
+import 'package:playo/core/models/user.dart';
 
 SliverWoltModalSheetPage loginModalPage(BuildContext modalSheetContext) {
   return WoltModalSheetPage(
@@ -123,16 +124,18 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
         }
       }
 
-      final currentUserNotifier = ref.read(
-        currentUserProvider.notifier,
-      );
+      final currentUserNotifier = ref.read(currentUserProvider.notifier);
 
       // Upsert the app-level user after Supabase session is active
-      await currentUserNotifier.createOrUpdateUser(
-        emailAddress: email,
-        firstName: firstName,
-        lastName: lastName,
-        avatarUrl: avatar,
+      await currentUserNotifier.createUser(
+        User(
+          userId: res.user!.id, // will be enforced in createUser
+          firstName: firstName,
+          lastName: lastName,
+          emailAddress: email,
+          avatarUrl: avatar,
+          favoriteSports: const [],
+        ),
       );
 
       if (!mounted) return;

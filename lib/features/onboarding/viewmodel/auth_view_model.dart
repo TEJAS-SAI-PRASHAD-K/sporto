@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:playo/features/onboarding/repository/auth_remote_repository.dart';
 import 'package:playo/core/providers/current_user_provider.dart';
+import 'package:playo/core/models/user.dart';
 
 part 'auth_view_model.g.dart';
 
@@ -97,9 +98,16 @@ class AuthViewModel extends _$AuthViewModel {
         debugPrint(user.userMetadata.toString());
         debugPrint(authResponse.user?.toJson().toString());
 
-        await _currentUserNotifier.createOrUpdateUser(
-          emailAddress: isEmail ? emailOrPhone : (user.email ?? ''),
-          mobileNumber: !isEmail ? emailOrPhone : user.phone,
+        // Build minimal user object for creation
+        await _currentUserNotifier.createUser(
+          User(
+            userId: user.id, // will be enforced in createUser
+            firstName: '',
+            lastName: null,
+            emailAddress: isEmail ? emailOrPhone : (user.email ?? ''),
+            mobileNumber: !isEmail ? emailOrPhone : user.phone,
+            favoriteSports: const [],
+          ),
         );
       }
     } catch (e) {
@@ -113,10 +121,12 @@ class AuthViewModel extends _$AuthViewModel {
     required String lastName,
   }) async {
     try {
-      await _currentUserNotifier.updateUserProfile(
-        firstName: firstName,
-        lastName: lastName,
-      );
+      final current = _currentUserNotifier.state;
+      if (current != null) {
+        await _currentUserNotifier.updateUser(
+          current.copyWith(firstName: firstName, lastName: lastName),
+        );
+      }
     } catch (e) {
       rethrow;
     }
@@ -124,9 +134,12 @@ class AuthViewModel extends _$AuthViewModel {
 
   Future<void> updateUserAvatar({required String profilePictureUrl}) async {
     try {
-      await _currentUserNotifier.updateUserProfile(
-        avatarUrl: profilePictureUrl,
-      );
+      final current = _currentUserNotifier.state;
+      if (current != null) {
+        await _currentUserNotifier.updateUser(
+          current.copyWith(avatarUrl: profilePictureUrl),
+        );
+      }
     } catch (e) {
       rethrow;
     }
@@ -136,10 +149,12 @@ class AuthViewModel extends _$AuthViewModel {
     try {
       // Persist favorite_sports using the central createOrUpdateUser method
       // which will create or update the user record and persist favorites.
-      await _currentUserNotifier.createOrUpdateUser(
-        emailAddress: _currentUserNotifier.userEmail ?? '',
-        favoriteSports: preferredSports,
-      );
+      final current = _currentUserNotifier.state;
+      if (current != null) {
+        await _currentUserNotifier.updateUser(
+          current.copyWith(favoriteSports: preferredSports),
+        );
+      }
     } catch (e) {
       rethrow;
     }
@@ -156,16 +171,21 @@ class AuthViewModel extends _$AuthViewModel {
     String? country,
   }) async {
     try {
-      await _currentUserNotifier.updateUserProfile(
-        firstName: firstName,
-        lastName: lastName,
-        bio: bio,
-        gender: gender,
-        city: city,
-        userState: state,
-        country: country,
-        favoriteSports: preferredSports,
-      );
+      final current = _currentUserNotifier.state;
+      if (current != null) {
+        await _currentUserNotifier.updateUser(
+          current.copyWith(
+            firstName: firstName,
+            lastName: lastName,
+            bio: bio,
+            gender: gender,
+            city: city,
+            state: state,
+            country: country,
+            favoriteSports: preferredSports,
+          ),
+        );
+      }
     } catch (e) {
       // Handle error appropriately
       rethrow;

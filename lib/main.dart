@@ -5,21 +5,34 @@ import 'package:playo/core/providers/current_user_provider.dart';
 import 'package:playo/features/onboarding/view/pages/onboarding_page.dart';
 import 'package:playo/core/widgets/bottom_navigation_bar.dart';
 import 'package:playo/init_dependecies.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 Future<void> main() async {
   await initDependencies();
   runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    _requestNotificationPermission();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    await Permission.notification.request();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = ref.watch(themeModeNotifierProvider);
-    // Watch the provider state (the current user). Watching the notifier
-    // won't rebuild when the authentication changes; we must watch the
-    // provider itself so the app reacts to sign-in / sign-out events.
     final currentUser = ref.watch(currentUserNotifierProvider);
     final isAuthed = currentUser != null;
 

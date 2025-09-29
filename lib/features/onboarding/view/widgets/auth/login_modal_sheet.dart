@@ -15,9 +15,6 @@ import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:playo/init_dependecies.dart';
 import 'package:playo/core/providers/current_user_provider.dart';
 
-const double _pagePadding = 16.0;
-const double _buttonHeight = 48.0;
-
 SliverWoltModalSheetPage loginModalPage(BuildContext modalSheetContext) {
   return WoltModalSheetPage(
     topBar: null,
@@ -25,7 +22,7 @@ SliverWoltModalSheetPage loginModalPage(BuildContext modalSheetContext) {
     hasSabGradient: false,
     enableDrag: true,
     child: Padding(
-      padding: const EdgeInsets.all(_pagePadding),
+      padding: const EdgeInsets.all(16),
       child: LoginPageContent(),
     ),
   );
@@ -120,8 +117,9 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
         final parts = local.split(RegExp(r'[._\\-]'));
         if (parts.isNotEmpty) {
           firstName = _capitalize(parts[0]);
-          if (parts.length > 1)
+          if (parts.length > 1) {
             lastName = _capitalize(parts.sublist(1).join(' '));
+          }
         }
       }
 
@@ -265,7 +263,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
             ElevatedButton(
               onPressed: isLoading ? null : _handleSendOtp,
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, _buttonHeight),
+                minimumSize: const Size(double.infinity, 48),
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(9),

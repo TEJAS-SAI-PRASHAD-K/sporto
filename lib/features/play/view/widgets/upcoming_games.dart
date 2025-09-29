@@ -3,7 +3,7 @@ import 'package:playo/core/models/game.dart';
 import 'package:playo/features/play/model/game_ui_extensions.dart';
 import 'package:playo/init_dependecies.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:playo/core/services/notification_service.dart';
 
 class UpcomingGames extends StatefulWidget {
   final List<Game> userCreatedGames;

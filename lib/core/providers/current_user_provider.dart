@@ -11,6 +11,37 @@ part 'current_user_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class CurrentUserNotifier extends _$CurrentUserNotifier {
+  /// Deletes the current user's account from backend and local cache
+  Future<void> deleteAccount() async {
+    final userId = _supabase.auth.currentUser?.id;
+    if (userId == null) throw Exception('No authenticated user found');
+
+    try {
+      // Delete user from backend (Supabase)
+      final result = await _userRepository.deleteUser(userId);
+      result.fold(
+        (failure) {
+          debugPrint('Failed to delete user from backend: ${failure.message}');
+          throw Exception('Failed to delete user: ${failure.message}');
+        },
+        (_) {
+          debugPrint('User deleted from backend');
+        },
+      );
+
+      // Remove user from local cache
+      await _removeUserFromCache(userId);
+
+      // Sign out and clear state
+      await _supabase.auth.signOut();
+      state = null;
+      debugPrint('Account deleted and signed out');
+    } catch (e) {
+      debugPrint('Error deleting account: $e');
+      rethrow;
+    }
+  }
+
   late UserRepository _userRepository;
   late SupabaseClient _supabase;
   late DatabaseHelper _databaseHelper;

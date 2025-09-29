@@ -335,7 +335,9 @@ class _GameOverviewPageState extends State<GameOverviewPage> {
                                 onTap: () {
                                   if (_game.isPublic) {
                                     setState(() {
-                                      _game.gameAccessType = 'Invite Only';
+                                      _game = _game.copyWith(
+                                        gameAccessType: 'Invite Only',
+                                      );
                                     });
                                     widget.onGameUpdated?.call(_game);
                                   }
@@ -350,7 +352,9 @@ class _GameOverviewPageState extends State<GameOverviewPage> {
                                 onTap: () {
                                   if (!_game.isPublic) {
                                     setState(() {
-                                      _game.gameAccessType = 'Public';
+                                      _game = _game.copyWith(
+                                        gameAccessType: 'Public',
+                                      );
                                     });
                                     widget.onGameUpdated?.call(_game);
                                   }

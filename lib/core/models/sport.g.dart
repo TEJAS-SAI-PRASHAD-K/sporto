@@ -6,7 +6,7 @@ part of 'sport.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Sport _$SportFromJson(Map<String, dynamic> json) => Sport(
+_Sport _$SportFromJson(Map<String, dynamic> json) => _Sport(
   sportId: json['sport_id'] as String,
   sportName: json['sport_name'] as String,
   iconUrl: json['icon_url'] as String?,
@@ -30,7 +30,7 @@ Sport _$SportFromJson(Map<String, dynamic> json) => Sport(
       .toList(),
 );
 
-Map<String, dynamic> _$SportToJson(Sport instance) => <String, dynamic>{
+Map<String, dynamic> _$SportToJson(_Sport instance) => <String, dynamic>{
   'sport_id': instance.sportId,
   'sport_name': instance.sportName,
   'icon_url': instance.iconUrl,
@@ -48,8 +48,8 @@ Map<String, dynamic> _$SportToJson(Sport instance) => <String, dynamic>{
   'equipment_required': instance.equipmentRequired,
 };
 
-SportsSkillLevel _$SportsSkillLevelFromJson(Map<String, dynamic> json) =>
-    SportsSkillLevel(
+_SportsSkillLevel _$SportsSkillLevelFromJson(Map<String, dynamic> json) =>
+    _SportsSkillLevel(
       skillLevelId: json['skill_level_id'] as String,
       sportId: json['sport_id'] as String,
       levelNumber: (json['level_number'] as num).toInt(),
@@ -64,7 +64,7 @@ SportsSkillLevel _$SportsSkillLevelFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['updated_at'] as String),
     );
 
-Map<String, dynamic> _$SportsSkillLevelToJson(SportsSkillLevel instance) =>
+Map<String, dynamic> _$SportsSkillLevelToJson(_SportsSkillLevel instance) =>
     <String, dynamic>{
       'skill_level_id': instance.skillLevelId,
       'sport_id': instance.sportId,

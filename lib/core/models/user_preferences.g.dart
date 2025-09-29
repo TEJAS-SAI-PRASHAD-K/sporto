@@ -6,8 +6,8 @@ part of 'user_preferences.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-UserPreferences _$UserPreferencesFromJson(Map<String, dynamic> json) =>
-    UserPreferences(
+_UserPreferences _$UserPreferencesFromJson(Map<String, dynamic> json) =>
+    _UserPreferences(
       preferenceId: json['preference_id'] as String,
       userId: json['user_id'] as String,
       notificationsEnabled: json['notifications_enabled'] as bool? ?? true,
@@ -25,7 +25,7 @@ UserPreferences _$UserPreferencesFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['updated_at'] as String),
     );
 
-Map<String, dynamic> _$UserPreferencesToJson(UserPreferences instance) =>
+Map<String, dynamic> _$UserPreferencesToJson(_UserPreferences instance) =>
     <String, dynamic>{
       'preference_id': instance.preferenceId,
       'user_id': instance.userId,

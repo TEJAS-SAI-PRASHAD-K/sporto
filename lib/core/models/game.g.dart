@@ -6,7 +6,7 @@ part of 'game.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Game _$GameFromJson(Map<String, dynamic> json) => Game(
+_Game _$GameFromJson(Map<String, dynamic> json) => _Game(
   gameId: json['game_id'] as String,
   organiserUserId: json['organiser_user_id'] as String,
   sportId: json['sport_id'] as String,
@@ -44,7 +44,7 @@ Game _$GameFromJson(Map<String, dynamic> json) => Game(
   venuePartnerId: json['venue_partner_id'] as String?,
 );
 
-Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
+Map<String, dynamic> _$GameToJson(_Game instance) => <String, dynamic>{
   'game_id': instance.gameId,
   'organiser_user_id': instance.organiserUserId,
   'sport_id': instance.sportId,
@@ -72,7 +72,7 @@ Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
   'venue_partner_id': instance.venuePartnerId,
 };
 
-GameInvite _$GameInviteFromJson(Map<String, dynamic> json) => GameInvite(
+_GameInvite _$GameInviteFromJson(Map<String, dynamic> json) => _GameInvite(
   inviteId: json['invite_id'] as String,
   gameId: json['game_id'] as String,
   inviterUserId: json['inviter_user_id'] as String,
@@ -95,7 +95,7 @@ GameInvite _$GameInviteFromJson(Map<String, dynamic> json) => GameInvite(
       : DateTime.parse(json['updated_at'] as String),
 );
 
-Map<String, dynamic> _$GameInviteToJson(GameInvite instance) =>
+Map<String, dynamic> _$GameInviteToJson(_GameInvite instance) =>
     <String, dynamic>{
       'invite_id': instance.inviteId,
       'game_id': instance.gameId,
@@ -109,8 +109,8 @@ Map<String, dynamic> _$GameInviteToJson(GameInvite instance) =>
       'updated_at': instance.updatedAt?.toIso8601String(),
     };
 
-GameParticipation _$GameParticipationFromJson(Map<String, dynamic> json) =>
-    GameParticipation(
+_GameParticipation _$GameParticipationFromJson(Map<String, dynamic> json) =>
+    _GameParticipation(
       participationId: json['participation_id'] as String,
       gameId: json['game_id'] as String,
       userId: json['user_id'] as String,
@@ -134,7 +134,7 @@ GameParticipation _$GameParticipationFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['updated_at'] as String),
     );
 
-Map<String, dynamic> _$GameParticipationToJson(GameParticipation instance) =>
+Map<String, dynamic> _$GameParticipationToJson(_GameParticipation instance) =>
     <String, dynamic>{
       'participation_id': instance.participationId,
       'game_id': instance.gameId,

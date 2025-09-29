@@ -6,7 +6,7 @@ part of 'auth.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-AuthSession _$AuthSessionFromJson(Map<String, dynamic> json) => AuthSession(
+_AuthSession _$AuthSessionFromJson(Map<String, dynamic> json) => _AuthSession(
   id: json['id'] as String,
   userId: json['userId'] as String,
   accessToken: json['accessToken'] as String,
@@ -28,7 +28,7 @@ AuthSession _$AuthSessionFromJson(Map<String, dynamic> json) => AuthSession(
       : DateTime.parse(json['updatedAt'] as String),
 );
 
-Map<String, dynamic> _$AuthSessionToJson(AuthSession instance) =>
+Map<String, dynamic> _$AuthSessionToJson(_AuthSession instance) =>
     <String, dynamic>{
       'id': instance.id,
       'userId': instance.userId,
@@ -45,8 +45,8 @@ Map<String, dynamic> _$AuthSessionToJson(AuthSession instance) =>
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };
 
-OTPVerification _$OTPVerificationFromJson(Map<String, dynamic> json) =>
-    OTPVerification(
+_OTPVerification _$OTPVerificationFromJson(Map<String, dynamic> json) =>
+    _OTPVerification(
       id: json['id'] as String,
       phone: json['phone'] as String?,
       email: json['email'] as String?,
@@ -66,7 +66,7 @@ OTPVerification _$OTPVerificationFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['createdAt'] as String),
     );
 
-Map<String, dynamic> _$OTPVerificationToJson(OTPVerification instance) =>
+Map<String, dynamic> _$OTPVerificationToJson(_OTPVerification instance) =>
     <String, dynamic>{
       'id': instance.id,
       'phone': instance.phone,
@@ -92,8 +92,8 @@ const _$OTPTypeEnumMap = {
   OTPType.loginVerification: 'login_verification',
 };
 
-SocialLoginData _$SocialLoginDataFromJson(Map<String, dynamic> json) =>
-    SocialLoginData(
+_SocialLoginData _$SocialLoginDataFromJson(Map<String, dynamic> json) =>
+    _SocialLoginData(
       id: json['id'] as String,
       provider: json['provider'] as String,
       socialId: json['socialId'] as String,
@@ -118,7 +118,7 @@ SocialLoginData _$SocialLoginDataFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['updatedAt'] as String),
     );
 
-Map<String, dynamic> _$SocialLoginDataToJson(SocialLoginData instance) =>
+Map<String, dynamic> _$SocialLoginDataToJson(_SocialLoginData instance) =>
     <String, dynamic>{
       'id': instance.id,
       'provider': instance.provider,
@@ -136,8 +136,8 @@ Map<String, dynamic> _$SocialLoginDataToJson(SocialLoginData instance) =>
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };
 
-PasswordResetToken _$PasswordResetTokenFromJson(Map<String, dynamic> json) =>
-    PasswordResetToken(
+_PasswordResetToken _$PasswordResetTokenFromJson(Map<String, dynamic> json) =>
+    _PasswordResetToken(
       id: json['id'] as String,
       userId: json['userId'] as String,
       token: json['token'] as String,
@@ -153,7 +153,7 @@ PasswordResetToken _$PasswordResetTokenFromJson(Map<String, dynamic> json) =>
           : DateTime.parse(json['createdAt'] as String),
     );
 
-Map<String, dynamic> _$PasswordResetTokenToJson(PasswordResetToken instance) =>
+Map<String, dynamic> _$PasswordResetTokenToJson(_PasswordResetToken instance) =>
     <String, dynamic>{
       'id': instance.id,
       'userId': instance.userId,

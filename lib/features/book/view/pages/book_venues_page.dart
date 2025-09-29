@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:icons_plus/icons_plus.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/core/models/venue.dart' as model;
 import 'package:playo/features/book/view/pages/book_slot_page.dart';
 import 'package:playo/features/book/view/widgets/rectangle_outlined_container.dart';
@@ -80,8 +80,8 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                       children: [
                         CircleIconButton(
                           icon: isFavorite
-                              ? Iconsax.heart_add_bold
-                              : Iconsax.heart_add_outline,
+                              ? Iconsax.heart_add
+                              : Iconsax.heart_add_copy,
                           iconColor: isFavorite
                               ? theme.colorScheme.error
                               : theme.colorScheme.onSurfaceVariant,
@@ -126,7 +126,7 @@ class _BookVenuesPageState extends State<BookVenuesPage> {
                   alignment: Alignment.centerLeft,
                   child: OutlinedButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Iconsax.google_1_bold),
+                    icon: const Icon(Iconsax.google_1),
                     label: const Text('Show in map'),
                     style: OutlinedButton.styleFrom(
                       shape: const RoundedRectangleBorder(

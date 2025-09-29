@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:icons_plus/icons_plus.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:playo/core/widgets/bottom_navigation_bar.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 import 'package:playo/core/common/widgets/loader.dart';
@@ -352,7 +352,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
                 if (Platform.isIOS || Platform.isMacOS) ...[
                   IconButton(
                     onPressed: _handleEmailLogin,
-                    icon: const Icon(Iconsax.apple_bold, size: 28),
+                    icon: const Icon(Iconsax.apple, size: 28),
                     style: IconButton.styleFrom(
                       maximumSize: const Size(50, 50),
                       minimumSize: const Size(28, 28),

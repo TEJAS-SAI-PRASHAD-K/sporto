@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 // Auth State Provider for managing state across pages
 final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((

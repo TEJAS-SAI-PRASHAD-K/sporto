@@ -29,7 +29,7 @@ Future<void> showSignOutDialog(BuildContext context) async {
           Consumer(
             builder: (context, ref, child) {
               final currentUserNotifier = ref.watch(
-                currentUserNotifierProvider.notifier,
+                currentUserProvider.notifier,
               );
               return TextButton(
                 onPressed: () async {

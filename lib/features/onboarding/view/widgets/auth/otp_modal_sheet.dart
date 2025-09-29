@@ -120,7 +120,7 @@ class _OtpPageContentState extends ConsumerState<_OtpPageContent> {
           next?.when(
             data: (_) {
               Navigator.of(context).pop(); // Close modal
-              final currentUser = ref.read(currentUserNotifierProvider);
+              final currentUser = ref.read(currentUserProvider);
 
               if (isPhone) {
                 // Phone flow logic: profile required if firstName empty OR favoriteSports empty

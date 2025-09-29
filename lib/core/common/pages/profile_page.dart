@@ -28,12 +28,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   Future<void> _loadUserData() async {
-    final currentUser = ref.read(currentUserNotifierProvider);
+    final currentUser = ref.read(currentUserProvider);
     final isCurrentUserProfile = currentUser?.userId == widget.userId;
 
     if (isCurrentUserProfile) {
       // Refresh current user data
-      ref.read(currentUserNotifierProvider.notifier).refreshUser();
+      ref.read(currentUserProvider.notifier).refreshUser();
     } else {
       // Load other user's profile
       setState(() {
@@ -43,7 +43,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
       try {
         final otherUser = await ref
-            .read(currentUserNotifierProvider.notifier)
+            .read(currentUserProvider.notifier)
             .getUserProfile(widget.userId);
 
         if (mounted) {
@@ -67,7 +67,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final currentUser = ref.watch(currentUserNotifierProvider);
+    final currentUser = ref.watch(currentUserProvider);
 
     // Check if viewing current user's profile
     final isCurrentUserProfile = currentUser?.userId == widget.userId;

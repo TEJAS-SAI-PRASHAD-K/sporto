@@ -135,7 +135,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final user = ref.watch(currentUserNotifierProvider);
+    final user = ref.watch(currentUserProvider);
     // Only set _selectedAvatarIndex if not already set (i.e., first load)
     if (_selectedAvatarIndex == null &&
         (user?.avatarUrl?.isNotEmpty ?? false)) {
@@ -243,10 +243,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   onPressed: isEnabled && !_isSaving
                       ? () async {
                           setState(() => _isSaving = true);
-                          final user = ref.watch(currentUserNotifierProvider);
+                          final user = ref.watch(currentUserProvider);
                           try {
                             await ref
-                                .read(currentUserNotifierProvider.notifier)
+                                .read(currentUserProvider.notifier)
                                 .updateUserProfile(
                                   firstName:
                                       _firstNameController.text.trim() !=
@@ -392,7 +392,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       ),
                       child: ClipOval(
                         child: (() {
-                          final user = ref.watch(currentUserNotifierProvider);
+                          final user = ref.watch(currentUserProvider);
                           if (_selectedAvatarIndex != null) {
                             return Image.asset(
                               avatarImages[_selectedAvatarIndex!],

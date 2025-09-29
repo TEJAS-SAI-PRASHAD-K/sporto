@@ -32,8 +32,8 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ref.watch(themeModeNotifierProvider);
-    final currentUser = ref.watch(currentUserNotifierProvider);
+    final theme = ref.watch(themeModeProvider);
+    final currentUser = ref.watch(currentUserProvider);
     final isAuthed = currentUser != null;
 
     return MaterialApp(

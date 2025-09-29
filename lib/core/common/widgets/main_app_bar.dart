@@ -21,7 +21,7 @@ class MainAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
 class _MainAppBarState extends ConsumerState<MainAppBar> {
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserNotifierProvider);
+    final user = ref.watch(currentUserProvider);
 
     return AppBar(
       automaticallyImplyLeading: false,
@@ -185,7 +185,7 @@ class _MainAppBarState extends ConsumerState<MainAppBar> {
 
                   // Preserve favorite sports while updating location
                   await ref
-                      .read(currentUserNotifierProvider.notifier)
+                      .read(currentUserProvider.notifier)
                       .createOrUpdateUser(
                         emailAddress: user.emailAddress,
                         firstName: user.firstName,

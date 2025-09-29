@@ -22,7 +22,7 @@ class _PreferenceAndPrivacyPageState
     extends ConsumerState<PreferenceAndPrivacyPage> {
   @override
   Widget build(BuildContext context) {
-    final theme = ref.watch(themeModeNotifierProvider);
+    final theme = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -92,12 +92,12 @@ class _PreferenceAndPrivacyPageState
               child: Switch.adaptive(
                 value: theme == darkTheme,
                 onChanged: (value) {
-                  ref.read(themeModeNotifierProvider.notifier).toggleTheme();
+                  ref.read(themeModeProvider.notifier).toggleTheme();
                 },
               ),
             ),
             onTap: () {
-              ref.read(themeModeNotifierProvider.notifier).toggleTheme();
+              ref.read(themeModeProvider.notifier).toggleTheme();
             },
           ),
           ListTile(
@@ -177,9 +177,7 @@ class _PreferenceAndPrivacyPageState
                 );
 
                 try {
-                  await ref
-                      .read(currentUserNotifierProvider.notifier)
-                      .deleteAccount();
+                  await ref.read(currentUserProvider.notifier).deleteAccount();
 
                   if (!mounted) return;
 

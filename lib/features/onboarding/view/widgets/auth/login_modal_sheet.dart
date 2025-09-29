@@ -124,7 +124,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
       }
 
       final currentUserNotifier = ref.read(
-        currentUserNotifierProvider.notifier,
+        currentUserProvider.notifier,
       );
 
       // Upsert the app-level user after Supabase session is active
@@ -138,7 +138,7 @@ class _LoginPageContentState extends ConsumerState<LoginPageContent> {
       if (!mounted) return;
 
       // Read provider state to decide navigation
-      final currentUser = ref.read(currentUserNotifierProvider);
+      final currentUser = ref.read(currentUserProvider);
       if (currentUser == null) {
         showSnackBar(
           context,

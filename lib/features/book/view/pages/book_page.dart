@@ -74,7 +74,7 @@ class _BookPageState extends ConsumerState<BookPage> {
       );
     });
 
-    final venueCount = venueState.valueOrNull?.data.length ?? 0;
+    final venueCount = venueState.value?.data.length ?? 0;
     final currentSelection = _tabs.indexWhere((t) => t.isSelected == true);
 
     _tabs = [

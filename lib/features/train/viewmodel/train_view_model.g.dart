@@ -6,21 +6,58 @@ part of 'train_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(TrainViewModel)
+const trainViewModelProvider = TrainViewModelProvider._();
+
+final class TrainViewModelProvider
+    extends $NotifierProvider<TrainViewModel, AsyncValue<Trainer>?> {
+  const TrainViewModelProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'trainViewModelProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$trainViewModelHash();
+
+  @$internal
+  @override
+  TrainViewModel create() => TrainViewModel();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<Trainer>? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<Trainer>?>(value),
+    );
+  }
+}
+
 String _$trainViewModelHash() => r'3ff4d99e4545f891867b56392c8d1a9740655b63';
 
-/// See also [TrainViewModel].
-@ProviderFor(TrainViewModel)
-final trainViewModelProvider =
-    AutoDisposeNotifierProvider<TrainViewModel, AsyncValue<Trainer>?>.internal(
-      TrainViewModel.new,
-      name: r'trainViewModelProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$trainViewModelHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$TrainViewModel = AutoDisposeNotifier<AsyncValue<Trainer>?>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$TrainViewModel extends $Notifier<AsyncValue<Trainer>?> {
+  AsyncValue<Trainer>? build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<AsyncValue<Trainer>?, AsyncValue<Trainer>?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<Trainer>?, AsyncValue<Trainer>?>,
+              AsyncValue<Trainer>?,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

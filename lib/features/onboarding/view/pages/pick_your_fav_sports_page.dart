@@ -32,7 +32,7 @@ class _PickYourFavSportsPageState extends ConsumerState<PickYourFavSportsPage> {
   @override
   Widget build(BuildContext context) {
     // Initialize selection from user's saved favorites (first build only)
-    final currentUser = ref.watch(currentUserNotifierProvider);
+    final currentUser = ref.watch(currentUserProvider);
     if (!_initializedFromUser &&
         (currentUser?.favoriteSports?.isNotEmpty ?? false)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

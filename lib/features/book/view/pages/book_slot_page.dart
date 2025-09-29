@@ -68,7 +68,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
       selectedCourtsWithDuration.clear();
 
       // Recheck availability for the new filtered courts
-      final venueState = ref.read(venueViewModelProvider).valueOrNull;
+      final venueState = ref.read(venueViewModelProvider).value;
       if (venueState != null) {
         final venueData = venueState.data.firstWhere(
           (datum) => datum.venue.id == widget.venueId,
@@ -313,7 +313,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
             : DateTime.now());
 
     // Get court index (first court = 0, second court = 1, etc.)
-    final venueState = ref.read(venueViewModelProvider).valueOrNull;
+    final venueState = ref.read(venueViewModelProvider).value;
     if (venueState == null) return false;
 
     final venueData = venueState.data.firstWhere(
@@ -396,7 +396,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
       selectedTime = newTime;
 
       // Check availability for new time and update unavailable courts
-      final venueState = ref.read(venueViewModelProvider).valueOrNull;
+      final venueState = ref.read(venueViewModelProvider).value;
       if (venueState != null) {
         final venueData = venueState.data.firstWhere(
           (datum) => datum.venue.id == widget.venueId,
@@ -419,7 +419,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
       }
 
       // Check availability for new duration and update unavailable courts
-      final venueState = ref.read(venueViewModelProvider).valueOrNull;
+      final venueState = ref.read(venueViewModelProvider).value;
       if (venueState != null) {
         final venueData = venueState.data.firstWhere(
           (datum) => datum.venue.id == widget.venueId,
@@ -436,7 +436,7 @@ class _BookSlotPageState extends ConsumerState<BookSlotPage> {
       // Regenerate time slots for new date
       if (availableDates.isNotEmpty) {
         final selectedDate = availableDates[selectedDateIndex];
-        final venueState = ref.read(venueViewModelProvider).valueOrNull;
+        final venueState = ref.read(venueViewModelProvider).value;
         if (venueState != null) {
           final venueData = venueState.data.firstWhere(
             (datum) => datum.venue.id == widget.venueId,

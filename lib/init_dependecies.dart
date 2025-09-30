@@ -6,5 +6,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/database/database_helper.dart';
 import 'core/services/notification_service.dart';
+import 'features/play/repository/games_remote_repository.dart';
 
 part 'init_dependencies.main.dart';

@@ -42,7 +42,7 @@ final class CurrentUserNotifierProvider
 }
 
 String _$currentUserNotifierHash() =>
-    r'ff28f6d45369656668b93566deff5f367bedeab3';
+    r'4d728990b45bbc41a824b5a9fc0c86d6b463a848';
 
 abstract class _$CurrentUserNotifier extends $Notifier<User?> {
   User? build();

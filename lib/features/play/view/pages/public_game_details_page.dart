@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:playo/core/models/game.dart';
 import 'package:playo/features/play/model/game_ui_extensions.dart';
-import 'package:playo/features/play/repository/game_participation_remote_repository.dart';
+// Removed old participation repository in favor of GameViewModel
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:playo/features/play/viewmodel/game_view_model.dart';
 import 'package:playo/init_dependecies.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:playo/features/play/view/pages/game_overview/add_players_page.dart';
@@ -167,16 +169,14 @@ class _PublicGameDetailsPageState extends State<PublicGameDetailsPage> {
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) return;
     setState(() => _loading = true);
-    final repo = GameParticipationRemoteRepository(_supabase);
-    final res = await repo.requestToJoinGame(
-      gameId: game.gameId,
-      userId: userId,
+    final container = ProviderScope.containerOf(context, listen: false);
+    final vm = container.read(gameViewModelProvider.notifier);
+    final res = await vm.requestToJoinGame(game.gameId);
+    res.when(
+      data: (p) => setState(() => _myParticipation = p),
+      error: (e, _) {},
+      loading: () {},
     );
-    res.match((_) {}, (p) {
-      setState(() {
-        _myParticipation = p;
-      });
-    });
     if (mounted) setState(() => _loading = false);
   }
 
@@ -184,13 +184,14 @@ class _PublicGameDetailsPageState extends State<PublicGameDetailsPage> {
     final part = _myParticipation;
     if (part == null) return;
     setState(() => _loading = true);
-    final repo = GameParticipationRemoteRepository(_supabase);
-    final res = await repo.leaveGame(participationId: part.participationId);
-    res.match((_) {}, (_) {
-      setState(() {
-        _myParticipation = null;
-      });
-    });
+    final container = ProviderScope.containerOf(context, listen: false);
+    final vm = container.read(gameViewModelProvider.notifier);
+    final res = await vm.leaveGame(part.participationId);
+    res.when(
+      data: (_) => setState(() => _myParticipation = null),
+      error: (e, _) {},
+      loading: () {},
+    );
     if (mounted) setState(() => _loading = false);
   }
 

@@ -6,19 +6,19 @@ import 'package:playo/features/play/view/widgets/player_card.dart';
 import 'package:playo/features/play/view/widgets/game_sub_tab_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:playo/init_dependecies.dart';
-import 'package:playo/features/play/repository/game_participation_remote_repository.dart';
-import 'package:playo/features/play/repository/games_remote_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:playo/features/play/viewmodel/game_view_model.dart';
 import 'package:playo/core/models/game.dart';
 
-class ManagePlayersPage extends StatefulWidget {
+class ManagePlayersPage extends ConsumerStatefulWidget {
   final Game? game; // optional: pass current game to scope queries
   const ManagePlayersPage({super.key, this.game});
 
   @override
-  State<ManagePlayersPage> createState() => _ManagePlayersPageState();
+  ConsumerState<ManagePlayersPage> createState() => _ManagePlayersPageState();
 }
 
-class _ManagePlayersPageState extends State<ManagePlayersPage> {
+class _ManagePlayersPageState extends ConsumerState<ManagePlayersPage> {
   bool _matchFull = false;
   final List<_Player> _requests = [];
   final List<_Player> _invited = [];
@@ -30,68 +30,48 @@ class _ManagePlayersPageState extends State<ManagePlayersPage> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _refreshParticipants();
   }
 
-  Future<void> _loadData() async {
+  Future<void> _refreshParticipants() async {
     final g = widget.game;
     if (g == null) return;
-    // Requests from participation table (Pending)
-    try {
-      final rows = await _supabase
-          .from('games_participants')
-          .select('user_id, joined_at')
-          .eq('game_id', g.gameId)
-          .eq('participation_status', 'Pending')
-          .order('joined_at');
-      setState(() {
-        _requests
-          ..clear()
-          ..addAll(
-            rows.map(
-              (r) => _Player(
-                name:
-                    r['user_id']
-                        as String, // replace with actual name lookup later
-                skill: 'NO SKILL',
-                updatedAt:
-                    DateTime.tryParse(r['joined_at']?.toString() ?? '') ??
-                    DateTime.now(),
-                role: null,
-                lastFive: const [],
-                message: null,
-                noShows: 0,
-              ),
-            ),
-          );
-      });
-    } catch (_) {}
-
-    // Playing from game's player_ids
-    try {
-      final gameRes = await GamesRemoteRepository(
-        _supabase,
-      ).getGameById(g.gameId);
-      gameRes.match((_) {}, (game) {
+    final vm = ref.read(gameViewModelProvider.notifier);
+    final grouped = await vm.participantsByStatus(g.gameId);
+    grouped.when(
+      data: (map) {
         setState(() {
+          _requests
+            ..clear()
+            ..addAll(_mapParticipants(map['Pending']));
           _playing
             ..clear()
-            ..addAll(
-              (game.playerIds ?? const []).map(
-                (uid) => _Player(
-                  name: uid, // replace with profile name if available
-                  skill: 'NO SKILL',
-                  updatedAt: game.updatedAt ?? DateTime.now(),
-                  role: null,
-                  lastFive: const [],
-                  message: null,
-                  noShows: 0,
-                ),
-              ),
-            );
+            ..addAll(_mapParticipants(map['Joined']));
+          _retired
+            ..clear()
+            ..addAll(_mapParticipants(map['Cancelled']));
         });
-      });
-    } catch (_) {}
+      },
+      error: (e, st) {},
+      loading: () {},
+    );
+  }
+
+  List<_Player> _mapParticipants(List<GameParticipation>? list) {
+    if (list == null) return const [];
+    return list
+        .map(
+          (p) => _Player(
+            name: p.userId,
+            skill: 'NO SKILL',
+            updatedAt: p.joinedAt ?? DateTime.now(),
+            role: p.isOrganiser ? 'Host' : null,
+            lastFive: const [],
+            message: null,
+            noShows: 0,
+          ),
+        )
+        .toList();
   }
 
   @override
@@ -330,7 +310,7 @@ class _ManagePlayersPageState extends State<ManagePlayersPage> {
     // Assuming player name is actually user_id for now; in real code map to id
     final userId = _requests[index].name;
     try {
-      // Find the participation row id for this user
+      // Query minimal participation id
       final rows = await _supabase
           .from('games_participants')
           .select('participation_id')
@@ -340,13 +320,16 @@ class _ManagePlayersPageState extends State<ManagePlayersPage> {
           .limit(1);
       if (rows.isEmpty) return;
       final participationId = rows.first['participation_id'] as String;
-      final repo = GameParticipationRemoteRepository(_supabase);
-      await repo.acceptJoinRequest(participationId: participationId);
-      setState(() {
-        final p = _requests.removeAt(index);
-        _playing.add(p);
-      });
-      _snack('Accepted $userId');
+      final vm = ref.read(gameViewModelProvider.notifier);
+      final res = await vm.acceptJoinRequest(participationId);
+      res.when(
+        data: (_) async {
+          _snack('Accepted $userId');
+          await _refreshParticipants();
+        },
+        error: (e, st) => _snack('Failed: $e'),
+        loading: () {},
+      );
     } catch (e) {
       _snack('Failed to accept');
     }

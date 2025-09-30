@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -174,25 +173,20 @@ class GamesRemoteRepository {
     }
   }
 
-  // Helpers for array fields
-  Future<Either<Failure, Game>> addPlayer(String gameId, String userId) async {
+  // ---------------------------------------------------------------------------
+  // Game Invites (migrated & simplified from GameInvitesRemoteRepository)
+  // ---------------------------------------------------------------------------
+
+  Future<Either<Failure, GameInvite>> insertGameInvite(
+    Map<String, dynamic> inviteJson,
+  ) async {
     try {
-      final gameEither = await getGameById(gameId);
-      return await gameEither.match((l) => Left(l), (game) async {
-        final players = [...?game.playerIds];
-        if (!players.contains(userId)) players.add(userId);
-        final res = await supabase
-            .from('games')
-            .update({
-              'player_ids': players,
-              'current_players_count': players.length,
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('game_id', gameId)
-            .select()
-            .single();
-        return Right(Game.fromJson(res));
-      });
+      final response = await supabase
+          .from('game_invites')
+          .insert(inviteJson)
+          .select()
+          .single();
+      return Right(GameInvite.fromJson(response));
     } on SocketException {
       return Left(Failure('No internet connection'));
     } on PostgrestException catch (e) {
@@ -202,26 +196,19 @@ class GamesRemoteRepository {
     }
   }
 
-  Future<Either<Failure, Game>> removePlayer(
-    String gameId,
+  Future<Either<Failure, List<GameInvite>>> fetchInvitesForUser(
     String userId,
   ) async {
     try {
-      final gameEither = await getGameById(gameId);
-      return await gameEither.match((l) => Left(l), (game) async {
-        final players = [...?game.playerIds]..removeWhere((id) => id == userId);
-        final res = await supabase
-            .from('games')
-            .update({
-              'player_ids': players,
-              'current_players_count': players.length,
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('game_id', gameId)
-            .select()
-            .single();
-        return Right(Game.fromJson(res));
-      });
+      final result = await supabase
+          .from('game_invites')
+          .select()
+          .eq('invitee_user_id', userId)
+          .order('sent_at', ascending: false);
+      final items = (result as List)
+          .map((e) => GameInvite.fromJson(e as Map<String, dynamic>))
+          .toList();
+      return Right(items);
     } on SocketException {
       return Left(Failure('No internet connection'));
     } on PostgrestException catch (e) {
@@ -231,26 +218,22 @@ class GamesRemoteRepository {
     }
   }
 
-  Future<Either<Failure, Game>> addToWaitlist(
-    String gameId,
-    String userId,
-  ) async {
+  Future<Either<Failure, GameInvite>> updateGameInviteStatus({
+    required String inviteId,
+    required String status,
+  }) async {
     try {
-      final gameEither = await getGameById(gameId);
-      return await gameEither.match((l) => Left(l), (game) async {
-        final waitlist = [...?game.waitlistUserIds];
-        if (!waitlist.contains(userId)) waitlist.add(userId);
-        final res = await supabase
-            .from('games')
-            .update({
-              'waitlist_user_ids': waitlist,
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('game_id', gameId)
-            .select()
-            .single();
-        return Right(Game.fromJson(res));
-      });
+      final response = await supabase
+          .from('game_invites')
+          .update({
+            'invite_status': status,
+            'responded_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('invite_id', inviteId)
+          .select()
+          .single();
+      return Right(GameInvite.fromJson(response));
     } on SocketException {
       return Left(Failure('No internet connection'));
     } on PostgrestException catch (e) {
@@ -260,26 +243,89 @@ class GamesRemoteRepository {
     }
   }
 
-  Future<Either<Failure, Game>> removeFromWaitlist(
-    String gameId,
-    String userId,
+  // ---------------------------------------------------------------------------
+  // Game Participation (migrated & simplified from GameParticipationRemoteRepository)
+  // ---------------------------------------------------------------------------
+
+  Future<Either<Failure, GameParticipation>> insertGameParticipation(
+    Map<String, dynamic> participationJson,
   ) async {
     try {
-      final gameEither = await getGameById(gameId);
-      return await gameEither.match((l) => Left(l), (game) async {
-        final waitlist = [...?game.waitlistUserIds]
-          ..removeWhere((id) => id == userId);
-        final res = await supabase
-            .from('games')
-            .update({
-              'waitlist_user_ids': waitlist,
-              'updated_at': DateTime.now().toIso8601String(),
-            })
-            .eq('game_id', gameId)
-            .select()
-            .single();
-        return Right(Game.fromJson(res));
-      });
+      final response = await supabase
+          .from('games_participants')
+          .insert(participationJson)
+          .select()
+          .single();
+      return Right(GameParticipation.fromJson(response));
+    } on SocketException {
+      return Left(Failure('No internet connection'));
+    } on PostgrestException catch (e) {
+      return Left(Failure('Database error: ${e.message}'));
+    } catch (e) {
+      return Left(Failure('Unexpected error: ${e.toString()}'));
+    }
+  }
+
+  Future<Either<Failure, GameParticipation>> updateGameParticipation(
+    String participationId,
+    Map<String, dynamic> updates,
+  ) async {
+    try {
+      final payload = {
+        ...updates,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      final response = await supabase
+          .from('games_participants')
+          .update(payload)
+          .eq('participation_id', participationId)
+          .select()
+          .single();
+      return Right(GameParticipation.fromJson(response));
+    } on SocketException {
+      return Left(Failure('No internet connection'));
+    } on PostgrestException catch (e) {
+      return Left(Failure('Database error: ${e.message}'));
+    } catch (e) {
+      return Left(Failure('Unexpected error: ${e.toString()}'));
+    }
+  }
+
+  Future<Either<Failure, List<GameParticipation>>> listParticipationsForGame(
+    String gameId,
+  ) async {
+    try {
+      final result = await supabase
+          .from('games_participants')
+          .select()
+          .eq('game_id', gameId)
+          .order('joined_at', ascending: true);
+      final items = (result as List)
+          .map((e) => GameParticipation.fromJson(e as Map<String, dynamic>))
+          .toList();
+      return Right(items);
+    } on SocketException {
+      return Left(Failure('No internet connection'));
+    } on PostgrestException catch (e) {
+      return Left(Failure('Database error: ${e.message}'));
+    } catch (e) {
+      return Left(Failure('Unexpected error: ${e.toString()}'));
+    }
+  }
+
+  Future<Either<Failure, void>> cancelParticipation(
+    String participationId,
+  ) async {
+    try {
+      await supabase
+          .from('games_participants')
+          .update({
+            'participation_status': 'Cancelled',
+            'left_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('participation_id', participationId);
+      return Right(null);
     } on SocketException {
       return Left(Failure('No internet connection'));
     } on PostgrestException catch (e) {

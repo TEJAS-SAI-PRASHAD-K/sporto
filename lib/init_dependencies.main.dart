@@ -48,6 +48,12 @@ Future<void> _initRepositories() async {
   // serviceLocator.registerLazySingleton<GameRepository>(() => GameRepository());
   // serviceLocator.registerLazySingleton<VenueRepository>(() => VenueRepository());
   // serviceLocator.registerLazySingleton<TrainerRepository>(() => TrainerRepository());
+  // Core game repository (even though exposed via Riverpod, provide singleton for manual lookup)
+  if (!serviceLocator.isRegistered<GamesRemoteRepository>()) {
+    serviceLocator.registerLazySingleton<GamesRemoteRepository>(
+      () => GamesRemoteRepository(serviceLocator<SupabaseClient>()),
+    );
+  }
 }
 
 /// Initialize providers/notifiers

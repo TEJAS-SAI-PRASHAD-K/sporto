@@ -6,7 +6,8 @@ import 'package:playo/core/models/sport.dart';
 // import 'package:playo/core/models/game.dart' as core_game;
 // import 'package:playo/core/error/failure.dart';
 // import 'package:playo/features/play/repository/games_remote_repository.dart';
-import 'package:playo/features/play/viewmodel/create_game_view_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:playo/features/play/viewmodel/game_view_model.dart';
 import 'package:playo/core/models/game.dart' as core_game;
 import 'package:playo/features/play/model/game_ui_extensions.dart';
 import 'package:playo/core/services/geo_location_service.dart';
@@ -91,100 +92,130 @@ class _CreateGamePageState extends State<CreateGamePage> {
         ),
         centerTitle: false,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            // sport/area/date/time tiles
-            _buildOptionTile(
-              icon: Icons.sports_soccer,
-              title: "Sport",
-              subtitle: selectedSport ?? "Select a Sport",
-              onTap: _onSelectSport,
-            ),
-            _buildOptionTile(
-              icon: Icons.location_on_outlined,
-              title: "Area",
-              subtitle: selectedArea ?? "Locality or Venue Name",
-              onTap: _onSelectArea,
-            ),
-            _buildOptionTile(
-              icon: Icons.calendar_today_outlined,
-              title: "Date",
-              subtitle: selectedDate == null
-                  ? "Pick a day"
-                  : _formatDate(selectedDate!),
-              onTap: _onSelectDate,
-            ),
-            _buildOptionTile(
-              icon: Icons.access_time,
-              title: "Time",
-              subtitle: _formatTimeTile(),
-              onTap: _onSelectTime,
-            ),
+      body: Consumer(
+        builder: (context, ref, _) {
+          final vmState = ref.watch(gameViewModelProvider);
+          // listen for errors only
+          ref.listen(gameViewModelProvider, (_, next) {
+            next.whenOrNull(error: (e, st) => _showSnack(e.toString()));
+          });
+          final isLoading = vmState.isLoading;
+          return Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListView(
+                  children: [
+                    // sport/area/date/time tiles
+                    _buildOptionTile(
+                      icon: Icons.sports_soccer,
+                      title: "Sport",
+                      subtitle: selectedSport ?? "Select a Sport",
+                      onTap: _onSelectSport,
+                    ),
+                    _buildOptionTile(
+                      icon: Icons.location_on_outlined,
+                      title: "Area",
+                      subtitle: selectedArea ?? "Locality or Venue Name",
+                      onTap: _onSelectArea,
+                    ),
+                    _buildOptionTile(
+                      icon: Icons.calendar_today_outlined,
+                      title: "Date",
+                      subtitle: selectedDate == null
+                          ? "Pick a day"
+                          : _formatDate(selectedDate!),
+                      onTap: _onSelectDate,
+                    ),
+                    _buildOptionTile(
+                      icon: Icons.access_time,
+                      title: "Time",
+                      subtitle: _formatTimeTile(),
+                      onTap: _onSelectTime,
+                    ),
 
-            const SizedBox(height: 24),
-            const Text(
-              "Game Access",
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
+                    const SizedBox(height: 24),
+                    const Text(
+                      "Game Access",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
 
-            _buildAccessButtons(),
+                    _buildAccessButtons(),
 
-            const SizedBox(height: 8),
-            Text(
-              isPublic
-                  ? "This game can be discovered by all players on Playo"
-                  : "This game can be accessed by anyone via shared link",
-              style: TextStyle(
-                fontSize: 13,
-                color: Theme.of(context).colorScheme.outline,
+                    const SizedBox(height: 8),
+                    Text(
+                      isPublic
+                          ? "This game can be discovered by all players on Playo"
+                          : "This game can be accessed by anyone via shared link",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+                    // Advanced Settings Toggle
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.settings_outlined),
+                      title: const Text("Advanced Settings"),
+                      trailing: AnimatedRotation(
+                        duration: const Duration(milliseconds: 200),
+                        turns: showAdvanced ? 0.25 : 0,
+                        child: const Icon(Icons.arrow_forward_ios, size: 16),
+                      ),
+                      onTap: () {
+                        setState(() => showAdvanced = !showAdvanced);
+                      },
+                    ),
+
+                    if (showAdvanced) _buildAdvancedSettings(),
+
+                    const SizedBox(height: 16),
+                    _buildAddInstructionsSection(),
+                  ],
+                ),
               ),
-            ),
-
-            const SizedBox(height: 24),
-            // Advanced Settings Toggle
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.settings_outlined),
-              title: const Text("Advanced Settings"),
-              trailing: AnimatedRotation(
-                duration: const Duration(milliseconds: 200),
-                turns: showAdvanced ? 0.25 : 0,
-                child: const Icon(Icons.arrow_forward_ios, size: 16),
-              ),
-              onTap: () {
-                setState(() => showAdvanced = !showAdvanced);
-              },
-            ),
-
-            if (showAdvanced) _buildAdvancedSettings(),
-
-            const SizedBox(height: 16),
-            _buildAddInstructionsSection(),
-          ],
-        ),
+              if (isLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.12),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+            ],
+          );
+        },
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              minimumSize: const Size(double.infinity, 52),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+      bottomNavigationBar: Consumer(
+        builder: (context, ref, _) {
+          final isLoading = ref.watch(gameViewModelProvider).isLoading;
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  minimumSize: const Size(double.infinity, 52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: isLoading ? null : () => _onCreateGame(ref),
+                child: Text(
+                  isLoading ? 'Creating...' : "CREATE GAME",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ),
             ),
-            onPressed: _onCreateGame,
-            child: const Text(
-              "CREATE GAME",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -670,7 +701,7 @@ class _CreateGamePageState extends State<CreateGamePage> {
     );
   }
 
-  Future<void> _onCreateGame() async {
+  Future<void> _onCreateGame(WidgetRef ref) async {
     // Basic validations
     if (selectedSport == null) {
       _showSnack('Please select a sport');
@@ -690,29 +721,34 @@ class _CreateGamePageState extends State<CreateGamePage> {
       return;
     }
 
-    try {
-      final vm = CreateGameViewModel();
-      final ui = await vm.createGame(
-        sportName: selectedSport!,
-        sportId: selectedSportId!,
-        selectedArea: selectedArea,
-        selectedDate: selectedDate!,
-        selectedTime: selectedTime!,
-        selectedEndTime: selectedEndTime!,
-        isPublic: isPublic,
-        gameType: gameType,
-        gameSkill: gameSkill,
-        payAndJoin: payAndJoin,
-        costPerPlayer: costPerPlayer,
-        totalPlayers: totalPlayers,
-        costShared: costShared,
-        bringYourOwnEquipment: bringOwnEquipment,
-        instructions: _instructionsCtrl.text,
-      );
-      if (mounted) Navigator.pop(context, ui);
-    } catch (e) {
-      _showSnack(e.toString());
-    }
+    final rules = <String, dynamic>{
+      'pay_and_join': payAndJoin,
+      'cost_per_player': costPerPlayer,
+      'total_players': totalPlayers,
+      'cost_shared': costShared,
+      'game_type': gameType,
+      'game_skill': gameSkill,
+      'bring_your_own_equipment': bringOwnEquipment,
+    }..removeWhere((k, v) => v == null);
+
+    final result = await ref
+        .read(gameViewModelProvider.notifier)
+        .createGame(
+          sportId: selectedSportId!,
+          area: selectedArea,
+          gameDate: selectedDate!,
+          gameTime: _startTimeForDb(),
+          isPublic: isPublic,
+          rules: rules,
+          notes: _instructionsCtrl.text,
+        );
+    result.when(
+      data: (g) {
+        if (mounted) Navigator.pop(context, g);
+      },
+      error: (e, st) => _showSnack(e.toString()),
+      loading: () {},
+    );
   }
 
   // Helpers moved to ViewModel
@@ -727,6 +763,19 @@ class _CreateGamePageState extends State<CreateGamePage> {
 
   void _showSnack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  String _startTimeForDb() {
+    final dt = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+      selectedTime!.hour,
+      selectedTime!.minute,
+    );
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '$h:$m:00';
   }
 }
 
